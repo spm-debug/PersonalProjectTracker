@@ -1,12 +1,12 @@
 // Service worker: permite que la app funcione sin internet.
 // La app (index.html) se busca primero en la red para recibir actualizaciones;
 // si no hay conexión, se sirve la copia guardada.
-const CACHE = 'vida-tracker-cache-v1';
+const CACHE = 'vida-tracker-cache-v2';
 
 self.addEventListener('install', function (e) {
   e.waitUntil(
     caches.open(CACHE)
-      .then(function (c) { return c.addAll(['./', './index.html', './icon.svg', './manifest.webmanifest']); })
+      .then(function (c) { return c.addAll(['./', './index.html', './icon.png', './manifest.webmanifest']); })
       .then(function () { return self.skipWaiting(); })
   );
 });
