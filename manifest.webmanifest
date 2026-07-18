@@ -1,0 +1,13 @@
+{
+  "name": "Mi Vida · Tracker",
+  "short_name": "Mi Vida",
+  "description": "Tracker personal de hábitos, gastos, notas, tareas y agenda",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#F5EDE3",
+  "theme_color": "#F5EDE3",
+  "icons": [
+    { "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+  ]
+}

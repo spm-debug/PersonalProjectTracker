@@ -2,6 +2,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#F5EDE3" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#221A14" media="(prefers-color-scheme: dark)">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Mi Vida">
 <style>
   :root {
     --bg: #F5EDE3;
@@ -214,6 +218,40 @@
   .habito.hecho .marca { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
   .habito.hecho .nombre { color: var(--accent); font-weight: 600; }
   .habito .racha { margin-left: auto; font-size: 0.8rem; color: var(--ink-soft); font-variant-numeric: tabular-nums; }
+  .hechos-toggle {
+    text-align: left;
+    color: var(--ink-soft);
+    font-size: 0.85rem;
+    padding: 10px 2px 2px;
+  }
+  .deshacer {
+    position: fixed;
+    left: 50%;
+    transform: translateX(-50%);
+    bottom: calc(78px + env(safe-area-inset-bottom));
+    background: var(--ink);
+    color: var(--bg);
+    border-radius: 12px;
+    padding: 10px 16px;
+    display: flex;
+    gap: 14px;
+    align-items: center;
+    font-size: 0.9rem;
+    z-index: 60;
+    box-shadow: var(--shadow);
+    white-space: nowrap;
+  }
+  .deshacer button { text-decoration: underline; font-weight: 700; color: inherit; }
+  .vencida .nota-hora { color: var(--danger); font-weight: 600; }
+  .sem-nav { display: flex; align-items: center; justify-content: space-between; padding: 0 4px; }
+  .paso-sem {
+    width: 42px; height: 42px;
+    border-radius: 10px;
+    background: var(--surface-2);
+    font-size: 1.1rem;
+  }
+  .paso-sem:disabled { opacity: 0.35; cursor: default; }
+  #sem-rotulo { font-family: var(--font-display); font-style: italic; color: var(--ink-soft); font-size: 0.95rem; }
 
   /* ---- Gasto rápido (Hoy) ---- */
   .gr-fila { display: flex; gap: 8px; }
@@ -416,7 +454,7 @@
     max-width: 480px;
     margin: 0 auto;
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(5, 1fr);
   }
   .tab {
     padding: 10px 4px 12px;
@@ -502,6 +540,17 @@
           <button class="btn-secundario" id="bienvenida-no">Empezar de cero</button>
         </div>
       </div>
+      <div class="aviso oculto" id="aviso-respaldo">
+        <p id="respaldo-texto">🛡️ Llevas días sin respaldar tus datos.</p>
+        <div class="aviso-botones">
+          <button class="btn-primario" id="respaldo-ir">Respaldar ahora</button>
+          <button class="btn-secundario" id="respaldo-luego">Hoy no</button>
+        </div>
+      </div>
+      <section class="card oculto" id="card-agenda-hoy">
+        <h2>📅 Agenda de hoy</h2>
+        <div class="notas-lista" id="agenda-hoy"></div>
+      </section>
       <section class="card">
         <h2>Hábitos</h2>
         <div class="habitos" id="lista-habitos"></div>
@@ -533,6 +582,16 @@
           <div class="tipos">
             <button class="tipo activo" data-tipo="nota">📝 Nota</button>
             <button class="tipo" data-tipo="tarea">☑️ Tarea</button>
+          </div>
+          <div class="tipos" id="etiquetas">
+            <button class="tipo activo" data-etq="">✏️ General</button>
+            <button class="tipo" data-etq="idea">💡 Idea</button>
+            <button class="tipo" data-etq="logro">🏆 Logro</button>
+            <button class="tipo" data-etq="reflexion">🤔 Reflexión</button>
+          </div>
+          <div class="oculto" id="zona-limite" style="margin-bottom: 10px;">
+            <label class="ayuda" for="tarea-limite" style="display:block; margin: 0 0 4px;">Fecha límite (opcional)</label>
+            <input class="nota-input" id="tarea-limite" type="date">
           </div>
           <textarea class="nota-dia" id="nota-dia" rows="2" maxlength="280" placeholder="Una línea sobre tu día… (opcional)"></textarea>
           <button class="btn-primario btn-nota" id="guardar-nota" disabled>Guardar nota</button>
@@ -581,8 +640,35 @@
       </section>
     </div>
 
+    <!-- ============ AGENDA ============ -->
+    <div id="vista-agenda" class="vista oculto" style="flex-direction:column; gap:14px;">
+      <section class="card">
+        <div class="card-cab">
+          <h2>Nuevo evento</h2>
+          <button class="abrir" data-plegable="form-evento" aria-expanded="false" aria-label="Programar un evento">＋</button>
+        </div>
+        <div class="plegable oculto" id="form-evento">
+          <input class="nota-input" id="evento-titulo" type="text" placeholder="¿Qué evento? (ej. Cumpleaños de mamá)" maxlength="60" style="margin-bottom: 10px;">
+          <div class="gr-fila">
+            <input class="nota-input" id="evento-fecha" type="date" style="flex: 1;">
+            <input class="nota-input" id="evento-hora" type="time" style="width: 120px;">
+          </div>
+          <button class="btn-primario btn-nota" id="agregar-evento" disabled>Guardar evento</button>
+        </div>
+      </section>
+      <section class="card" id="card-eventos">
+        <h2>Próximos<span class="mini-info" id="mini-eventos"></span></h2>
+        <div class="notas-lista" id="eventos-lista"></div>
+      </section>
+    </div>
+
     <!-- ============ RESUMEN ============ -->
     <div id="vista-resumen" class="vista oculto" style="flex-direction:column; gap:14px;">
+      <div class="sem-nav">
+        <button class="paso-sem" id="sem-prev" aria-label="Semana anterior">←</button>
+        <span id="sem-rotulo">Esta semana</span>
+        <button class="paso-sem" id="sem-sig" aria-label="Semana siguiente" disabled>→</button>
+      </div>
       <section class="card">
         <h2>Últimos 7 días</h2>
         <div class="semana-grid" id="semana-grid"></div>
@@ -618,6 +704,16 @@
         <div class="ajuste-habitos" id="ajuste-habitos"></div>
       </section>
       <section class="card">
+        <div class="card-cab">
+          <h2>Presupuestos semanales</h2>
+          <button class="abrir" data-plegable="form-presu" aria-expanded="false" aria-label="Editar presupuestos">＋</button>
+        </div>
+        <div class="plegable oculto" id="form-presu">
+          <div id="lista-presu" style="display: flex; flex-direction: column; gap: 8px;"></div>
+          <p class="ayuda">Tope de gasto por categoría para los últimos 7 días. Deja vacío para no controlar esa categoría. El avance se ve en Resumen → Financiero, y la frase del día te alertará al llegar al 80%.</p>
+        </div>
+      </section>
+      <section class="card">
         <h2>Mis datos</h2>
         <button class="btn-primario btn-nota" id="copiar-link" data-rotulo="📲 Copiar mis datos para otro dispositivo" style="margin-top: 0;">📲 Copiar mis datos para otro dispositivo</button>
         <p class="ayuda">Copia un link con todo lo tuyo: envíatelo por WhatsApp, ábrelo en el otro dispositivo y pégalo donde la app te lo pida. Borra el mensaje del chat después de importar.</p>
@@ -646,10 +742,16 @@
     </div>
   </main>
 
+  <div class="deshacer oculto" id="deshacer">
+    <span id="deshacer-texto"></span>
+    <button id="deshacer-btn">Deshacer</button>
+  </div>
+
   <nav class="tabs">
     <div class="tabs-inner">
       <button class="tab activa" data-vista="hoy"><span class="icono">☀️</span>Hoy</button>
       <button class="tab" data-vista="gastos"><span class="icono">💸</span>Gastos</button>
+      <button class="tab" data-vista="agenda"><span class="icono">📅</span>Agenda</button>
       <button class="tab" data-vista="resumen"><span class="icono">📈</span>Resumen</button>
       <button class="tab" data-vista="ajustes"><span class="icono">⚙️</span>Ajustes</button>
     </div>
@@ -672,8 +774,10 @@
       ],
       dias: {},      // 'YYYY-MM-DD' -> { habitos: {id:true} }
       gastos: [],    // { id, fecha, monto, cat, nota }
-      notas: [],     // { id, fecha, hora, texto }
-      tareas: [],    // { id, fecha, hora, texto, hecha, fechaHecha }
+      notas: [],     // { id, fecha, hora, texto, etiqueta }
+      tareas: [],    // { id, fecha, hora, texto, hecha, fechaHecha, limite }
+      eventos: [],   // { id, titulo, fecha, hora }
+      presupuestos: {}, // { categoria: tope semanal }
     };
   }
 
@@ -700,6 +804,8 @@
     });
   }
   if (!estado.tareas) estado.tareas = [];
+  if (!estado.eventos) estado.eventos = [];
+  if (!estado.presupuestos) estado.presupuestos = {};
 
   // Respaldo automático: una foto del estado al primer arranque de cada día.
   // Nunca se sobrescribe con un estado vacío, para que sirva de salvavidas.
@@ -769,6 +875,31 @@
     });
     if (peor) {
       el.textContent = 'Llevas ' + peor.n + ' días sin ' + nombreDe(peor.h) + '. ¿Vas a dejar que hoy sean ' + (peor.n + 1) + '?';
+      return;
+    }
+
+    // Regla 1b: un presupuesto semanal va en 80% o más
+    const clavesSem = [];
+    for (let i = 0; i < 7; i++) {
+      const d = new Date();
+      d.setDate(d.getDate() - i);
+      clavesSem.push(claveDia(d));
+    }
+    let alertaPresu = null;
+    Object.keys(estado.presupuestos).forEach(function (c) {
+      const tope = estado.presupuestos[c];
+      let gastado = 0;
+      estado.gastos.forEach(function (g) {
+        if (g.cat === c && clavesSem.indexOf(g.fecha) !== -1) gastado += g.monto;
+      });
+      const pct = Math.round((gastado / tope) * 100);
+      if (pct >= 80 && (!alertaPresu || pct > alertaPresu.pct)) alertaPresu = { cat: c, pct: pct };
+    });
+    if (alertaPresu) {
+      const nombreCat = alertaPresu.cat.replace(/^[^A-Za-z0-9ÁÉÍÓÚáéíóúÑñ]+\s*/, '').toLowerCase();
+      el.textContent = alertaPresu.pct >= 100
+        ? 'Te pasaste del presupuesto semanal de ' + nombreCat + ' (' + alertaPresu.pct + '%). Mañana se recupera, hoy se frena.'
+        : 'Vas al ' + alertaPresu.pct + '% de tu presupuesto semanal de ' + nombreCat + '. Ojo con lo que sigue.';
       return;
     }
 
@@ -865,12 +996,27 @@
     btn.setAttribute('aria-expanded', 'false');
   }
 
+  // ---------- Deshacer borrados ----------
+  let deshacerTimer = null;
+  function ofrecerDeshacer(texto, restaurar) {
+    const el = document.getElementById('deshacer');
+    document.getElementById('deshacer-texto').textContent = texto;
+    el.classList.remove('oculto');
+    document.getElementById('deshacer-btn').onclick = function () {
+      el.classList.add('oculto');
+      clearTimeout(deshacerTimer);
+      restaurar();
+    };
+    clearTimeout(deshacerTimer);
+    deshacerTimer = setTimeout(function () { el.classList.add('oculto'); }, 5000);
+  }
+
   // ---------- Navegación ----------
   function saludo() {
     const h = new Date().getHours();
     return h < 12 ? 'Buenos días' : h < 19 ? 'Buenas tardes' : 'Buenas noches';
   }
-  const TITULOS = { hoy: saludo(), gastos: 'Gastos', resumen: 'Resumen', ajustes: 'Ajustes' };
+  const TITULOS = { hoy: saludo(), gastos: 'Gastos', agenda: 'Agenda', resumen: 'Resumen', ajustes: 'Ajustes' };
   document.getElementById('titulo').textContent = TITULOS.hoy;
   let vistaActiva = 'hoy';
   document.querySelectorAll('.tab').forEach(function (tab) {
@@ -903,7 +1049,7 @@
     return n;
   }
 
-  let ultimoToggle = null;
+  let mostrarHechos = false;
   function pintarHabitos() {
     const cont = document.getElementById('lista-habitos');
     cont.innerHTML = '';
@@ -911,15 +1057,17 @@
     if (estado.habitos.length === 0) {
       cont.innerHTML = '<p class="vacio">No tienes hábitos aún. Agrégalos en Ajustes.</p>';
     }
-    estado.habitos.forEach(function (h) {
+    const pendientes = estado.habitos.filter(function (h) { return !dia.habitos[h.id]; });
+    const hechos = estado.habitos.filter(function (h) { return !!dia.habitos[h.id]; });
+
+    function filaHabito(h) {
       const hecho = !!dia.habitos[h.id];
       const btn = document.createElement('button');
       btn.className = 'habito' + (hecho ? ' hecho' : '');
       btn.setAttribute('aria-pressed', hecho);
       const r = racha(h.id);
-      const conPop = hecho && h.id === ultimoToggle;
       btn.innerHTML =
-        '<span class="marca' + (conPop ? ' pop' : '') + '">✓</span>' +
+        '<span class="marca">✓</span>' +
         '<span class="nombre"></span>' +
         (r > 0 ? '<span class="racha">🔥 ' + r + '</span>' : '');
       btn.querySelector('.nombre').textContent = h.nombre;
@@ -927,15 +1075,33 @@
         const activando = !dia.habitos[h.id];
         if (activando) dia.habitos[h.id] = true;
         else delete dia.habitos[h.id];
-        ultimoToggle = activando ? h.id : null;
         guardar();
         pintarHabitos();
         if (activando) celebrarSiCompleto();
       });
-      cont.appendChild(btn);
-    });
-    ultimoToggle = null;
-    const todos = estado.habitos.length > 0 && estado.habitos.every(function (h) { return dia.habitos[h.id]; });
+      return btn;
+    }
+
+    pendientes.forEach(function (h) { cont.appendChild(filaHabito(h)); });
+
+    if (hechos.length) {
+      const toggle = document.createElement('button');
+      toggle.className = 'hechos-toggle';
+      toggle.textContent = '✓ ' + hechos.length +
+        (hechos.length === 1 ? ' hábito hecho hoy' : ' hábitos hechos hoy') +
+        (mostrarHechos ? ' · ocultar' : ' · ver');
+      toggle.setAttribute('aria-expanded', String(mostrarHechos));
+      toggle.addEventListener('click', function () {
+        mostrarHechos = !mostrarHechos;
+        pintarHabitos();
+      });
+      cont.appendChild(toggle);
+      if (mostrarHechos) {
+        hechos.forEach(function (h) { cont.appendChild(filaHabito(h)); });
+      }
+    }
+
+    const todos = estado.habitos.length > 0 && hechos.length === estado.habitos.length;
     document.getElementById('dia-completo').classList.toggle('oculto', !todos);
     actualizarAnillo();
     actualizarFrase();
@@ -945,12 +1111,22 @@
   const notaDia = document.getElementById('nota-dia');
   const btnNota = document.getElementById('guardar-nota');
   let tipoActivo = 'nota';
-  document.querySelectorAll('.tipo').forEach(function (chip) {
+  let etqActiva = '';
+  const ETIQUETAS = { idea: '💡 Idea', logro: '🏆 Logro', reflexion: '🤔 Reflexión' };
+  document.querySelectorAll('.tipo[data-tipo]').forEach(function (chip) {
     chip.addEventListener('click', function () {
       tipoActivo = chip.dataset.tipo;
-      document.querySelectorAll('.tipo').forEach(function (c) { c.classList.toggle('activo', c === chip); });
+      document.querySelectorAll('.tipo[data-tipo]').forEach(function (c) { c.classList.toggle('activo', c === chip); });
       btnNota.textContent = tipoActivo === 'nota' ? 'Guardar nota' : 'Guardar tarea';
       notaDia.placeholder = tipoActivo === 'nota' ? 'Una línea sobre tu día… (opcional)' : '¿Qué tienes que hacer?';
+      document.getElementById('etiquetas').classList.toggle('oculto', tipoActivo !== 'nota');
+      document.getElementById('zona-limite').classList.toggle('oculto', tipoActivo !== 'tarea');
+    });
+  });
+  document.querySelectorAll('.tipo[data-etq]').forEach(function (chip) {
+    chip.addEventListener('click', function () {
+      etqActiva = chip.dataset.etq;
+      document.querySelectorAll('.tipo[data-etq]').forEach(function (c) { c.classList.toggle('activo', c === chip); });
     });
   });
   notaDia.addEventListener('input', function () {
@@ -961,10 +1137,12 @@
     if (!texto) return;
     const hora = new Date().toTimeString().slice(0, 5);
     if (tipoActivo === 'nota') {
-      estado.notas.push({ id: 'n' + Date.now(), fecha: HOY, hora: hora, texto: texto });
+      estado.notas.push({ id: 'n' + Date.now(), fecha: HOY, hora: hora, texto: texto, etiqueta: etqActiva });
       pintarNotasHoy();
     } else {
-      estado.tareas.push({ id: 't' + Date.now(), fecha: HOY, hora: hora, texto: texto, hecha: false, fechaHecha: null });
+      const limite = document.getElementById('tarea-limite').value || null;
+      estado.tareas.push({ id: 't' + Date.now(), fecha: HOY, hora: hora, texto: texto, hecha: false, fechaHecha: null, limite: limite });
+      document.getElementById('tarea-limite').value = '';
       pintarTareas();
     }
     guardar();
@@ -977,6 +1155,10 @@
     const cont = document.getElementById('tareas-lista');
     cont.innerHTML = '';
     const pendientes = estado.tareas.filter(function (t) { return !t.hecha; });
+    pendientes.sort(function (a, b) {
+      const la = a.limite || '9999', lb = b.limite || '9999';
+      return la < lb ? -1 : la > lb ? 1 : 0;
+    });
     const hechasHoy = estado.tareas.filter(function (t) { return t.hecha && t.fechaHecha === HOY; });
     const card = document.getElementById('card-tareas');
     const mini = document.getElementById('mini-tareas');
@@ -989,7 +1171,8 @@
     mini.textContent = '';
     pendientes.concat(hechasHoy).forEach(function (t) {
       const fila = document.createElement('div');
-      fila.className = 'nota-item' + (t.hecha ? ' tarea-hecha' : '');
+      fila.className = 'nota-item' + (t.hecha ? ' tarea-hecha' : '') +
+        (!t.hecha && t.limite && t.limite < HOY ? ' vencida' : '');
       fila.innerHTML =
         '<button class="tarea-check" aria-label="Marcar tarea como hecha">✓</button>' +
         '<div style="flex:1"><div class="nota-texto"></div><div class="nota-hora"></div></div>' +
@@ -997,7 +1180,8 @@
       fila.querySelector('.nota-texto').textContent = t.texto;
       fila.querySelector('.nota-hora').textContent = t.hecha
         ? 'Hecha'
-        : 'Desde el ' + fechaCorta(t.fecha) + (t.hora ? ' · ' + t.hora : '');
+        : 'Desde el ' + fechaCorta(t.fecha) + (t.hora ? ' · ' + t.hora : '') +
+          (t.limite ? (t.limite < HOY ? ' · VENCIDA el ' : ' · vence el ') + fechaCorta(t.limite) : '');
       fila.querySelector('.tarea-check').addEventListener('click', function () {
         if (t.hecha) { t.hecha = false; t.fechaHecha = null; }
         else { t.hecha = true; t.fechaHecha = HOY; }
@@ -1008,6 +1192,11 @@
         estado.tareas = estado.tareas.filter(function (x) { return x.id !== t.id; });
         guardar();
         pintarTareas();
+        ofrecerDeshacer('Tarea eliminada', function () {
+          estado.tareas.push(t);
+          guardar();
+          pintarTareas();
+        });
       });
       cont.appendChild(fila);
     });
@@ -1040,13 +1229,107 @@
         '<button class="g-borrar" aria-label="Borrar nota">✕</button>';
       fila.querySelector('.nota-texto').textContent = n.texto;
       fila.querySelector('.nota-hora').textContent =
-        'Guardada el ' + fechaCorta(n.fecha) + (n.hora ? ' · ' + n.hora : '');
+        'Guardada el ' + fechaCorta(n.fecha) + (n.hora ? ' · ' + n.hora : '') +
+        (n.etiqueta && ETIQUETAS[n.etiqueta] ? ' · ' + ETIQUETAS[n.etiqueta] : '');
       fila.querySelector('.g-borrar').addEventListener('click', function () {
         estado.notas = estado.notas.filter(function (x) { return x.id !== n.id; });
         guardar();
         pintarNotasHoy();
+        ofrecerDeshacer('Nota eliminada', function () {
+          estado.notas.push(n);
+          guardar();
+          pintarNotasHoy();
+        });
       });
       cont.appendChild(fila);
+    });
+  }
+
+  // ---------- Agenda ----------
+  const eventoTitulo = document.getElementById('evento-titulo');
+  const eventoFecha = document.getElementById('evento-fecha');
+  const eventoHora = document.getElementById('evento-hora');
+  const btnEvento = document.getElementById('agregar-evento');
+  function validarEvento() {
+    btnEvento.disabled = !(eventoTitulo.value.trim() && eventoFecha.value);
+  }
+  eventoTitulo.addEventListener('input', validarEvento);
+  eventoFecha.addEventListener('change', validarEvento);
+  btnEvento.addEventListener('click', function () {
+    if (!(eventoTitulo.value.trim() && eventoFecha.value)) return;
+    estado.eventos.push({
+      id: 'e' + Date.now(),
+      titulo: eventoTitulo.value.trim(),
+      fecha: eventoFecha.value,
+      hora: eventoHora.value || '',
+    });
+    guardar();
+    eventoTitulo.value = '';
+    eventoFecha.value = '';
+    eventoHora.value = '';
+    btnEvento.disabled = true;
+    plegar('form-evento');
+    pintarEventos();
+  });
+
+  function diasHasta(fecha) {
+    const p = fecha.split('-');
+    const q = HOY.split('-');
+    return Math.round((new Date(p[0], p[1] - 1, p[2]) - new Date(q[0], q[1] - 1, q[2])) / 86400000);
+  }
+
+  function pintarEventos() {
+    const cont = document.getElementById('eventos-lista');
+    cont.innerHTML = '';
+    const proximos = estado.eventos
+      .filter(function (ev) { return ev.fecha >= HOY; })
+      .sort(function (a, b) { return (a.fecha + (a.hora || '')) < (b.fecha + (b.hora || '')) ? -1 : 1; });
+    const card = document.getElementById('card-eventos');
+    const mini = document.getElementById('mini-eventos');
+    if (proximos.length === 0) {
+      card.classList.add('compacta');
+      mini.textContent = ' · nada programado';
+    } else {
+      card.classList.remove('compacta');
+      mini.textContent = '';
+      proximos.forEach(function (ev) {
+        const fila = document.createElement('div');
+        fila.className = 'nota-item';
+        const n = diasHasta(ev.fecha);
+        const cuando = n === 0 ? 'Hoy' : n === 1 ? 'Mañana' : 'En ' + n + ' días · ' + fechaCorta(ev.fecha);
+        fila.innerHTML =
+          '<div style="flex:1"><div class="nota-texto" style="font-style:normal;"></div><div class="nota-hora"></div></div>' +
+          '<button class="g-borrar" aria-label="Borrar evento">✕</button>';
+        fila.querySelector('.nota-texto').textContent = ev.titulo;
+        fila.querySelector('.nota-hora').textContent = cuando + (ev.hora ? ' · ' + ev.hora : '');
+        fila.querySelector('.g-borrar').addEventListener('click', function () {
+          estado.eventos = estado.eventos.filter(function (x) { return x.id !== ev.id; });
+          guardar();
+          pintarEventos();
+          ofrecerDeshacer('Evento eliminado', function () {
+            estado.eventos.push(ev);
+            guardar();
+            pintarEventos();
+          });
+        });
+        cont.appendChild(fila);
+      });
+    }
+    // Cronograma del día en la pestaña Hoy
+    const cardHoy = document.getElementById('card-agenda-hoy');
+    const contHoy = document.getElementById('agenda-hoy');
+    contHoy.innerHTML = '';
+    const deHoy = proximos.filter(function (ev) { return ev.fecha === HOY; });
+    cardHoy.classList.toggle('oculto', deHoy.length === 0);
+    deHoy.forEach(function (ev) {
+      const fila = document.createElement('div');
+      fila.className = 'nota-item';
+      fila.innerHTML =
+        '<span class="nota-hora" style="min-width:48px; margin-top:2px;"></span>' +
+        '<div class="nota-texto" style="font-style:normal; flex:1;"></div>';
+      fila.querySelector('.nota-hora').textContent = ev.hora || '—';
+      fila.querySelector('.nota-texto').textContent = ev.titulo;
+      contHoy.appendChild(fila);
     });
   }
 
@@ -1147,6 +1430,11 @@
         estado.gastos = estado.gastos.filter(function (x) { return x.id !== g.id; });
         guardar();
         pintarGastos();
+        ofrecerDeshacer('Gasto eliminado', function () {
+          estado.gastos.push(g);
+          guardar();
+          pintarGastos();
+        });
       });
       cont.appendChild(fila);
     });
@@ -1160,18 +1448,34 @@
   }
 
   // ---------- Resumen ----------
-  function ultimos7() {
+  let semanaOffset = 0;
+  function ultimos7(offset) {
     const dias = [];
+    const atras = (offset || 0) * 7;
     for (let i = 6; i >= 0; i--) {
       const d = new Date();
-      d.setDate(d.getDate() - i);
+      d.setDate(d.getDate() - i - atras);
       dias.push({ clave: claveDia(d), letra: d.toLocaleDateString('es', { weekday: 'narrow' }) });
     }
     return dias;
   }
+  document.getElementById('sem-prev').addEventListener('click', function () {
+    semanaOffset++;
+    pintarResumen();
+  });
+  document.getElementById('sem-sig').addEventListener('click', function () {
+    if (semanaOffset > 0) {
+      semanaOffset--;
+      pintarResumen();
+    }
+  });
 
   function pintarResumen() {
-    const dias = ultimos7();
+    const dias = ultimos7(semanaOffset);
+    document.getElementById('sem-sig').disabled = semanaOffset === 0;
+    document.getElementById('sem-rotulo').textContent = semanaOffset === 0
+      ? 'Esta semana'
+      : fechaCorta(dias[0].clave) + ' – ' + fechaCorta(dias[6].clave);
 
     // Grid de hábitos
     const grid = document.getElementById('semana-grid');
@@ -1252,13 +1556,23 @@
     }
     const max = entradas.length ? entradas[0][1] : 1;
     entradas.forEach(function (par) {
+      const cat = par[0], monto = par[1];
+      const tope = estado.presupuestos[cat];
       const fila = document.createElement('div');
       fila.className = 'cat-barra-fila';
+      let ancho, colorCss = '', montoTxt = '$ ' + fmtMoneda.format(monto);
+      if (tope) {
+        ancho = Math.min(100, Math.round((monto / tope) * 100));
+        if (monto >= tope) colorCss = '; background: var(--danger)';
+        montoTxt += ' / ' + fmtMoneda.format(tope);
+      } else {
+        ancho = Math.round((monto / max) * 100);
+      }
       fila.innerHTML =
         '<span class="nombre"></span>' +
-        '<div class="cat-barra"><div style="width:' + Math.round((par[1] / max) * 100) + '%"></div></div>' +
-        '<span class="monto">$ ' + fmtMoneda.format(par[1]) + '</span>';
-      fila.querySelector('.nombre').textContent = par[0];
+        '<div class="cat-barra"><div style="width:' + ancho + '%' + colorCss + '"></div></div>' +
+        '<span class="monto">' + montoTxt + '</span>';
+      fila.querySelector('.nombre').textContent = cat;
       cont.appendChild(fila);
     });
     document.getElementById('total-semana').textContent = '$ ' + fmtMoneda.format(total);
@@ -1341,10 +1655,17 @@
         guardar();
         pintarAjustes();
         pintarHabitos();
+        ofrecerDeshacer('Hábito eliminado', function () {
+          estado.habitos.push(h);
+          guardar();
+          pintarAjustes();
+          pintarHabitos();
+        });
       });
       cont.appendChild(fila);
     });
     pintarRecuperacion();
+    pintarPresupuestos();
   }
 
   function pintarRecuperacion() {
@@ -1383,6 +1704,28 @@
     });
   }
 
+  function pintarPresupuestos() {
+    const cont = document.getElementById('lista-presu');
+    cont.innerHTML = '';
+    CATEGORIAS.forEach(function (c) {
+      const fila = document.createElement('div');
+      fila.style.cssText = 'display:flex; align-items:center; gap:10px;';
+      fila.innerHTML =
+        '<span style="flex:1; font-size:0.9rem;"></span>' +
+        '<input type="number" inputmode="decimal" placeholder="$ 0" style="width:130px; height:42px; padding:0 10px; border-radius:10px; border:1px solid var(--line); background:var(--surface); color:var(--ink); text-align:right; font-variant-numeric:tabular-nums; font-size:0.95rem;">';
+      fila.querySelector('span').textContent = c;
+      const inp = fila.querySelector('input');
+      if (estado.presupuestos[c]) inp.value = estado.presupuestos[c];
+      inp.addEventListener('change', function () {
+        const v = parseFloat(inp.value);
+        if (v > 0) estado.presupuestos[c] = v;
+        else delete estado.presupuestos[c];
+        guardar();
+      });
+      cont.appendChild(fila);
+    });
+  }
+
   document.getElementById('agregar-habito').addEventListener('click', function () {
     const input = document.getElementById('nuevo-habito-nombre');
     const nombre = input.value.trim();
@@ -1402,7 +1745,13 @@
     a.download = 'vida-tracker-respaldo-' + HOY + '.json';
     a.click();
     URL.revokeObjectURL(a.href);
+    marcarRespaldo();
   });
+
+  function marcarRespaldo() {
+    try { localStorage.setItem(CLAVE + '-ultimo-respaldo', claveDia()); } catch (e) {}
+    document.getElementById('aviso-respaldo').classList.add('oculto');
+  }
 
   // Dirección de la propia app, se adapta sola a donde esté alojada
   const URL_APP = location.origin + location.pathname;
@@ -1416,6 +1765,7 @@
     function exito() {
       zona.classList.add('oculto');
       btn.textContent = 'Copiado ✓ — envíatelo al otro dispositivo';
+      marcarRespaldo();
       setTimeout(restaurar, 2500);
     }
     function copiaManual() {
@@ -1516,6 +1866,35 @@
     });
   })();
 
+  // Recordatorio de respaldo: si hay datos y llevas 7+ días sin exportar
+  (function () {
+    try {
+      const hayDatos = Object.keys(estado.dias).length || estado.gastos.length ||
+        estado.notas.length || estado.tareas.length;
+      if (!hayDatos) return;
+      if (localStorage.getItem(CLAVE + '-respaldo-aviso') === claveDia()) return;
+      const ultimo = localStorage.getItem(CLAVE + '-ultimo-respaldo');
+      let diasSin = 999;
+      if (ultimo) {
+        const p = ultimo.split('-');
+        diasSin = Math.round((new Date() - new Date(p[0], p[1] - 1, p[2])) / 86400000);
+      }
+      if (diasSin < 7) return;
+      document.getElementById('respaldo-texto').textContent = ultimo
+        ? '🛡️ Llevas ' + diasSin + ' días sin respaldar tus datos.'
+        : '🛡️ Aún no has descargado ningún respaldo de tus datos.';
+      document.getElementById('aviso-respaldo').classList.remove('oculto');
+      document.getElementById('respaldo-ir').addEventListener('click', function () {
+        document.getElementById('aviso-respaldo').classList.add('oculto');
+        document.querySelector('.tab[data-vista="ajustes"]').click();
+      });
+      document.getElementById('respaldo-luego').addEventListener('click', function () {
+        localStorage.setItem(CLAVE + '-respaldo-aviso', claveDia());
+        document.getElementById('aviso-respaldo').classList.add('oculto');
+      });
+    } catch (e) {}
+  })();
+
   // Si la app se abrió desde un link con datos (#r=...), ofrecer importarlos
   (function () {
     let hash = '';
@@ -1588,17 +1967,22 @@
       pintarGastos();
       pintarNotasHoy();
       pintarTareas();
+      pintarEventos();
       if (vistaActiva === 'resumen') pintarResumen();
     }
   }
   setInterval(tick, 1000);
 
   // ---------- Inicio ----------
+  if ('serviceWorker' in navigator && location.protocol === 'https:') {
+    navigator.serviceWorker.register('./sw.js').catch(function () {});
+  }
   pintarHabitos();
   pintarCats();
   pintarGastos();
   pintarNotasHoy();
   pintarTareas();
+  pintarEventos();
   tick();
 })();
 </script>
