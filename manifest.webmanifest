@@ -1,6 +1,6 @@
 {
-  "name": "Mi Vida · Tracker",
-  "short_name": "Mi Vida",
+  "name": "Tracker",
+  "short_name": "Tracker",
   "description": "Tracker personal de hábitos, gastos, notas, tareas y agenda",
   "start_url": "./",
   "scope": "./",
