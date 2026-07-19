@@ -415,6 +415,7 @@
   .aj-habito .nombre { flex: 1; }
   .aj-racha { font-size: 0.8rem; color: var(--ink-soft); font-variant-numeric: tabular-nums; }
   .aj-borrar { color: var(--ink-soft); font-size: 1rem; padding: 6px 10px; border-radius: 8px; }
+  .aj-var { color: var(--ink-soft); font-size: 0.95rem; padding: 6px 6px; }
   .aj-borrar.confirmando { background: var(--danger); color: #FFF6F2; font-size: 0.8rem; font-weight: 600; }
   .nuevo-habito { display: flex; gap: 8px; }
   .nuevo-habito input {
@@ -1051,6 +1052,7 @@
   }
 
   let mostrarHechos = false;
+  let varianteAbierta = null;
   function pintarHabitos() {
     const cont = document.getElementById('lista-habitos');
     cont.innerHTML = '';
@@ -1060,6 +1062,18 @@
     }
     const pendientes = estado.habitos.filter(function (h) { return !dia.habitos[h.id]; });
     const hechos = estado.habitos.filter(function (h) { return !!dia.habitos[h.id]; });
+
+    function marcarCon(h, variante) {
+      dia.habitos[h.id] = true;
+      if (variante) {
+        dia.variantes = dia.variantes || {};
+        dia.variantes[h.id] = variante;
+      }
+      varianteAbierta = null;
+      guardar();
+      pintarHabitos();
+      celebrarSiCompleto();
+    }
 
     function filaHabito(h) {
       const hecho = !!dia.habitos[h.id];
@@ -1071,19 +1085,47 @@
         '<span class="marca">✓</span>' +
         '<span class="nombre"></span>' +
         (r > 0 ? '<span class="racha">🔥 ' + r + '</span>' : '');
-      btn.querySelector('.nombre').textContent = h.nombre;
+      const variante = hecho && dia.variantes && dia.variantes[h.id];
+      btn.querySelector('.nombre').textContent = h.nombre + (variante ? ' · ' + variante : '');
       btn.addEventListener('click', function () {
-        const activando = !dia.habitos[h.id];
-        if (activando) dia.habitos[h.id] = true;
-        else delete dia.habitos[h.id];
-        guardar();
-        pintarHabitos();
-        if (activando) celebrarSiCompleto();
+        if (hecho) {
+          delete dia.habitos[h.id];
+          if (dia.variantes) delete dia.variantes[h.id];
+          guardar();
+          pintarHabitos();
+          return;
+        }
+        if (h.variantes && h.variantes.length) {
+          varianteAbierta = varianteAbierta === h.id ? null : h.id;
+          pintarHabitos();
+          return;
+        }
+        marcarCon(h, null);
       });
       return btn;
     }
 
-    pendientes.forEach(function (h) { cont.appendChild(filaHabito(h)); });
+    pendientes.forEach(function (h) {
+      cont.appendChild(filaHabito(h));
+      if (varianteAbierta === h.id && h.variantes && h.variantes.length) {
+        const chips = document.createElement('div');
+        chips.className = 'tipos';
+        chips.style.margin = '2px 0 6px';
+        h.variantes.forEach(function (v) {
+          const b = document.createElement('button');
+          b.className = 'tipo';
+          b.textContent = v;
+          b.addEventListener('click', function () { marcarCon(h, v); });
+          chips.appendChild(b);
+        });
+        const sin = document.createElement('button');
+        sin.className = 'tipo';
+        sin.textContent = '✓ Sin detalle';
+        sin.addEventListener('click', function () { marcarCon(h, null); });
+        chips.appendChild(sin);
+        cont.appendChild(chips);
+      }
+    });
 
     if (hechos.length) {
       const toggle = document.createElement('button');
@@ -1595,6 +1637,7 @@
     contTematico.innerHTML = '';
     estado.habitos.forEach(function (h) {
       let n7 = 0, n30 = 0;
+      const conteoVar = {};
       for (let i = 0; i < 30; i++) {
         const d = new Date();
         d.setDate(d.getDate() - i);
@@ -1602,8 +1645,15 @@
         if (dd && dd.habitos[h.id]) {
           n30++;
           if (i < 7) n7++;
+          if (dd.variantes && dd.variantes[h.id]) {
+            conteoVar[dd.variantes[h.id]] = (conteoVar[dd.variantes[h.id]] || 0) + 1;
+          }
         }
       }
+      let topVar = null;
+      Object.keys(conteoVar).forEach(function (v) {
+        if (!topVar || conteoVar[v] > conteoVar[topVar]) topVar = v;
+      });
       const card = document.createElement('section');
       card.className = 'card';
       card.innerHTML =
@@ -1612,8 +1662,13 @@
         '<div class="stat"><div class="valor">🔥 ' + racha(h.id) + '</div><div class="desc">racha actual</div></div>' +
         '<div class="stat"><div class="valor">' + n7 + '/7</div><div class="desc">esta semana</div></div>' +
         '<div class="stat"><div class="valor">' + n30 + '/30</div><div class="desc">último mes</div></div>' +
-        '</div>';
+        '</div>' +
+        (topVar ? '<p class="ayuda" style="margin-top: 10px;" id="top-var"></p>' : '');
       card.querySelector('h2').textContent = 'Resumen · ' + h.nombre;
+      if (topVar) {
+        card.querySelector('#top-var').textContent =
+          'Lo que más practicas: ' + topVar + ' (' + conteoVar[topVar] + (conteoVar[topVar] === 1 ? ' vez' : ' veces') + ' en 30 días)';
+      }
       contTematico.appendChild(card);
     });
     if (estado.habitos.length) {
@@ -1626,6 +1681,7 @@
   }
 
   // ---------- Ajustes ----------
+  let varEditando = null;
   function pintarAjustes() {
     const cont = document.getElementById('ajuste-habitos');
     cont.innerHTML = '';
@@ -1639,8 +1695,14 @@
       fila.innerHTML =
         '<span class="nombre"></span>' +
         (r > 0 ? '<span class="aj-racha">🔥 ' + r + '</span>' : '') +
+        '<button class="aj-var" aria-label="Configurar variantes">🔀</button>' +
         '<button class="aj-borrar" aria-label="Eliminar hábito">✕</button>';
-      fila.querySelector('.nombre').textContent = h.nombre;
+      fila.querySelector('.nombre').textContent = h.nombre +
+        (h.variantes && h.variantes.length ? ' · ' + h.variantes.length + ' variantes' : '');
+      fila.querySelector('.aj-var').addEventListener('click', function () {
+        varEditando = varEditando === h.id ? null : h.id;
+        pintarAjustes();
+      });
       const btn = fila.querySelector('.aj-borrar');
       btn.addEventListener('click', function () {
         if (!btn.classList.contains('confirmando')) {
@@ -1664,6 +1726,25 @@
         });
       });
       cont.appendChild(fila);
+      if (varEditando === h.id) {
+        const zona = document.createElement('div');
+        zona.style.cssText = 'padding: 4px 0 10px;';
+        zona.innerHTML =
+          '<input class="nota-input" placeholder="Variantes separadas por coma (ej. Gym, Correr, Fútbol)">' +
+          '<p class="ayuda" style="margin-top: 6px;">Al marcar este hábito en Hoy elegirás cuál practicaste. Deja el campo vacío para quitar las variantes.</p>';
+        const inp = zona.querySelector('input');
+        inp.value = (h.variantes || []).join(', ');
+        inp.addEventListener('change', function () {
+          const lista = inp.value.split(',')
+            .map(function (s) { return s.trim(); })
+            .filter(function (s) { return s; });
+          if (lista.length) h.variantes = lista;
+          else delete h.variantes;
+          guardar();
+          pintarHabitos();
+        });
+        cont.appendChild(zona);
+      }
     });
     pintarRecuperacion();
     pintarPresupuestos();
