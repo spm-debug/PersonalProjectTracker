@@ -1,7 +1,7 @@
 <title>Tracker</title>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#F5EDE3" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="#221A14" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#FAFAF8" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#151513" media="(prefers-color-scheme: dark)">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icon.png?v=2" type="image/png">
 <link rel="apple-touch-icon" href="icon.png?v=2">
@@ -9,68 +9,68 @@
 <meta name="apple-mobile-web-app-title" content="Tracker">
 <style>
   :root {
-    --bg: #F5EDE3;
-    --surface: #FDF8F1;
-    --surface-2: #EFE3D3;
-    --ink: #362A22;
-    --ink-soft: #8B7A6A;
-    --line: #E5D6C3;
+    --bg: #FAFAF8;
+    --surface: #FFFFFF;
+    --surface-2: #F1F1EE;
+    --ink: #1C1C1A;
+    --ink-soft: #8A8A84;
+    --line: #E8E8E4;
     --accent: #A34E5F;
-    --accent-soft: #F4E3E3;
-    --accent-ink: #FFF9F5;
-    --money: #A8742C;
-    --money-soft: #F3E8D3;
+    --accent-soft: #F6EAEC;
+    --accent-ink: #FFFFFF;
+    --money: #1C1C1A;
+    --money-soft: #F1F1EE;
     --danger: #B44A3C;
-    --shadow: 0 2px 8px rgba(74, 52, 38, 0.07);
-    --font-display: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
-    --radius: 20px;
+    --shadow: none;
+    --font-display: -apple-system, system-ui, "Segoe UI", Roboto, sans-serif;
+    --radius: 14px;
   }
   @media (prefers-color-scheme: dark) {
     :root {
-      --bg: #221A14;
-      --surface: #2C231B;
-      --surface-2: #382D22;
-      --ink: #F0E7DA;
-      --ink-soft: #A6937F;
-      --line: #443729;
+      --bg: #151513;
+      --surface: #1D1D1B;
+      --surface-2: #262623;
+      --ink: #EDEDEA;
+      --ink-soft: #8F8F88;
+      --line: #2A2A27;
       --accent: #D68B97;
-      --accent-soft: #4A2F3355;
-      --accent-ink: #2A1216;
-      --money: #D3A159;
-      --money-soft: #3A2F1B55;
+      --accent-soft: #3A282C;
+      --accent-ink: #1C1013;
+      --money: #EDEDEA;
+      --money-soft: #262623;
       --danger: #D97A6C;
-      --shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
+      --shadow: none;
     }
   }
   :root[data-theme="light"] {
-    --bg: #F5EDE3;
-    --surface: #FDF8F1;
-    --surface-2: #EFE3D3;
-    --ink: #362A22;
-    --ink-soft: #8B7A6A;
-    --line: #E5D6C3;
+    --bg: #FAFAF8;
+    --surface: #FFFFFF;
+    --surface-2: #F1F1EE;
+    --ink: #1C1C1A;
+    --ink-soft: #8A8A84;
+    --line: #E8E8E4;
     --accent: #A34E5F;
-    --accent-soft: #F4E3E3;
-    --accent-ink: #FFF9F5;
-    --money: #A8742C;
-    --money-soft: #F3E8D3;
+    --accent-soft: #F6EAEC;
+    --accent-ink: #FFFFFF;
+    --money: #1C1C1A;
+    --money-soft: #F1F1EE;
     --danger: #B44A3C;
-    --shadow: 0 2px 8px rgba(74, 52, 38, 0.07);
+    --shadow: none;
   }
   :root[data-theme="dark"] {
-    --bg: #221A14;
-    --surface: #2C231B;
-    --surface-2: #382D22;
-    --ink: #F0E7DA;
-    --ink-soft: #A6937F;
-    --line: #443729;
+    --bg: #151513;
+    --surface: #1D1D1B;
+    --surface-2: #262623;
+    --ink: #EDEDEA;
+    --ink-soft: #8F8F88;
+    --line: #2A2A27;
     --accent: #D68B97;
-    --accent-soft: #4A2F3355;
-    --accent-ink: #2A1216;
-    --money: #D3A159;
-    --money-soft: #3A2F1B55;
+    --accent-soft: #3A282C;
+    --accent-ink: #1C1013;
+    --money: #EDEDEA;
+    --money-soft: #262623;
     --danger: #D97A6C;
-    --shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
+    --shadow: none;
   }
 
   * { box-sizing: border-box; margin: 0; }
@@ -501,6 +501,44 @@
   @keyframes caer {
     to { transform: translateY(108vh) rotate(720deg); }
   }
+
+  /* ===== Tema monocromo: estructura y tipografía ===== */
+  body { font-family: -apple-system, system-ui, "Segoe UI", Roboto, sans-serif; }
+  section.card { background: transparent; border: none; box-shadow: none; padding: 8px 2px 10px; }
+  .card h2, .card-cab h2 {
+    font-family: inherit;
+    font-style: normal;
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.09em;
+  }
+  .card.compacta { padding: 8px 2px 10px; }
+  .top h1 { font-size: 1.35rem; font-weight: 700; letter-spacing: -0.01em; }
+  .top .fecha { font-style: normal; font-size: 0.8rem; font-variant-numeric: tabular-nums; }
+  .frase { font-family: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif; }
+  .habito {
+    border: none;
+    border-bottom: 1px solid var(--line);
+    border-radius: 0;
+    background: transparent;
+    padding: 10px 2px;
+  }
+  .habito.hecho { background: transparent; border-color: var(--line); }
+  .habito.hecho .marca { background: var(--ink); border-color: var(--ink); color: var(--bg); }
+  .habito.hecho .nombre { color: var(--ink-soft); font-weight: 400; text-decoration: line-through; }
+  .habito .racha, .aj-racha { color: var(--accent); font-weight: 600; }
+  .nota-dia, .nota-texto { font-family: inherit; font-style: normal; }
+  .nota-texto { font-size: 0.92rem; }
+  .stat .valor { font-family: inherit; }
+  #sem-rotulo { font-family: inherit; font-style: normal; font-size: 0.85rem; }
+  .cat.activa, .tipo.activo { background: transparent; border-color: var(--ink); color: var(--ink); }
+  .cat-barra > div { background: var(--ink-soft); }
+  .dia-completo { background: var(--surface-2); color: var(--ink); }
+  .abrir { background: var(--surface-2); color: var(--ink); }
+  .aviso { background: var(--surface); border-color: var(--line); }
+  .monto-input, .nota-input, .peso-input { background: var(--surface); }
+  nav.tabs { background: var(--surface); }
 
   @media (prefers-reduced-motion: reduce) {
     * { transition: none !important; animation: none !important; }
