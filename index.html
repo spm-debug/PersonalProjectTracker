@@ -1,12 +1,12 @@
 <title>Tracker</title>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#FAFAF8" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="#151513" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#0A0A0A">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icon.png?v=2" type="image/png">
 <link rel="apple-touch-icon" href="icon.png?v=2">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Tracker">
+<script>document.documentElement.setAttribute('data-theme', 'dark');</script>
 <style>
   :root {
     --bg: #FAFAF8;
@@ -27,17 +27,17 @@
   }
   @media (prefers-color-scheme: dark) {
     :root {
-      --bg: #151513;
-      --surface: #1D1D1B;
-      --surface-2: #262623;
-      --ink: #EDEDEA;
-      --ink-soft: #8F8F88;
-      --line: #2A2A27;
-      --accent: #D68B97;
-      --accent-soft: #3A282C;
-      --accent-ink: #1C1013;
-      --money: #EDEDEA;
-      --money-soft: #262623;
+      --bg: #0A0A0A;
+      --surface: #161616;
+      --surface-2: #202020;
+      --ink: #ECECEC;
+      --ink-soft: #8C8C8C;
+      --line: #262626;
+      --accent: #E0909C;
+      --accent-soft: #362227;
+      --accent-ink: #17090C;
+      --money: #ECECEC;
+      --money-soft: #202020;
       --danger: #D97A6C;
       --shadow: none;
     }
@@ -58,17 +58,17 @@
     --shadow: none;
   }
   :root[data-theme="dark"] {
-    --bg: #151513;
-    --surface: #1D1D1B;
-    --surface-2: #262623;
-    --ink: #EDEDEA;
-    --ink-soft: #8F8F88;
-    --line: #2A2A27;
-    --accent: #D68B97;
-    --accent-soft: #3A282C;
-    --accent-ink: #1C1013;
-    --money: #EDEDEA;
-    --money-soft: #262623;
+    --bg: #0A0A0A;
+    --surface: #161616;
+    --surface-2: #202020;
+    --ink: #ECECEC;
+    --ink-soft: #8C8C8C;
+    --line: #262626;
+    --accent: #E0909C;
+    --accent-soft: #362227;
+    --accent-ink: #17090C;
+    --money: #ECECEC;
+    --money-soft: #202020;
     --danger: #D97A6C;
     --shadow: none;
   }
@@ -139,6 +139,11 @@
   }
   .lec-form textarea { font-family: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif; font-style: italic; resize: none; }
   .presu-inp { width: 96px; height: 42px; padding: 0 8px; border-radius: 10px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); text-align: right; font-variant-numeric: tabular-nums; font-size: 0.9rem; }
+  #timer-activo { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 12px 14px; border-radius: 12px; background: var(--accent-soft); border: 1px solid var(--accent); margin-bottom: 10px; }
+  #timer-activo .t-info { font-size: 0.95rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  #timer-activo .t-crono { font-variant-numeric: tabular-nums; font-weight: 700; color: var(--accent); }
+  #timer-activo .t-stop { background: var(--accent); color: var(--accent-ink); border-radius: 10px; padding: 8px 14px; font-weight: 700; flex-shrink: 0; }
+  .tiempo-item .g-min { margin-left: auto; font-variant-numeric: tabular-nums; color: var(--accent); font-weight: 600; }
   .frase-autor {
     display: block;
     font-family: ui-rounded, "SF Pro Rounded", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
@@ -238,6 +243,45 @@
     font-size: 0.85rem;
     padding: 10px 2px 2px;
   }
+  .habito-panel { padding: 12px; border: 1px solid var(--accent); border-radius: 12px; margin: 4px 0 2px; background: var(--surface); }
+  .panel-label { font-size: 0.75rem; color: var(--ink-soft); margin: 10px 0 6px; }
+  .panel-label:first-child { margin-top: 0; }
+  /* Hábitos como círculos */
+  .hab-circulos { display: flex; gap: 10px; overflow-x: auto; padding: 4px 2px 6px; }
+  .hab-circulo { display: flex; flex-direction: column; align-items: center; gap: 3px; flex-shrink: 0; width: 66px; background: none; }
+  .hab-c-ring {
+    width: 54px; height: 54px; border-radius: 50%;
+    border: 2px solid var(--line); background: var(--surface);
+    display: grid; place-items: center; font-size: 1.4rem;
+    transition: transform 0.12s;
+  }
+  .hab-circulo.hecho .hab-c-ring { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+  .hab-circulo.activo .hab-c-ring { border-color: var(--accent); transform: scale(1.06); }
+  .hab-c-nombre { font-size: 0.66rem; color: var(--ink-soft); max-width: 66px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; text-align: center; }
+  .hab-circulo.hecho .hab-c-nombre { color: var(--ink); }
+  .hab-c-racha { font-size: 0.6rem; color: var(--accent); min-height: 0.8em; }
+  /* Línea de tiempo de la agenda */
+  .timeline { display: flex; flex-direction: column; }
+  .tl-item { display: flex; align-items: flex-start; gap: 10px; padding: 5px 0; }
+  .tl-hora { min-width: 44px; text-align: right; font-variant-numeric: tabular-nums; font-size: 0.85rem; color: var(--accent); font-weight: 600; padding-top: 1px; }
+  .tl-punto { width: 10px; height: 10px; border-radius: 50%; background: var(--accent); margin-top: 5px; flex-shrink: 0; position: relative; }
+  .tl-punto::before { content: ''; position: absolute; left: 4px; top: 12px; width: 2px; height: calc(100% + 10px); background: var(--line); }
+  .tl-item:last-child .tl-punto::before { display: none; }
+  .tl-titulo { flex: 1; font-size: 0.95rem; }
+  .reto { border: 1px solid var(--line); border-radius: 14px; padding: 14px; margin-bottom: 10px; }
+  .reto:last-child { margin-bottom: 0; }
+  .reto.completado { border-color: var(--accent); background: var(--accent-soft); }
+  .reto-cab { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; }
+  .reto-nombre { font-weight: 600; font-size: 1rem; }
+  .reto-badge { font-size: 0.72rem; color: var(--ink-soft); white-space: nowrap; }
+  .reto-stats { display: flex; gap: 16px; margin: 10px 0 8px; font-size: 0.8rem; color: var(--ink-soft); }
+  .reto-stats b { color: var(--ink); font-variant-numeric: tabular-nums; font-size: 0.95rem; }
+  .reto-barra { height: 10px; border-radius: 999px; background: var(--surface-2); overflow: hidden; }
+  .reto-barra > div { height: 100%; background: var(--accent); border-radius: 999px; transition: width 0.3s; }
+  .reto-acciones { display: flex; gap: 8px; margin-top: 12px; align-items: center; }
+  .reto-check { flex: 1; height: 44px; border-radius: 12px; font-weight: 600; background: var(--surface-2); color: var(--ink); }
+  .reto-check.ok { background: var(--accent); color: var(--accent-ink); }
+  .reto-panel { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; align-items: center; }
   .deshacer {
     position: fixed;
     left: 50%;
@@ -469,7 +513,7 @@
     max-width: 480px;
     margin: 0 auto;
     display: grid;
-    grid-template-columns: repeat(6, 1fr);
+    grid-template-columns: repeat(5, 1fr);
   }
   .tab {
     padding: 9px 2px 11px;
@@ -477,10 +521,13 @@
     flex-direction: column;
     align-items: center;
     gap: 2px;
-    font-size: 0.62rem;
+    font-size: 0.68rem;
     color: var(--ink-soft);
   }
-  .tab .icono { font-size: 1.2rem; }
+  .tab .icono { font-size: 1.3rem; }
+  .mas-item { display: flex; align-items: center; gap: 12px; width: 100%; padding: 15px 6px; border-bottom: 1px solid var(--line); font-size: 1rem; text-align: left; color: var(--ink); }
+  .mas-item:last-child { border-bottom: none; }
+  .mas-item span { font-size: 1.35rem; }
   .tab.activa { color: var(--accent); font-weight: 700; }
 
   /* ---- Calendario mensual ---- */
@@ -654,14 +701,40 @@
           <button class="btn-secundario" id="respaldo-luego">Hoy no</button>
         </div>
       </div>
+      <div class="stats-fila" id="panel-dia" style="margin-bottom:2px;"></div>
       <section class="card" id="card-agenda-hoy">
         <h2>📅 Agenda de hoy<span class="mini-info" id="mini-agenda-hoy"></span></h2>
         <div class="notas-lista" id="agenda-hoy"></div>
       </section>
       <section class="card">
         <h2>Hábitos</h2>
-        <div class="habitos" id="lista-habitos"></div>
+        <div id="lista-habitos"></div>
         <div class="dia-completo oculto" id="dia-completo">🎉 ¡Día completo!</div>
+      </section>
+
+      <section class="card" id="card-tiempo">
+        <div id="timer-activo" class="oculto"></div>
+        <div class="card-cab">
+          <h2>⏱ Registrar otro tiempo<span class="mini-info" id="mini-tiempo"></span></h2>
+          <button class="abrir" data-plegable="form-tiempo" aria-expanded="false" aria-label="Registrar tiempo de una actividad suelta">＋</button>
+        </div>
+        <div class="plegable oculto" id="form-tiempo">
+          <input class="nota-input" id="tiempo-actividad" type="text" placeholder="¿En qué? (ej. Lectura, Estudiar CCNA)" maxlength="40" list="lista-actividades" autocomplete="off">
+          <datalist id="lista-actividades"></datalist>
+          <div class="tipos" id="tiempo-chips" style="margin-top:10px;">
+            <button class="tipo" data-min="15">15 min</button>
+            <button class="tipo" data-min="30">30 min</button>
+            <button class="tipo" data-min="45">45 min</button>
+            <button class="tipo" data-min="60">1 h</button>
+          </div>
+          <input class="nota-input" id="tiempo-min" type="number" inputmode="numeric" placeholder="o escribe los minutos" style="margin-top:8px;">
+          <input class="nota-input" id="tiempo-detalle" type="text" placeholder="Detalle (libro, tema…) — opcional" maxlength="60" style="margin-top:8px;">
+          <div class="gr-fila" style="margin-top:10px;">
+            <button class="btn-secundario" id="tiempo-cronometro" style="flex:1;">▶ Cronómetro</button>
+            <button class="btn-primario" id="tiempo-guardar" style="flex:1;" disabled>Guardar</button>
+          </div>
+        </div>
+        <div class="notas-lista" id="tiempos-hoy"></div>
       </section>
 
       <section class="card">
@@ -759,6 +832,39 @@
           <input class="buscar-nota" id="buscar-gasto" type="search" placeholder="Buscar por categoría o comentario…" style="margin-bottom:10px;">
           <div class="notas-lista" id="gastos-historial"></div>
         </div>
+      </section>
+    </div>
+
+    <!-- ============ RETOS ============ -->
+    <div id="vista-retos" class="vista oculto" style="flex-direction:column; gap:14px;">
+      <section class="card">
+        <div class="card-cab">
+          <h2>Nuevo reto</h2>
+          <button class="abrir" data-plegable="form-reto" aria-expanded="false" aria-label="Crear un reto">＋</button>
+        </div>
+        <div class="plegable oculto" id="form-reto">
+          <input class="nota-input" id="reto-nombre" type="text" placeholder="¿Qué reto? (ej. 90 días sin redes)" maxlength="50">
+          <div class="tipos" id="reto-tipo" style="margin-top:10px;">
+            <button class="tipo activo" data-rtipo="abstinencia">🚫 Aguantar</button>
+            <button class="tipo" data-rtipo="acumulacion">📚 Acumular</button>
+          </div>
+          <div id="reto-campo-abst" style="margin-top:10px;">
+            <label class="ayuda" for="reto-meta-dias" style="display:block; margin:0 0 4px;">Meta: días seguidos</label>
+            <input class="nota-input" id="reto-meta-dias" type="number" inputmode="numeric" placeholder="ej. 90">
+          </div>
+          <div id="reto-campo-acum" class="oculto" style="margin-top:10px;">
+            <label class="ayuda" for="reto-meta-horas" style="display:block; margin:0 0 4px;">Meta: horas a acumular</label>
+            <input class="nota-input" id="reto-meta-horas" type="number" inputmode="numeric" placeholder="ej. 60">
+          </div>
+          <label class="ayuda" for="reto-inicio" style="display:block; margin:10px 0 4px;">Fecha de inicio</label>
+          <input class="nota-input" id="reto-inicio" type="date">
+          <button class="btn-primario btn-nota" id="guardar-reto" disabled>Crear reto</button>
+          <p class="ayuda">🚫 Aguantar = días seguidos resistiendo (ej. sin redes), con racha. 📚 Acumular = sumar horas hacia una meta (ej. estudiar CCNA); tu avance también cuenta como tiempo invertido.</p>
+        </div>
+      </section>
+      <section class="card" id="card-retos">
+        <h2>Mis retos<span class="mini-info" id="mini-retos"></span></h2>
+        <div id="retos-lista"></div>
       </section>
     </div>
 
@@ -881,6 +987,12 @@
         <div class="total-dia"><span id="total-rotulo">Total semana</span><span id="total-semana">$ 0</span></div>
       </section>
 
+      <section class="card">
+        <h2>⏱ En qué inviertes tu tiempo</h2>
+        <div class="cat-resumen" id="tiempo-resumen"></div>
+        <div class="total-dia"><span>Total del período</span><span id="tiempo-total">0 min</span></div>
+      </section>
+
       <div id="resumen-tematico" style="display: flex; flex-direction: column; gap: 14px;"></div>
     </div>
 
@@ -948,14 +1060,22 @@
     <div class="modal" id="editor-modal"></div>
   </div>
 
+  <div class="modal-fondo oculto" id="mas-fondo">
+    <div class="modal" id="mas-modal">
+      <h3>Más</h3>
+      <button class="mas-item" data-vista="retos"><span>🎯</span> Retos</button>
+      <button class="mas-item" data-vista="resumen"><span>📈</span> Resumen</button>
+      <button class="mas-item" data-vista="ajustes"><span>⚙️</span> Ajustes</button>
+    </div>
+  </div>
+
   <nav class="tabs">
     <div class="tabs-inner">
       <button class="tab activa" data-vista="hoy"><span class="icono">☀️</span>Hoy</button>
       <button class="tab" data-vista="agenda"><span class="icono">📅</span>Agenda</button>
       <button class="tab" data-vista="notas"><span class="icono">📝</span>Notas</button>
       <button class="tab" data-vista="gastos"><span class="icono">💸</span>Gastos</button>
-      <button class="tab" data-vista="resumen"><span class="icono">📈</span>Resumen</button>
-      <button class="tab" data-vista="ajustes"><span class="icono">⚙️</span>Ajustes</button>
+      <button class="tab" id="tab-mas"><span class="icono">⋯</span>Más</button>
     </div>
   </nav>
 </div>
@@ -981,6 +1101,9 @@
       eventos: [],   // { id, titulo, fecha, hora }
       presupuestos: {}, // { categoria: tope semanal }
       lecturas: [],  // { id, fecha, texto, libro, autor } — frases de libros para la frase del día
+      tiempos: [],   // { id, fecha, actividad, minutos, detalle } — tiempo invertido
+      timer: null,   // { actividad, detalle, inicio } — cronómetro en marcha
+      retos: [],     // { id, nombre, tipo, inicio, metaDias|metaMinutos, dias|acumulado, completado }
     };
   }
 
@@ -1016,6 +1139,9 @@
     }
   });
   if (!estado.lecturas) estado.lecturas = [];
+  if (!estado.tiempos) estado.tiempos = [];
+  if (typeof estado.timer === 'undefined') estado.timer = null;
+  if (!estado.retos) estado.retos = [];
 
   // Respaldo automático: una foto del estado al primer arranque de cada día.
   // Nunca se sobrescribe con un estado vacío, para que sirva de salvavidas.
@@ -1337,6 +1463,17 @@
     } else if (tipo === 'habito') {
       o = buscarPorId(estado.habitos, id); if (!o) return;
       html = '<h3>Editar hábito</h3><label>Nombre (incluye el emoji)</label><input id="ed-texto" type="text" maxlength="40">';
+    } else if (tipo === 'tiempo') {
+      o = buscarPorId(estado.tiempos, id); if (!o) return;
+      html = '<h3>Editar tiempo</h3><label>Actividad</label><input id="ed-texto" type="text" maxlength="40">' +
+        '<label>Minutos</label><input id="ed-min" type="number" inputmode="numeric">' +
+        '<label>Detalle (opcional)</label><input id="ed-detalle" type="text" maxlength="60">' +
+        '<label>Fecha</label><input id="ed-fecha" type="date">';
+    } else if (tipo === 'reto') {
+      o = buscarPorId(estado.retos, id); if (!o) return;
+      html = '<h3>Editar reto</h3><label>Nombre</label><input id="ed-texto" type="text" maxlength="50">' +
+        '<label>' + (o.tipo === 'abstinencia' ? 'Meta (días seguidos)' : 'Meta (horas)') + '</label><input id="ed-meta" type="number" inputmode="numeric">' +
+        '<label>Fecha de inicio</label><input id="ed-fecha" type="date">';
     } else { return; }
 
     modal.innerHTML = html +
@@ -1349,6 +1486,8 @@
     else if (tipo === 'evento') { set('ed-texto', o.titulo); set('ed-fecha', o.fecha); set('ed-hora', o.hora); document.getElementById('ed-anual').checked = !!o.anual; }
     else if (tipo === 'lectura') { set('ed-texto', o.texto); set('ed-libro', o.libro); set('ed-autor', o.autor); }
     else if (tipo === 'habito') { set('ed-texto', o.nombre); }
+    else if (tipo === 'tiempo') { set('ed-texto', o.actividad); set('ed-min', o.minutos); set('ed-detalle', o.detalle); set('ed-fecha', o.fecha); }
+    else if (tipo === 'reto') { set('ed-texto', o.nombre); set('ed-meta', o.tipo === 'abstinencia' ? o.metaDias : Math.round(o.metaMinutos / 60)); set('ed-fecha', o.inicio); }
 
     document.getElementById('editor-cancelar').addEventListener('click', cerrarEditor);
     document.getElementById('editor-guardar').addEventListener('click', guardarEdicion);
@@ -1362,7 +1501,7 @@
 
   function refrescarTodo() {
     pintarNotasHoy(); pintarHistorial(); pintarGastos(); pintarHistorialGastos();
-    pintarTareas(); pintarEventos(); pintarCalendario(); pintarLecturas(); pintarHabitos(); pintarAjustes();
+    pintarTareas(); pintarEventos(); pintarCalendario(); pintarLecturas(); pintarHabitos(); pintarAjustes(); pintarTiempo(); pintarRetos();
   }
 
   function guardarEdicion() {
@@ -1393,6 +1532,17 @@
       const o = buscarPorId(estado.habitos, id); if (!o) return;
       const t = val('ed-texto').trim(); if (!t) return;
       o.nombre = t;
+    } else if (tipo === 'tiempo') {
+      const o = buscarPorId(estado.tiempos, id); if (!o) return;
+      const t = val('ed-texto').trim(), m = parseInt(val('ed-min'), 10);
+      if (!t || !(m > 0)) return;
+      o.actividad = t; o.minutos = m; o.detalle = val('ed-detalle').trim(); o.fecha = val('ed-fecha') || o.fecha;
+    } else if (tipo === 'reto') {
+      const o = buscarPorId(estado.retos, id); if (!o) return;
+      const t = val('ed-texto').trim(), meta = parseInt(val('ed-meta'), 10);
+      if (!t || !(meta > 0)) return;
+      o.nombre = t; o.inicio = val('ed-fecha') || o.inicio;
+      if (o.tipo === 'abstinencia') o.metaDias = meta; else o.metaMinutos = meta * 60;
     }
     guardar();
     cerrarEditor();
@@ -1411,22 +1561,38 @@
   const TITULOS = { hoy: saludo(), gastos: 'Gastos', agenda: 'Agenda', notas: 'Notas', resumen: 'Resumen', ajustes: 'Ajustes' };
   document.getElementById('titulo').textContent = TITULOS.hoy;
   let vistaActiva = 'hoy';
-  document.querySelectorAll('.tab').forEach(function (tab) {
-    tab.addEventListener('click', function () {
-      document.querySelectorAll('.tab').forEach(function (t) { t.classList.remove('activa'); });
-      tab.classList.add('activa');
-      const v = tab.dataset.vista;
-      vistaActiva = v;
-      document.querySelectorAll('.vista').forEach(function (el) { el.classList.add('oculto'); });
-      const vista = document.getElementById('vista-' + v);
-      vista.classList.remove('oculto');
-      vista.style.display = 'flex';
-      document.getElementById('titulo').textContent = TITULOS[v];
-      if (v === 'resumen') pintarResumen();
-      if (v === 'ajustes') pintarAjustes();
-      if (v === 'agenda') pintarCalendario();
-      if (v === 'notas') { pintarHistorial(); pintarLecturas(); }
-      if (v === 'gastos') pintarHistorialGastos();
+  function navegarA(v) {
+    vistaActiva = v;
+    document.querySelectorAll('.tab').forEach(function (t) { t.classList.remove('activa'); });
+    const btnTab = document.querySelector('.tab[data-vista="' + v + '"]');
+    if (btnTab) btnTab.classList.add('activa');
+    else document.getElementById('tab-mas').classList.add('activa');
+    document.querySelectorAll('.vista').forEach(function (el) { el.classList.add('oculto'); });
+    const vista = document.getElementById('vista-' + v);
+    vista.classList.remove('oculto');
+    vista.style.display = 'flex';
+    document.getElementById('titulo').textContent = TITULOS[v];
+    if (v === 'resumen') pintarResumen();
+    if (v === 'ajustes') pintarAjustes();
+    if (v === 'agenda') pintarCalendario();
+    if (v === 'notas') { pintarHistorial(); pintarLecturas(); }
+    if (v === 'gastos') pintarHistorialGastos();
+    if (v === 'retos') pintarRetos();
+  }
+  document.querySelectorAll('.tab[data-vista]').forEach(function (tab) {
+    tab.addEventListener('click', function () { navegarA(tab.dataset.vista); });
+  });
+  // Menú "Más"
+  document.getElementById('tab-mas').addEventListener('click', function () {
+    document.getElementById('mas-fondo').classList.remove('oculto');
+  });
+  document.getElementById('mas-fondo').addEventListener('click', function (e) {
+    if (e.target === this) this.classList.add('oculto');
+  });
+  document.querySelectorAll('.mas-item').forEach(function (item) {
+    item.addEventListener('click', function () {
+      document.getElementById('mas-fondo').classList.add('oculto');
+      navegarA(item.dataset.vista);
     });
   });
 
@@ -1445,102 +1611,154 @@
   }
 
   let mostrarHechos = false;
-  let varianteAbierta = null;
+  let habitoAbierto = null;
   function pintarHabitos() {
     const cont = document.getElementById('lista-habitos');
     cont.innerHTML = '';
     const dia = diaDe(HOY);
-    if (estado.habitos.length === 0) {
-      cont.innerHTML = '<p class="vacio">No tienes hábitos aún. Agrégalos en Ajustes.</p>';
-    }
-    const pendientes = estado.habitos.filter(function (h) { return !dia.habitos[h.id]; });
-    const hechos = estado.habitos.filter(function (h) { return !!dia.habitos[h.id]; });
 
-    function marcarCon(h, variante) {
+    function marcarCon(h, variante, minutos) {
       dia.habitos[h.id] = true;
       if (variante) {
         dia.variantes = dia.variantes || {};
         dia.variantes[h.id] = variante;
       }
-      varianteAbierta = null;
+      if (minutos > 0) {
+        estado.tiempos.push({ id: 'ti' + Date.now(), fecha: HOY, actividad: h.nombre, minutos: minutos, detalle: variante || '', habitoId: h.id });
+      }
+      habitoAbierto = null;
       guardar();
       pintarHabitos();
+      pintarTiempo();
       celebrarSiCompleto();
     }
 
-    function filaHabito(h) {
+    function circuloHabito(h) {
       const hecho = !!dia.habitos[h.id];
-      const btn = document.createElement('button');
-      btn.className = 'habito' + (hecho ? ' hecho' : '');
-      btn.setAttribute('aria-pressed', hecho);
-      const r = racha(h.id);
-      btn.innerHTML =
-        '<span class="marca">✓</span>' +
-        '<span class="nombre"></span>' +
-        (r > 0 ? '<span class="racha">🔥 ' + r + '</span>' : '');
+      const emoji = h.nombre.split(' ')[0];
+      const label = h.nombre.replace(/^\S+\s*/, '') || h.nombre;
       const variante = hecho && dia.variantes && dia.variantes[h.id];
-      btn.querySelector('.nombre').textContent = h.nombre + (variante ? ' · ' + variante : '');
-      btn.addEventListener('click', function () {
+      const r = racha(h.id);
+      const c = document.createElement('button');
+      c.className = 'hab-circulo' + (hecho ? ' hecho' : '') + (habitoAbierto === h.id ? ' activo' : '');
+      c.setAttribute('aria-pressed', hecho);
+      c.innerHTML =
+        '<span class="hab-c-ring">' + (hecho ? '✓' : '') + '</span>' +
+        '<span class="hab-c-nombre"></span>' +
+        '<span class="hab-c-racha">' + (r > 0 ? '🔥 ' + r : ' ') + '</span>';
+      if (!hecho) c.querySelector('.hab-c-ring').textContent = emoji;
+      c.querySelector('.hab-c-nombre').textContent = label + (variante ? ' · ' + variante : '');
+      c.addEventListener('click', function () {
         if (hecho) {
           delete dia.habitos[h.id];
           if (dia.variantes) delete dia.variantes[h.id];
+          estado.tiempos = estado.tiempos.filter(function (t) { return !(t.habitoId === h.id && t.fecha === HOY); });
+          habitoAbierto = null;
           guardar();
           pintarHabitos();
+          pintarTiempo();
           return;
         }
-        if (h.variantes && h.variantes.length) {
-          varianteAbierta = varianteAbierta === h.id ? null : h.id;
-          pintarHabitos();
-          return;
-        }
-        marcarCon(h, null);
-      });
-      return btn;
-    }
-
-    pendientes.forEach(function (h) {
-      cont.appendChild(filaHabito(h));
-      if (varianteAbierta === h.id && h.variantes && h.variantes.length) {
-        const chips = document.createElement('div');
-        chips.className = 'tipos';
-        chips.style.margin = '2px 0 6px';
-        h.variantes.forEach(function (v) {
-          const b = document.createElement('button');
-          b.className = 'tipo';
-          b.textContent = v;
-          b.addEventListener('click', function () { marcarCon(h, v); });
-          chips.appendChild(b);
-        });
-        const sin = document.createElement('button');
-        sin.className = 'tipo';
-        sin.textContent = '✓ Sin detalle';
-        sin.addEventListener('click', function () { marcarCon(h, null); });
-        chips.appendChild(sin);
-        cont.appendChild(chips);
-      }
-    });
-
-    if (hechos.length) {
-      const toggle = document.createElement('button');
-      toggle.className = 'hechos-toggle';
-      toggle.textContent = '✓ ' + hechos.length +
-        (hechos.length === 1 ? ' hábito hecho hoy' : ' hábitos hechos hoy') +
-        (mostrarHechos ? ' · ocultar' : ' · ver');
-      toggle.setAttribute('aria-expanded', String(mostrarHechos));
-      toggle.addEventListener('click', function () {
-        mostrarHechos = !mostrarHechos;
+        habitoAbierto = (habitoAbierto === h.id ? null : h.id);
         pintarHabitos();
       });
-      cont.appendChild(toggle);
-      if (mostrarHechos) {
-        hechos.forEach(function (h) { cont.appendChild(filaHabito(h)); });
-      }
+      return c;
     }
 
-    const todos = estado.habitos.length > 0 && hechos.length === estado.habitos.length;
+    function panelTiempo(h) {
+      let selVar = null, selMin = 0;
+      const wrap = document.createElement('div');
+      wrap.className = 'habito-panel';
+      if (h.variantes && h.variantes.length) {
+        const vl = document.createElement('div'); vl.className = 'panel-label'; vl.textContent = '¿Cuál?';
+        wrap.appendChild(vl);
+        const vch = document.createElement('div'); vch.className = 'tipos';
+        h.variantes.forEach(function (v) {
+          const b = document.createElement('button'); b.className = 'tipo'; b.textContent = v;
+          b.addEventListener('click', function () {
+            selVar = (selVar === v ? null : v);
+            Array.prototype.forEach.call(vch.querySelectorAll('.tipo'), function (x) { x.classList.remove('activo'); });
+            if (selVar) b.classList.add('activo');
+          });
+          vch.appendChild(b);
+        });
+        wrap.appendChild(vch);
+      }
+      const tl = document.createElement('div'); tl.className = 'panel-label'; tl.textContent = '¿Cuánto tiempo? (obligatorio)';
+      wrap.appendChild(tl);
+      const tch = document.createElement('div'); tch.className = 'tipos';
+      const btnOk = document.createElement('button');
+      function actualiza() { btnOk.disabled = !(selMin > 0); }
+      [15, 30, 45, 60].forEach(function (m) {
+        const b = document.createElement('button'); b.className = 'tipo'; b.textContent = m < 60 ? m + ' min' : '1 h';
+        b.addEventListener('click', function () {
+          selMin = m; custom.value = '';
+          Array.prototype.forEach.call(tch.querySelectorAll('.tipo'), function (x) { x.classList.remove('activo'); });
+          b.classList.add('activo'); actualiza();
+        });
+        tch.appendChild(b);
+      });
+      wrap.appendChild(tch);
+      const custom = document.createElement('input');
+      custom.className = 'nota-input'; custom.type = 'number'; custom.inputMode = 'numeric';
+      custom.placeholder = 'o escribe los minutos'; custom.style.marginTop = '8px';
+      custom.addEventListener('input', function () {
+        selMin = parseInt(custom.value, 10) || 0;
+        Array.prototype.forEach.call(tch.querySelectorAll('.tipo'), function (x) { x.classList.remove('activo'); });
+        actualiza();
+      });
+      wrap.appendChild(custom);
+      const fila = document.createElement('div'); fila.className = 'gr-fila'; fila.style.marginTop = '10px';
+      const btnCr = document.createElement('button'); btnCr.className = 'btn-secundario'; btnCr.style.flex = '1'; btnCr.textContent = '▶ Cronómetro';
+      btnCr.addEventListener('click', function () {
+        estado.timer = { actividad: h.nombre, detalle: selVar || '', inicio: Date.now(), habitoId: h.id };
+        habitoAbierto = null; guardar(); pintarHabitos(); pintarTiempo();
+      });
+      btnOk.className = 'btn-primario'; btnOk.style.flex = '1'; btnOk.textContent = 'Marcar hecho'; btnOk.disabled = true;
+      btnOk.addEventListener('click', function () { if (selMin > 0) marcarCon(h, selVar, selMin); });
+      fila.appendChild(btnCr); fila.appendChild(btnOk);
+      wrap.appendChild(fila);
+      return wrap;
+    }
+
+    if (estado.habitos.length === 0) {
+      cont.innerHTML = '<p class="vacio">No tienes hábitos aún. Agrégalos en Ajustes.</p>';
+      document.getElementById('dia-completo').classList.add('oculto');
+      actualizarAnillo(); actualizarFrase(); pintarPanelDia();
+      return;
+    }
+    const row = document.createElement('div');
+    row.className = 'hab-circulos';
+    estado.habitos.forEach(function (h) { row.appendChild(circuloHabito(h)); });
+    cont.appendChild(row);
+    if (habitoAbierto) {
+      const ha = buscarPorId(estado.habitos, habitoAbierto);
+      if (ha && !dia.habitos[ha.id]) cont.appendChild(panelTiempo(ha));
+    }
+
+    const todos = estado.habitos.every(function (h) { return dia.habitos[h.id]; });
     document.getElementById('dia-completo').classList.toggle('oculto', !todos);
     actualizarAnillo();
     actualizarFrase();
+    pintarPanelDia();
+  }
+
+  function pintarPanelDia() {
+    const el = document.getElementById('panel-dia');
+    if (!el) return;
+    const dia = diaDe(HOY);
+    const total = estado.habitos.length;
+    const hechos = estado.habitos.filter(function (h) { return dia.habitos[h.id]; }).length;
+    let minHoy = 0;
+    estado.tiempos.forEach(function (t) { if (t.fecha === HOY) minHoy += t.minutos; });
+    const retosActivos = estado.retos.filter(function (r) {
+      if (r.tipo === 'abstinencia') return rachaReto(r) < r.metaDias;
+      return (r.acumulado || 0) < r.metaMinutos;
+    }).length;
+    el.innerHTML =
+      '<div class="stat"><div class="valor">' + hechos + '/' + total + '</div><div class="desc">hábitos hoy</div></div>' +
+      '<div class="stat"><div class="valor">' + fmtDur(minHoy) + '</div><div class="desc">tiempo hoy</div></div>' +
+      '<div class="stat"><div class="valor">' + retosActivos + '</div><div class="desc">retos activos</div></div>';
   }
 
   // ---------- Notas y tareas ----------
@@ -1787,16 +2005,23 @@
       .sort(function (a, b) { return (a.hora || '') < (b.hora || '') ? -1 : 1; });
     cardHoy.classList.toggle('compacta', deHoy.length === 0);
     document.getElementById('mini-agenda-hoy').textContent = deHoy.length === 0 ? ' · sin eventos hoy' : '';
-    deHoy.forEach(function (ev) {
-      const fila = document.createElement('div');
-      fila.className = 'nota-item';
-      fila.innerHTML =
-        '<span class="nota-hora" style="min-width:48px; margin-top:2px;"></span>' +
-        '<div class="nota-texto" style="font-style:normal; flex:1;"></div>';
-      fila.querySelector('.nota-hora').textContent = ev.hora || '—';
-      fila.querySelector('.nota-texto').textContent = ev.titulo;
-      contHoy.appendChild(fila);
-    });
+    if (deHoy.length) {
+      const tl = document.createElement('div');
+      tl.className = 'timeline';
+      deHoy.forEach(function (ev) {
+        const item = document.createElement('div');
+        item.className = 'tl-item';
+        item.innerHTML =
+          '<span class="tl-hora"></span><span class="tl-punto"></span>' +
+          '<span class="tl-titulo"></span>' +
+          '<button class="g-editar" aria-label="Registrar tiempo de este evento">⏱</button>';
+        item.querySelector('.tl-hora').textContent = ev.hora || '—';
+        item.querySelector('.tl-titulo').textContent = ev.titulo;
+        item.querySelector('.g-editar').addEventListener('click', function () { registrarTiempoDe(ev.titulo); });
+        tl.appendChild(item);
+      });
+      contHoy.appendChild(tl);
+    }
   }
 
   // ---------- Calendario mensual (Agenda) ----------
@@ -2073,6 +2298,278 @@
       });
       cont.appendChild(fila);
     });
+  }
+
+  // ---------- Tiempo (medición) ----------
+  function fmtDur(min) {
+    min = Math.round(min);
+    if (min < 60) return min + ' min';
+    const h = Math.floor(min / 60), m = min % 60;
+    return h + 'h' + (m ? ' ' + m + 'm' : '');
+  }
+  function fmtCrono(seg) {
+    const m = Math.floor(seg / 60), s = seg % 60;
+    return (m < 10 ? '0' : '') + m + ':' + (s < 10 ? '0' : '') + s;
+  }
+
+  const tiempoActividad = document.getElementById('tiempo-actividad');
+  const tiempoMin = document.getElementById('tiempo-min');
+  const tiempoDetalle = document.getElementById('tiempo-detalle');
+  const btnTiempoGuardar = document.getElementById('tiempo-guardar');
+  const btnCronometro = document.getElementById('tiempo-cronometro');
+
+  function validarTiempo() {
+    btnTiempoGuardar.disabled = !(tiempoActividad.value.trim() && parseInt(tiempoMin.value, 10) > 0);
+  }
+  tiempoActividad.addEventListener('input', validarTiempo);
+  tiempoMin.addEventListener('input', validarTiempo);
+  document.querySelectorAll('#tiempo-chips .tipo').forEach(function (chip) {
+    chip.addEventListener('click', function () { tiempoMin.value = chip.dataset.min; validarTiempo(); });
+  });
+  function limpiarFormTiempo() {
+    tiempoActividad.value = ''; tiempoMin.value = ''; tiempoDetalle.value = '';
+    btnTiempoGuardar.disabled = true;
+  }
+  btnTiempoGuardar.addEventListener('click', function () {
+    const act = tiempoActividad.value.trim();
+    const min = parseInt(tiempoMin.value, 10);
+    if (!act || !(min > 0)) return;
+    estado.tiempos.push({ id: 'ti' + Date.now(), fecha: HOY, actividad: act, minutos: min, detalle: tiempoDetalle.value.trim() });
+    guardar();
+    limpiarFormTiempo();
+    plegar('form-tiempo');
+    pintarTiempo();
+  });
+  btnCronometro.addEventListener('click', function () {
+    const act = tiempoActividad.value.trim();
+    if (!act) { tiempoActividad.focus(); return; }
+    estado.timer = { actividad: act, detalle: tiempoDetalle.value.trim(), inicio: Date.now() };
+    guardar();
+    limpiarFormTiempo();
+    plegar('form-tiempo');
+    pintarTiempo();
+  });
+  function detenerCronometro() {
+    if (!estado.timer) return;
+    const timer = estado.timer;
+    const min = Math.max(1, Math.round((Date.now() - timer.inicio) / 60000));
+    const reg = { id: 'ti' + Date.now(), fecha: HOY, actividad: timer.actividad, minutos: min, detalle: timer.detalle };
+    if (timer.habitoId) reg.habitoId = timer.habitoId;
+    estado.tiempos.push(reg);
+    estado.timer = null;
+    if (timer.habitoId) {
+      const d = diaDe(HOY);
+      d.habitos[timer.habitoId] = true;
+      if (timer.detalle) { d.variantes = d.variantes || {}; d.variantes[timer.habitoId] = timer.detalle; }
+    }
+    guardar();
+    pintarTiempo();
+    if (timer.habitoId) { pintarHabitos(); celebrarSiCompleto(); }
+  }
+
+  // Abre el formulario de tiempo pre-cargado (usado por la agenda, opcional)
+  function registrarTiempoDe(actividad) {
+    const panel = document.getElementById('form-tiempo');
+    panel.classList.remove('oculto');
+    const b = document.querySelector('[data-plegable="form-tiempo"]');
+    if (b) { b.textContent = '−'; b.setAttribute('aria-expanded', 'true'); }
+    tiempoActividad.value = actividad;
+    validarTiempo();
+    document.getElementById('card-tiempo').scrollIntoView({ behavior: 'smooth', block: 'center' });
+    tiempoMin.focus();
+  }
+
+  function pintarTiempo() {
+    const dl = document.getElementById('lista-actividades');
+    const nombres = {};
+    estado.habitos.forEach(function (h) { nombres[h.nombre] = true; });
+    estado.tiempos.forEach(function (t) { nombres[t.actividad] = true; });
+    dl.innerHTML = Object.keys(nombres).map(function (n) { return '<option value="' + n.replace(/"/g, '&quot;') + '">'; }).join('');
+
+    const cont = document.getElementById('timer-activo');
+    if (estado.timer) {
+      const seg = Math.floor((Date.now() - estado.timer.inicio) / 1000);
+      cont.classList.remove('oculto');
+      cont.innerHTML =
+        '<span class="t-info">▶ <strong></strong> · <span class="t-crono">' + fmtCrono(seg) + '</span></span>' +
+        '<button class="t-stop">Detener</button>';
+      cont.querySelector('strong').textContent = estado.timer.actividad;
+      cont.querySelector('.t-stop').addEventListener('click', detenerCronometro);
+    } else {
+      cont.classList.add('oculto');
+      cont.innerHTML = '';
+    }
+
+    const lista = document.getElementById('tiempos-hoy');
+    lista.innerHTML = '';
+    // Solo actividades sueltas: las de hábitos ya se ven en los hábitos; las de retos en Retos
+    const deHoy = estado.tiempos.filter(function (t) { return t.fecha === HOY && !t.habitoId && t.detalle !== 'reto'; });
+    let totalHoy = 0;
+    deHoy.forEach(function (t) { totalHoy += t.minutos; });
+    document.getElementById('mini-tiempo').textContent = totalHoy ? ' · ' + fmtDur(totalHoy) + ' hoy' : '';
+    deHoy.slice().reverse().forEach(function (t) {
+      const fila = document.createElement('div');
+      fila.className = 'nota-item tiempo-item';
+      fila.innerHTML =
+        '<div style="flex:1"><div class="nota-texto" style="font-style:normal"></div><div class="nota-hora"></div></div>' +
+        '<span class="g-min">' + fmtDur(t.minutos) + '</span>' +
+        botonEditar() +
+        '<button class="g-borrar" aria-label="Borrar registro de tiempo">✕</button>';
+      fila.querySelector('.nota-texto').textContent = t.actividad;
+      fila.querySelector('.nota-hora').textContent = t.detalle || '';
+      fila.querySelector('.g-editar').addEventListener('click', function () { abrirEditor('tiempo', t.id); });
+      fila.querySelector('.g-borrar').addEventListener('click', function () {
+        estado.tiempos = estado.tiempos.filter(function (x) { return x.id !== t.id; });
+        guardar();
+        pintarTiempo();
+        ofrecerDeshacer('Registro eliminado', function () {
+          estado.tiempos.push(t);
+          guardar();
+          pintarTiempo();
+        });
+      });
+      lista.appendChild(fila);
+    });
+    pintarPanelDia();
+  }
+
+  // ---------- Retos ----------
+  let retoTipoNuevo = 'abstinencia';
+  const retoNombre = document.getElementById('reto-nombre');
+  const retoMetaDias = document.getElementById('reto-meta-dias');
+  const retoMetaHoras = document.getElementById('reto-meta-horas');
+  const retoInicio = document.getElementById('reto-inicio');
+  const btnReto = document.getElementById('guardar-reto');
+  retoInicio.value = HOY;
+
+  document.querySelectorAll('#reto-tipo .tipo').forEach(function (chip) {
+    chip.addEventListener('click', function () {
+      retoTipoNuevo = chip.dataset.rtipo;
+      document.querySelectorAll('#reto-tipo .tipo').forEach(function (c) { c.classList.toggle('activo', c === chip); });
+      document.getElementById('reto-campo-abst').classList.toggle('oculto', retoTipoNuevo !== 'abstinencia');
+      document.getElementById('reto-campo-acum').classList.toggle('oculto', retoTipoNuevo !== 'acumulacion');
+      validarReto();
+    });
+  });
+  function validarReto() {
+    const meta = retoTipoNuevo === 'abstinencia' ? parseInt(retoMetaDias.value, 10) : parseInt(retoMetaHoras.value, 10);
+    btnReto.disabled = !(retoNombre.value.trim() && meta > 0 && retoInicio.value);
+  }
+  retoNombre.addEventListener('input', validarReto);
+  retoMetaDias.addEventListener('input', validarReto);
+  retoMetaHoras.addEventListener('input', validarReto);
+  retoInicio.addEventListener('change', validarReto);
+  btnReto.addEventListener('click', function () {
+    const nombre = retoNombre.value.trim();
+    if (!nombre) return;
+    const reto = { id: 'r' + Date.now(), nombre: nombre, tipo: retoTipoNuevo, inicio: retoInicio.value || HOY, completado: false };
+    if (retoTipoNuevo === 'abstinencia') {
+      const md = parseInt(retoMetaDias.value, 10); if (!(md > 0)) return;
+      reto.metaDias = md; reto.dias = {};
+    } else {
+      const mh = parseInt(retoMetaHoras.value, 10); if (!(mh > 0)) return;
+      reto.metaMinutos = mh * 60; reto.acumulado = 0;
+    }
+    estado.retos.push(reto);
+    guardar();
+    retoNombre.value = ''; retoMetaDias.value = ''; retoMetaHoras.value = ''; retoInicio.value = HOY;
+    btnReto.disabled = true;
+    plegar('form-reto');
+    pintarRetos();
+  });
+
+  function rachaReto(r) {
+    let n = 0;
+    const d = new Date();
+    if (!r.dias[HOY]) d.setDate(d.getDate() - 1);
+    while (true) {
+      const clave = claveDia(d);
+      if (clave < r.inicio) break;
+      if (r.dias[clave]) { n++; d.setDate(d.getDate() - 1); }
+      else break;
+    }
+    return n;
+  }
+
+  function avanzarReto(r, min) {
+    r.acumulado = (r.acumulado || 0) + min;
+    estado.tiempos.push({ id: 'ti' + Date.now(), fecha: HOY, actividad: r.nombre, minutos: min, detalle: 'reto' });
+    guardar();
+    pintarRetos();
+    pintarTiempo();
+  }
+
+  function pintarRetos() {
+    const cont = document.getElementById('retos-lista');
+    cont.innerHTML = '';
+    document.getElementById('mini-retos').textContent = estado.retos.length ? ' · ' + estado.retos.length : '';
+    if (estado.retos.length === 0) {
+      cont.innerHTML = '<p class="vacio">Aún no tienes retos. Toca ＋ para crear el primero (ej. 90 días sin redes, o estudiar CCNA 60 h).</p>';
+      return;
+    }
+    estado.retos.forEach(function (r) {
+      const card = document.createElement('div');
+      let pct, completado, statsHtml;
+      if (r.tipo === 'abstinencia') {
+        const racha = rachaReto(r);
+        const totalDias = Object.keys(r.dias).length;
+        pct = Math.min(100, Math.round(racha / r.metaDias * 100));
+        completado = racha >= r.metaDias;
+        statsHtml = '<div class="reto-stats"><span>Racha<br><b>🔥 ' + racha + ' / ' + r.metaDias + '</b></span>' +
+          '<span>Días logrados<br><b>' + totalDias + '</b></span><span>Avance<br><b>' + pct + '%</b></span></div>';
+      } else {
+        pct = Math.min(100, Math.round((r.acumulado || 0) / r.metaMinutos * 100));
+        completado = (r.acumulado || 0) >= r.metaMinutos;
+        statsHtml = '<div class="reto-stats"><span>Acumulado<br><b>' + fmtDur(r.acumulado || 0) + '</b></span>' +
+          '<span>Meta<br><b>' + Math.round(r.metaMinutos / 60) + ' h</b></span><span>Avance<br><b>' + pct + '%</b></span></div>';
+      }
+      card.className = 'reto' + (completado ? ' completado' : '');
+      card.innerHTML =
+        '<div class="reto-cab"><span class="reto-nombre"></span>' +
+        '<span style="display:flex; gap:2px; flex-shrink:0;">' + botonEditar() + '<button class="g-borrar" aria-label="Borrar reto">✕</button></span></div>' +
+        '<div class="reto-badge">' + (r.tipo === 'abstinencia' ? '🚫 Aguantar' : '📚 Acumular') + ' · desde ' + fechaCorta(r.inicio) + '</div>' +
+        statsHtml +
+        '<div class="reto-barra"><div style="width:' + pct + '%"></div></div>' +
+        (completado ? '<div class="dia-completo" style="margin-top:10px;">🏆 ¡Reto cumplido!</div>' : '<div class="reto-panel-holder"></div>');
+      card.querySelector('.reto-nombre').textContent = r.nombre;
+      card.querySelector('.g-editar').addEventListener('click', function () { abrirEditor('reto', r.id); });
+      card.querySelector('.g-borrar').addEventListener('click', function () {
+        estado.retos = estado.retos.filter(function (x) { return x.id !== r.id; });
+        guardar();
+        pintarRetos();
+        ofrecerDeshacer('Reto eliminado', function () { estado.retos.push(r); guardar(); pintarRetos(); });
+      });
+      if (!completado) {
+        const holder = card.querySelector('.reto-panel-holder');
+        if (r.tipo === 'abstinencia') {
+          const hoyOk = !!r.dias[HOY];
+          const btn = document.createElement('button');
+          btn.className = 'reto-check' + (hoyOk ? ' ok' : '');
+          btn.textContent = hoyOk ? '✓ Mantenido hoy' : 'Lo mantuve hoy';
+          btn.addEventListener('click', function () {
+            if (r.dias[HOY]) delete r.dias[HOY]; else r.dias[HOY] = true;
+            guardar();
+            pintarRetos();
+          });
+          const acc = document.createElement('div'); acc.className = 'reto-acciones'; acc.appendChild(btn);
+          holder.appendChild(acc);
+        } else {
+          const panel = document.createElement('div'); panel.className = 'reto-panel';
+          [15, 30, 60].forEach(function (m) {
+            const b = document.createElement('button'); b.className = 'tipo'; b.textContent = '+' + (m < 60 ? m + 'm' : '1h');
+            b.addEventListener('click', function () { avanzarReto(r, m); });
+            panel.appendChild(b);
+          });
+          const inp = document.createElement('input'); inp.className = 'nota-input'; inp.type = 'number'; inp.inputMode = 'numeric'; inp.placeholder = 'min'; inp.style.width = '80px';
+          const add = document.createElement('button'); add.className = 'tipo'; add.textContent = '+ añadir';
+          add.addEventListener('click', function () { const m = parseInt(inp.value, 10); if (m > 0) { avanzarReto(r, m); inp.value = ''; } });
+          panel.appendChild(inp); panel.appendChild(add);
+          holder.appendChild(panel);
+        }
+      }
+      cont.appendChild(card);
+    });
+    pintarPanelDia();
   }
 
   // ---------- Gastos ----------
@@ -2462,6 +2959,30 @@
     });
     document.getElementById('total-semana').textContent = '$ ' + fmtMoneda.format(total);
 
+    // --- Tiempo invertido del período ---
+    const tiemposP = estado.tiempos.filter(function (t) { return claves.indexOf(t.fecha) !== -1; });
+    const porActividad = {};
+    let totalMin = 0;
+    tiemposP.forEach(function (t) { porActividad[t.actividad] = (porActividad[t.actividad] || 0) + t.minutos; totalMin += t.minutos; });
+    const contT = document.getElementById('tiempo-resumen');
+    contT.innerHTML = '';
+    const entT = Object.keys(porActividad).map(function (a) { return [a, porActividad[a]]; }).sort(function (a, b) { return b[1] - a[1]; });
+    if (entT.length === 0) {
+      contT.innerHTML = '<p class="vacio">Aún no registras tiempo en este período.</p>';
+    }
+    const maxT = entT.length ? entT[0][1] : 1;
+    entT.forEach(function (par) {
+      const fila = document.createElement('div');
+      fila.className = 'cat-barra-fila';
+      fila.innerHTML =
+        '<span class="nombre"></span>' +
+        '<div class="cat-barra"><div style="width:' + Math.round(par[1] / maxT * 100) + '%; background: var(--accent)"></div></div>' +
+        '<span class="monto">' + fmtDur(par[1]) + '</span>';
+      fila.querySelector('.nombre').textContent = par[0];
+      contT.appendChild(fila);
+    });
+    document.getElementById('tiempo-total').textContent = fmtDur(totalMin);
+
     // --- Resúmenes temáticos por hábito, según el período ---
     const contTematico = document.getElementById('resumen-tematico');
     contTematico.innerHTML = '';
@@ -2809,7 +3330,7 @@
       document.getElementById('aviso-respaldo').classList.remove('oculto');
       document.getElementById('respaldo-ir').addEventListener('click', function () {
         document.getElementById('aviso-respaldo').classList.add('oculto');
-        document.querySelector('.tab[data-vista="ajustes"]').click();
+        navegarA('ajustes');
       });
       document.getElementById('respaldo-luego').addEventListener('click', function () {
         localStorage.setItem(CLAVE + '-respaldo-aviso', claveDia());
@@ -2882,6 +3403,11 @@
     document.getElementById('reloj').textContent = '· ' + ahora.toTimeString().slice(0, 5);
     TITULOS.hoy = saludo();
     if (vistaActiva === 'hoy') document.getElementById('titulo').textContent = TITULOS.hoy;
+    if (estado.timer) {
+      const cr = document.querySelector('#timer-activo .t-crono');
+      if (cr) cr.textContent = fmtCrono(Math.floor((Date.now() - estado.timer.inicio) / 1000));
+      else pintarTiempo();
+    }
     if (claveDia(ahora) !== HOY) {
       HOY = claveDia(ahora);
       document.getElementById('fecha').textContent =
@@ -2892,6 +3418,8 @@
       pintarNotasHoy();
       pintarTareas();
       pintarEventos();
+      pintarTiempo();
+      pintarRetos();
       if (vistaActiva === 'resumen') pintarResumen();
     }
   }
@@ -2908,6 +3436,8 @@
   pintarNotasHoy();
   pintarTareas();
   pintarEventos();
+  pintarTiempo();
+  pintarRetos();
   tick();
 })();
 </script>
