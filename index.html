@@ -126,6 +126,19 @@
     padding: 0 6px;
   }
   .frase-libro { color: var(--accent); text-decoration: underline; text-underline-offset: 2px; }
+  .frase-mas { opacity: 0.7; }
+  .lec-item { display: block; padding: 12px 2px; border-bottom: 1px solid var(--line); }
+  .lec-item:last-child { border-bottom: none; }
+  .lec-texto { font-family: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif; font-style: italic; font-size: 0.95rem; line-height: 1.5; }
+  .lec-fuente { font-size: 0.78rem; color: var(--ink-soft); margin-top: 4px; display: flex; justify-content: space-between; gap: 8px; align-items: baseline; }
+  .lec-form input, .lec-form textarea {
+    width: 100%; margin-bottom: 8px;
+    border: 1px solid var(--line); border-radius: 12px;
+    background: var(--surface); color: var(--ink);
+    padding: 10px 12px; font-size: 0.95rem;
+  }
+  .lec-form textarea { font-family: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif; font-style: italic; resize: none; }
+  .presu-inp { width: 96px; height: 42px; padding: 0 8px; border-radius: 10px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); text-align: right; font-variant-numeric: tabular-nums; font-size: 0.9rem; }
   .frase-autor {
     display: block;
     font-family: ui-rounded, "SF Pro Rounded", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
@@ -456,19 +469,73 @@
     max-width: 480px;
     margin: 0 auto;
     display: grid;
-    grid-template-columns: repeat(5, 1fr);
+    grid-template-columns: repeat(6, 1fr);
   }
   .tab {
-    padding: 10px 4px 12px;
+    padding: 9px 2px 11px;
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 2px;
-    font-size: 0.7rem;
+    font-size: 0.62rem;
     color: var(--ink-soft);
   }
-  .tab .icono { font-size: 1.3rem; }
+  .tab .icono { font-size: 1.2rem; }
   .tab.activa { color: var(--accent); font-weight: 700; }
+
+  /* ---- Calendario mensual ---- */
+  .cal-nav { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+  .cal-mes { font-weight: 700; font-size: 0.95rem; text-transform: capitalize; }
+  .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
+  .cal-dow { text-align: center; font-size: 0.62rem; color: var(--ink-soft); text-transform: uppercase; padding-bottom: 2px; }
+  .cal-dia {
+    aspect-ratio: 1;
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.85rem;
+    background: var(--surface-2);
+    position: relative;
+    font-variant-numeric: tabular-nums;
+  }
+  .cal-dia.vacio { background: transparent; }
+  .cal-dia.hoy { box-shadow: inset 0 0 0 2px var(--accent); font-weight: 700; }
+  .cal-dia.sel { background: var(--accent); color: var(--accent-ink); }
+  .cal-dia .punto { width: 5px; height: 5px; border-radius: 50%; background: var(--accent); position: absolute; bottom: 5px; }
+  .cal-dia.sel .punto { background: var(--accent-ink); }
+  .cal-detalle-fecha { font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink-soft); margin: 16px 0 4px; }
+
+  /* ---- Historial de notas ---- */
+  .buscar-nota {
+    width: 100%; height: 46px; padding: 0 14px;
+    border-radius: 12px; border: 1px solid var(--line);
+    background: var(--surface); color: var(--ink); font-size: 0.95rem;
+  }
+  .nota-grupo { font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink-soft); margin: 16px 0 2px; }
+  .nota-etq { display: inline-block; font-size: 0.72rem; color: var(--accent); margin-left: 6px; }
+
+  /* ---- Botón editar (junto a borrar) ---- */
+  .g-editar { color: var(--ink-soft); font-size: 1rem; padding: 8px 6px; flex-shrink: 0; }
+
+  /* ---- Editor (hoja inferior) ---- */
+  .modal-fondo { position: fixed; inset: 0; background: rgba(0,0,0,0.45); z-index: 100; display: flex; align-items: flex-end; justify-content: center; }
+  .modal-fondo.oculto { display: none !important; }
+  .modal {
+    background: var(--surface); width: 100%; max-width: 480px;
+    border-radius: 18px 18px 0 0;
+    padding: 18px 18px calc(18px + env(safe-area-inset-bottom));
+    max-height: 88vh; overflow-y: auto;
+  }
+  .modal h3 { font-size: 1.05rem; font-weight: 700; margin-bottom: 8px; }
+  .modal label { display: block; font-size: 0.7rem; color: var(--ink-soft); text-transform: uppercase; letter-spacing: 0.05em; margin: 12px 0 4px; }
+  .modal input, .modal textarea, .modal select {
+    width: 100%; border: 1px solid var(--line); border-radius: 12px;
+    background: var(--surface); color: var(--ink); padding: 10px 12px; font-size: 0.95rem;
+  }
+  .modal textarea { resize: none; font-family: inherit; }
+  .modal .fila-check { display: flex; align-items: center; gap: 8px; margin-top: 12px; }
+  .modal .fila-check input { width: auto; }
+  .modal-botones { display: flex; gap: 8px; margin-top: 18px; }
+  .modal-botones button { flex: 1; height: 48px; border-radius: 12px; font-weight: 700; }
 
   .oculto { display: none !important; }
 
@@ -587,8 +654,8 @@
           <button class="btn-secundario" id="respaldo-luego">Hoy no</button>
         </div>
       </div>
-      <section class="card oculto" id="card-agenda-hoy">
-        <h2>📅 Agenda de hoy</h2>
+      <section class="card" id="card-agenda-hoy">
+        <h2>📅 Agenda de hoy<span class="mini-info" id="mini-agenda-hoy"></span></h2>
         <div class="notas-lista" id="agenda-hoy"></div>
       </section>
       <section class="card">
@@ -634,7 +701,9 @@
             <input class="nota-input" id="tarea-limite" type="date">
           </div>
           <textarea class="nota-dia" id="nota-dia" rows="2" maxlength="280" placeholder="Una línea sobre tu día… (opcional)"></textarea>
-          <button class="btn-primario btn-nota" id="guardar-nota" disabled>Guardar nota</button>
+          <label class="ayuda" for="nota-fecha" style="display:block; margin: 8px 0 4px;">Fecha (puedes registrar días pasados)</label>
+          <input class="nota-input" id="nota-fecha" type="date">
+          <button class="btn-primario btn-nota" id="guardar-nota" disabled style="margin-top:10px;">Guardar nota</button>
         </div>
       </section>
 
@@ -660,7 +729,9 @@
           <input class="monto-input" id="monto" type="number" inputmode="decimal" placeholder="$ 0">
           <div class="cats" id="cats"></div>
           <input class="nota-input" id="nota" type="text" placeholder="Nota (opcional)" maxlength="60">
-          <button class="btn-primario" id="agregar-gasto" disabled>Agregar gasto</button>
+          <label class="ayuda" for="ng-fecha" style="display:block; margin: 0 0 4px;">Fecha (puedes registrar días pasados)</label>
+          <input class="nota-input" id="ng-fecha" type="date">
+          <button class="btn-primario" id="agregar-gasto" disabled style="margin-top:10px;">Agregar gasto</button>
         </div>
       </section>
       <section class="card" id="card-gastos-hoy">
@@ -678,6 +749,17 @@
         </div>
         <div class="gastos-lista" id="gastos-ayer"></div>
       </section>
+
+      <section class="card">
+        <div class="card-cab">
+          <h2>Historial de gastos<span class="mini-info" id="mini-gastos-hist"></span></h2>
+          <button class="abrir" data-plegable="gastos-hist-panel" aria-expanded="false" aria-label="Ver historial de gastos">＋</button>
+        </div>
+        <div class="plegable oculto" id="gastos-hist-panel">
+          <input class="buscar-nota" id="buscar-gasto" type="search" placeholder="Buscar por categoría o comentario…" style="margin-bottom:10px;">
+          <div class="notas-lista" id="gastos-historial"></div>
+        </div>
+      </section>
     </div>
 
     <!-- ============ AGENDA ============ -->
@@ -693,8 +775,20 @@
             <input class="nota-input" id="evento-fecha" type="date" style="flex: 1;">
             <input class="nota-input" id="evento-hora" type="time" style="width: 120px;">
           </div>
+          <label style="display:flex; align-items:center; gap:8px; margin-top:10px; font-size:0.9rem; cursor:pointer;">
+            <input id="evento-anual" type="checkbox" style="width:auto;"> Se repite cada año (cumpleaños, aniversarios…)
+          </label>
           <button class="btn-primario btn-nota" id="agregar-evento" disabled>Guardar evento</button>
         </div>
+      </section>
+      <section class="card">
+        <div class="cal-nav">
+          <button class="paso-sem" id="cal-prev" aria-label="Mes anterior">←</button>
+          <span class="cal-mes" id="cal-mes"></span>
+          <button class="paso-sem" id="cal-sig" aria-label="Mes siguiente">→</button>
+        </div>
+        <div class="cal-grid" id="cal-grid"></div>
+        <div id="cal-detalle"></div>
       </section>
       <section class="card" id="card-eventos">
         <h2>Próximos<span class="mini-info" id="mini-eventos"></span></h2>
@@ -702,26 +796,89 @@
       </section>
     </div>
 
+    <!-- ============ NOTAS ============ -->
+    <div id="vista-notas" class="vista oculto" style="flex-direction:column; gap:12px;">
+      <div class="tipos" id="notas-modo">
+        <button class="tipo activo" data-modo="notas">📝 Mis notas</button>
+        <button class="tipo" data-modo="lecturas">📖 Mis lecturas</button>
+      </div>
+
+      <div id="sub-notas" style="display:flex; flex-direction:column; gap:12px;">
+        <section class="card">
+          <div class="card-cab">
+            <h2>Nueva nota</h2>
+            <button class="abrir" data-plegable="form-nota-hist" aria-expanded="false" aria-label="Escribir una nota">＋</button>
+          </div>
+          <div class="plegable oculto" id="form-nota-hist">
+            <div class="tipos" id="etiquetas-hist">
+              <button class="tipo activo" data-etqh="">✏️ General</button>
+              <button class="tipo" data-etqh="idea">💡 Idea</button>
+              <button class="tipo" data-etqh="logro">🏆 Logro</button>
+              <button class="tipo" data-etqh="reflexion">🤔 Reflexión</button>
+            </div>
+            <textarea class="nota-dia" id="nota-hist-texto" rows="2" maxlength="280" placeholder="Escribe una nota…"></textarea>
+            <button class="btn-primario btn-nota" id="guardar-nota-hist" disabled>Guardar nota</button>
+          </div>
+        </section>
+        <input class="buscar-nota" id="buscar-nota" type="search" placeholder="Buscar en todas mis notas…">
+        <div class="tipos" id="filtro-etq" style="flex-wrap: wrap;">
+          <button class="tipo activo" data-fetq="todas">Todas</button>
+          <button class="tipo" data-fetq="">✏️ General</button>
+          <button class="tipo" data-fetq="idea">💡 Idea</button>
+          <button class="tipo" data-fetq="logro">🏆 Logro</button>
+          <button class="tipo" data-fetq="reflexion">🤔 Reflexión</button>
+        </div>
+        <section class="card">
+          <h2>Historial de notas<span class="mini-info" id="mini-historial"></span></h2>
+          <div class="notas-lista" id="notas-historial"></div>
+        </section>
+      </div>
+
+      <div id="sub-lecturas" class="oculto" style="flex-direction:column; gap:12px;">
+        <section class="card">
+          <div class="card-cab">
+            <h2>Añadir frase de libro</h2>
+            <button class="abrir" data-plegable="form-lectura" aria-expanded="false" aria-label="Añadir frase de libro">＋</button>
+          </div>
+          <div class="lec-form plegable oculto" id="form-lectura">
+            <textarea id="lec-texto" rows="3" maxlength="600" placeholder="Escribe o pega aquí la frase del libro…"></textarea>
+            <input id="lec-libro" type="text" maxlength="80" placeholder="Libro (ej. El principito)">
+            <input id="lec-autor" type="text" maxlength="60" placeholder="Autor (opcional)">
+            <button class="btn-primario btn-nota" id="guardar-lectura" disabled>Guardar frase</button>
+            <p class="ayuda">Tus frases se guardan aquí y rotan como frase del día en la pantalla principal. ¿Tienes una foto de la página? Mándamela por el chat y te la transcribo lista para pegar.</p>
+          </div>
+        </section>
+        <section class="card">
+          <h2>Mis frases guardadas<span class="mini-info" id="mini-lecturas"></span></h2>
+          <div class="notas-lista" id="lecturas-lista"></div>
+        </section>
+      </div>
+    </div>
+
     <!-- ============ RESUMEN ============ -->
     <div id="vista-resumen" class="vista oculto" style="flex-direction:column; gap:14px;">
-      <div class="sem-nav">
-        <button class="paso-sem" id="sem-prev" aria-label="Semana anterior">←</button>
-        <span id="sem-rotulo">Esta semana</span>
-        <button class="paso-sem" id="sem-sig" aria-label="Semana siguiente" disabled>→</button>
+      <div class="tipos" id="resumen-modo">
+        <button class="tipo activo" data-rmodo="semana">Semana</button>
+        <button class="tipo" data-rmodo="mes">Mes</button>
       </div>
-      <section class="card">
-        <h2>Últimos 7 días</h2>
+      <div class="sem-nav">
+        <button class="paso-sem" id="sem-prev" aria-label="Período anterior">←</button>
+        <span id="sem-rotulo">Esta semana</span>
+        <button class="paso-sem" id="sem-sig" aria-label="Período siguiente" disabled>→</button>
+      </div>
+      <section class="card" id="card-grid">
+        <h2 id="grid-titulo">Hábitos de la semana</h2>
         <div class="semana-grid" id="semana-grid"></div>
       </section>
       <section class="card">
-        <h2>Esta semana</h2>
+        <h2 id="stats-titulo">Esta semana</h2>
         <div class="stats-fila" id="stats-semana"></div>
       </section>
       <section class="card">
-        <h2>💰 Financiero · últimos 7 días</h2>
+        <h2 id="fin-titulo">💰 Financiero</h2>
         <div class="stats-fila" id="fin-stats" style="margin-bottom: 12px;"></div>
         <div class="cat-resumen" id="cat-resumen"></div>
-        <div class="total-dia"><span>Total semana</span><span id="total-semana">$ 0</span></div>
+        <div class="total-dia"><span id="total-rotulo">Total semana</span><span id="total-semana">$ 0</span></div>
       </section>
 
       <div id="resumen-tematico" style="display: flex; flex-direction: column; gap: 14px;"></div>
@@ -745,12 +902,12 @@
       </section>
       <section class="card">
         <div class="card-cab">
-          <h2>Presupuestos semanales</h2>
+          <h2>Presupuestos</h2>
           <button class="abrir" data-plegable="form-presu" aria-expanded="false" aria-label="Editar presupuestos">＋</button>
         </div>
         <div class="plegable oculto" id="form-presu">
           <div id="lista-presu" style="display: flex; flex-direction: column; gap: 8px;"></div>
-          <p class="ayuda">Tope de gasto por categoría para los últimos 7 días. Deja vacío para no controlar esa categoría. El avance se ve en Resumen → Financiero, y la frase del día te alertará al llegar al 80%.</p>
+          <p class="ayuda">Define un tope por categoría, semanal (Lun-Dom) y/o mensual. Deja vacío para no controlarla. El avance se ve en Resumen → Financiero según la vista (Semana o Mes), y la frase del día te alerta al llegar al 80%.</p>
         </div>
       </section>
       <section class="card">
@@ -787,11 +944,16 @@
     <button id="deshacer-btn">Deshacer</button>
   </div>
 
+  <div class="modal-fondo oculto" id="editor-fondo">
+    <div class="modal" id="editor-modal"></div>
+  </div>
+
   <nav class="tabs">
     <div class="tabs-inner">
       <button class="tab activa" data-vista="hoy"><span class="icono">☀️</span>Hoy</button>
-      <button class="tab" data-vista="gastos"><span class="icono">💸</span>Gastos</button>
       <button class="tab" data-vista="agenda"><span class="icono">📅</span>Agenda</button>
+      <button class="tab" data-vista="notas"><span class="icono">📝</span>Notas</button>
+      <button class="tab" data-vista="gastos"><span class="icono">💸</span>Gastos</button>
       <button class="tab" data-vista="resumen"><span class="icono">📈</span>Resumen</button>
       <button class="tab" data-vista="ajustes"><span class="icono">⚙️</span>Ajustes</button>
     </div>
@@ -818,6 +980,7 @@
       tareas: [],    // { id, fecha, hora, texto, hecha, fechaHecha, limite }
       eventos: [],   // { id, titulo, fecha, hora }
       presupuestos: {}, // { categoria: tope semanal }
+      lecturas: [],  // { id, fecha, texto, libro, autor } — frases de libros para la frase del día
     };
   }
 
@@ -846,6 +1009,13 @@
   if (!estado.tareas) estado.tareas = [];
   if (!estado.eventos) estado.eventos = [];
   if (!estado.presupuestos) estado.presupuestos = {};
+  // Migración: presupuesto que era un número (semanal) → { semanal, mensual }
+  Object.keys(estado.presupuestos).forEach(function (c) {
+    if (typeof estado.presupuestos[c] === 'number') {
+      estado.presupuestos[c] = { semanal: estado.presupuestos[c], mensual: null };
+    }
+  });
+  if (!estado.lecturas) estado.lecturas = [];
 
   // Respaldo automático: una foto del estado al primer arranque de cada día.
   // Nunca se sobrescribe con un estado vacío, para que sirva de salvavidas.
@@ -881,12 +1051,37 @@
     { t: 'La felicidad de tu vida depende de la calidad de tus pensamientos.', a: 'Marco Aurelio', l: 'Meditaciones' },
     { t: 'No nos perturban las cosas, sino lo que pensamos sobre ellas.', a: 'Epicteto', l: 'Enquiridión' },
     { t: 'Cada acción que tomas es un voto por la persona en la que te quieres convertir.', a: 'James Clear', l: 'Hábitos atómicos' },
-    { t: 'Quien tiene un porqué para vivir puede soportar casi cualquier cómo.', a: 'Nietzsche, citado por Viktor Frankl', l: 'El hombre en busca de sentido' },
+    { t: 'Quien tiene un porqué para vivir puede soportar casi cualquier cómo.', a: 'Viktor Frankl', l: 'El hombre en busca de sentido' },
     { t: 'Siempre parece imposible hasta que se hace.', a: 'Nelson Mandela', l: '' },
     { t: 'Nada en la vida debe ser temido, solamente comprendido.', a: 'Marie Curie', l: '' },
-    { t: 'Nada en la vida es tan importante como crees mientras estás pensando en ello.', a: 'Daniel Kahneman', l: 'Pensar rápido, pensar despacio' },
+    { t: 'Nada es tan importante como crees mientras estás pensando en ello.', a: 'Daniel Kahneman', l: 'Pensar rápido, pensar despacio' },
     { t: 'La vida no es la que uno vivió, sino la que uno recuerda y cómo la recuerda para contarla.', a: 'Gabriel García Márquez', l: 'Vivir para contarla' },
     { t: 'Un lector vive mil vidas antes de morir. Quien nunca lee vive solo una.', a: 'George R. R. Martin', l: 'Danza de dragones' },
+    { t: 'El que tiene salud tiene esperanza, y el que tiene esperanza lo tiene todo.', a: 'Proverbio árabe', l: '' },
+    { t: 'Conócete a ti mismo.', a: 'Inscripción de Delfos', l: '' },
+    { t: 'No cuentes los días, haz que los días cuenten.', a: 'Muhammad Ali', l: '' },
+    { t: 'La disciplina es el puente entre las metas y los logros.', a: 'Jim Rohn', l: '' },
+    { t: 'Somos lo que hacemos repetidamente. La excelencia no es un acto, sino un hábito.', a: 'Aristóteles', l: 'Ética a Nicómaco' },
+    { t: 'El viaje de mil millas comienza con un solo paso.', a: 'Lao-Tsé', l: 'Tao Te Ching' },
+    { t: 'Lo que no te reta, no te cambia.', a: 'Fred DeVito', l: '' },
+    { t: 'La mayor gloria no es nunca caer, sino levantarse siempre.', a: 'Nelson Mandela', l: '' },
+    { t: 'El tiempo es lo que más queremos, pero lo que peor usamos.', a: 'William Penn', l: '' },
+    { t: 'Un año de trabajo constante vale más que diez de buenas intenciones.', a: 'Anónimo', l: '' },
+    { t: 'No hay viento favorable para el que no sabe a dónde va.', a: 'Séneca', l: 'Cartas a Lucilio' },
+    { t: 'Lo esencial es invisible a los ojos.', a: 'Antoine de Saint-Exupéry', l: 'El principito' },
+    { t: 'Caminante, no hay camino, se hace camino al andar.', a: 'Antonio Machado', l: 'Campos de Castilla' },
+    { t: 'El hombre que mueve montañas comienza apartando piedras pequeñas.', a: 'Confucio', l: '' },
+    { t: 'No dejes para mañana lo que puedas disfrutar hoy.', a: 'Josh Billings', l: '' },
+    { t: 'La constancia vence lo que la dicha no alcanza.', a: 'Proverbio', l: '' },
+    { t: 'Tus hábitos de hoy deciden tu futuro de mañana.', a: 'Mahatma Gandhi', l: '' },
+    { t: 'La paciencia es amarga, pero su fruto es dulce.', a: 'Jean-Jacques Rousseau', l: '' },
+    { t: 'El éxito es la suma de pequeños esfuerzos repetidos día tras día.', a: 'Robert Collier', l: '' },
+    { t: 'Cuida los pequeños gastos; un pequeño agujero hunde un barco.', a: 'Benjamin Franklin', l: '' },
+    { t: 'No es rico quien más tiene, sino quien menos necesita.', a: 'Proverbio', l: '' },
+    { t: 'Invierte en ti mismo: es la mejor inversión que puedes hacer.', a: 'Warren Buffett', l: '' },
+    { t: 'Ordena tu mente, y ordenarás tu vida.', a: 'Marco Aurelio', l: 'Meditaciones' },
+    { t: 'El que lee mucho y anda mucho, ve mucho y sabe mucho.', a: 'Miguel de Cervantes', l: 'Don Quijote de la Mancha' },
+    { t: 'La verdadera sabiduría está en reconocer la propia ignorancia.', a: 'Sócrates', l: '' },
   ];
 
   function actualizarFrase() {
@@ -918,28 +1113,35 @@
       return;
     }
 
-    // Regla 1b: un presupuesto semanal va en 80% o más
+    // Regla 1b: un presupuesto (semanal Lun-Dom o mensual) va al 80% o más
+    const lunSem = lunesDe(new Date());
     const clavesSem = [];
     for (let i = 0; i < 7; i++) {
-      const d = new Date();
-      d.setDate(d.getDate() - i);
+      const d = new Date(lunSem.getFullYear(), lunSem.getMonth(), lunSem.getDate() + i);
       clavesSem.push(claveDia(d));
     }
+    const mesPrefijo = HOY.slice(0, 7);
     let alertaPresu = null;
     Object.keys(estado.presupuestos).forEach(function (c) {
-      const tope = estado.presupuestos[c];
-      let gastado = 0;
-      estado.gastos.forEach(function (g) {
-        if (g.cat === c && clavesSem.indexOf(g.fecha) !== -1) gastado += g.monto;
+      const presu = estado.presupuestos[c] || {};
+      [['semanal', clavesSem], ['mensual', null]].forEach(function (par) {
+        const tipo = par[0], clavesP = par[1];
+        const tope = presu[tipo];
+        if (!tope) return;
+        let gastado = 0;
+        estado.gastos.forEach(function (g) {
+          if (g.cat !== c) return;
+          if (clavesP ? clavesP.indexOf(g.fecha) !== -1 : g.fecha.slice(0, 7) === mesPrefijo) gastado += g.monto;
+        });
+        const pct = Math.round((gastado / tope) * 100);
+        if (pct >= 80 && (!alertaPresu || pct > alertaPresu.pct)) alertaPresu = { cat: c, pct: pct, tipo: tipo };
       });
-      const pct = Math.round((gastado / tope) * 100);
-      if (pct >= 80 && (!alertaPresu || pct > alertaPresu.pct)) alertaPresu = { cat: c, pct: pct };
     });
     if (alertaPresu) {
       const nombreCat = alertaPresu.cat.replace(/^[^A-Za-z0-9ÁÉÍÓÚáéíóúÑñ]+\s*/, '').toLowerCase();
       el.textContent = alertaPresu.pct >= 100
-        ? 'Te pasaste del presupuesto semanal de ' + nombreCat + ' (' + alertaPresu.pct + '%). Mañana se recupera, hoy se frena.'
-        : 'Vas al ' + alertaPresu.pct + '% de tu presupuesto semanal de ' + nombreCat + '. Ojo con lo que sigue.';
+        ? 'Te pasaste del presupuesto ' + alertaPresu.tipo + ' de ' + nombreCat + ' (' + alertaPresu.pct + '%). Hoy conviene frenar.'
+        : 'Vas al ' + alertaPresu.pct + '% de tu presupuesto ' + alertaPresu.tipo + ' de ' + nombreCat + '. Ojo con lo que sigue.';
       return;
     }
 
@@ -964,15 +1166,50 @@
       }
     }
 
-    // Regla 4: nada que alertar — cita del día con autor y libro
-    const diaDelAno = Math.floor((Date.now() - new Date(new Date().getFullYear(), 0, 0)) / 86400000);
-    const cita = CITAS[diaDelAno % CITAS.length];
-    let credito = '— ' + cita.a;
+    // Regla 4: nada que alertar — cita del día (mezcla las que trae la app + tus lecturas)
+    const cita = citaDelDia();
+    let credito = cita.a ? '— ' + cita.a : '';
     if (cita.l) {
       const enlace = 'https://www.google.com/search?q=' + encodeURIComponent('reseña libro ' + cita.l + ' ' + cita.a);
-      credito += ' · <a class="frase-libro" href="' + enlace + '" target="_blank" rel="noopener">' + cita.l + '</a>';
+      credito += (credito ? ' · ' : '— ') + '<a class="frase-libro" href="' + enlace + '" target="_blank" rel="noopener">' + cita.l + '</a>';
     }
-    el.innerHTML = '“' + cita.t + '”<span class="frase-autor">' + credito + '</span>';
+    const MAX_PALABRAS = 28;
+    const palabras = cita.t.split(/\s+/);
+    let texto = cita.t, recortada = false;
+    if (palabras.length > MAX_PALABRAS) {
+      texto = palabras.slice(0, MAX_PALABRAS).join(' ') + '…';
+      recortada = true;
+    }
+    const verMas = recortada ? '<span class="frase-mas"> (ver completa en Notas › Mis lecturas)</span>' : '';
+    el.innerHTML = '“' + texto + '”<span class="frase-autor">' + credito + verMas + '</span>';
+  }
+
+  // Elige la cita del día sin repetir hasta agotar el conjunto, mezclando app + lecturas
+  function citaDelDia() {
+    const pool = CITAS.map(function (c, i) { return { key: 'b' + i, t: c.t, a: c.a, l: c.l }; });
+    estado.lecturas.forEach(function (fr) {
+      pool.push({ key: 'L' + fr.id, t: fr.texto, a: fr.autor || '', l: fr.libro || '' });
+    });
+    const porKey = {};
+    pool.forEach(function (c) { porKey[c.key] = c; });
+
+    let reg = null;
+    try { reg = JSON.parse(localStorage.getItem(CLAVE + '-frase-dia') || 'null'); } catch (e) {}
+    if (reg && reg.fecha === HOY && porKey[reg.key]) return porKey[reg.key];
+
+    let recientes = [];
+    try { recientes = JSON.parse(localStorage.getItem(CLAVE + '-frase-recientes') || '[]'); } catch (e) {}
+    let candidatos = pool.filter(function (c) { return recientes.indexOf(c.key) === -1; });
+    if (candidatos.length === 0) candidatos = pool;
+    const elegida = candidatos[Math.floor(Math.random() * candidatos.length)];
+
+    recientes.push(elegida.key);
+    while (recientes.length > pool.length - 1 && recientes.length > 0) recientes.shift();
+    try {
+      localStorage.setItem(CLAVE + '-frase-dia', JSON.stringify({ fecha: HOY, key: elegida.key }));
+      localStorage.setItem(CLAVE + '-frase-recientes', JSON.stringify(recientes));
+    } catch (e) {}
+    return elegida;
   }
 
   const CIRCUNFERENCIA = 100.53;
@@ -1051,12 +1288,127 @@
     deshacerTimer = setTimeout(function () { el.classList.add('oculto'); }, 5000);
   }
 
+  // ---------- Editor universal (editar cualquier registro) ----------
+  let editando = null;
+  function buscarPorId(arr, id) {
+    for (let i = 0; i < arr.length; i++) { if (arr[i].id === id) return arr[i]; }
+    return null;
+  }
+  function opciones(arr, sel) {
+    return arr.map(function (v) {
+      const val = typeof v === 'object' ? v.val : v;
+      const txt = typeof v === 'object' ? v.txt : v;
+      return '<option value="' + val + '"' + (val === sel ? ' selected' : '') + '>' + txt + '</option>';
+    }).join('');
+  }
+  function botonEditar() {
+    return '<button class="g-editar" aria-label="Editar">✎</button>';
+  }
+
+  function abrirEditor(tipo, id) {
+    editando = { tipo: tipo, id: id };
+    const modal = document.getElementById('editor-modal');
+    const etqOpts = [{ val: '', txt: '✏️ General' }, { val: 'idea', txt: '💡 Idea' }, { val: 'logro', txt: '🏆 Logro' }, { val: 'reflexion', txt: '🤔 Reflexión' }];
+    let o, html = '';
+    if (tipo === 'nota') {
+      o = buscarPorId(estado.notas, id); if (!o) return;
+      html = '<h3>Editar nota</h3><label>Nota</label><textarea id="ed-texto" rows="3" maxlength="280"></textarea>' +
+        '<label>Etiqueta</label><select id="ed-etq">' + opciones(etqOpts, o.etiqueta || '') + '</select>' +
+        '<label>Fecha</label><input id="ed-fecha" type="date">';
+    } else if (tipo === 'gasto') {
+      o = buscarPorId(estado.gastos, id); if (!o) return;
+      html = '<h3>Editar gasto</h3><label>Monto</label><input id="ed-monto" type="number" inputmode="decimal">' +
+        '<label>Categoría</label><select id="ed-cat">' + opciones(CATEGORIAS, o.cat) + '</select>' +
+        '<label>Comentario</label><input id="ed-nota" type="text" maxlength="60">' +
+        '<label>Fecha</label><input id="ed-fecha" type="date">';
+    } else if (tipo === 'tarea') {
+      o = buscarPorId(estado.tareas, id); if (!o) return;
+      html = '<h3>Editar tarea</h3><label>Tarea</label><input id="ed-texto" type="text" maxlength="280">' +
+        '<label>Fecha límite (opcional)</label><input id="ed-limite" type="date">';
+    } else if (tipo === 'evento') {
+      o = buscarPorId(estado.eventos, id); if (!o) return;
+      html = '<h3>Editar evento</h3><label>Evento</label><input id="ed-texto" type="text" maxlength="60">' +
+        '<label>Fecha</label><input id="ed-fecha" type="date"><label>Hora (opcional)</label><input id="ed-hora" type="time">' +
+        '<div class="fila-check"><input id="ed-anual" type="checkbox"><label style="margin:0; text-transform:none; letter-spacing:0; font-size:0.9rem; color:var(--ink);">Se repite cada año</label></div>';
+    } else if (tipo === 'lectura') {
+      o = buscarPorId(estado.lecturas, id); if (!o) return;
+      html = '<h3>Editar frase</h3><label>Frase</label><textarea id="ed-texto" rows="3" maxlength="600"></textarea>' +
+        '<label>Libro</label><input id="ed-libro" type="text" maxlength="80"><label>Autor</label><input id="ed-autor" type="text" maxlength="60">';
+    } else if (tipo === 'habito') {
+      o = buscarPorId(estado.habitos, id); if (!o) return;
+      html = '<h3>Editar hábito</h3><label>Nombre (incluye el emoji)</label><input id="ed-texto" type="text" maxlength="40">';
+    } else { return; }
+
+    modal.innerHTML = html +
+      '<div class="modal-botones"><button class="btn-secundario" id="editor-cancelar">Cancelar</button><button class="btn-primario" id="editor-guardar">Guardar cambios</button></div>';
+
+    function set(k, v) { const e = document.getElementById(k); if (e) e.value = (v == null ? '' : v); }
+    if (tipo === 'nota') { set('ed-texto', o.texto); set('ed-fecha', o.fecha); }
+    else if (tipo === 'gasto') { set('ed-monto', o.monto); set('ed-nota', o.nota); set('ed-fecha', o.fecha); }
+    else if (tipo === 'tarea') { set('ed-texto', o.texto); set('ed-limite', o.limite); }
+    else if (tipo === 'evento') { set('ed-texto', o.titulo); set('ed-fecha', o.fecha); set('ed-hora', o.hora); document.getElementById('ed-anual').checked = !!o.anual; }
+    else if (tipo === 'lectura') { set('ed-texto', o.texto); set('ed-libro', o.libro); set('ed-autor', o.autor); }
+    else if (tipo === 'habito') { set('ed-texto', o.nombre); }
+
+    document.getElementById('editor-cancelar').addEventListener('click', cerrarEditor);
+    document.getElementById('editor-guardar').addEventListener('click', guardarEdicion);
+    document.getElementById('editor-fondo').classList.remove('oculto');
+  }
+
+  function cerrarEditor() {
+    editando = null;
+    document.getElementById('editor-fondo').classList.add('oculto');
+  }
+
+  function refrescarTodo() {
+    pintarNotasHoy(); pintarHistorial(); pintarGastos(); pintarHistorialGastos();
+    pintarTareas(); pintarEventos(); pintarCalendario(); pintarLecturas(); pintarHabitos(); pintarAjustes();
+  }
+
+  function guardarEdicion() {
+    if (!editando) return;
+    const tipo = editando.tipo, id = editando.id;
+    const val = function (k) { const e = document.getElementById(k); return e ? e.value : ''; };
+    if (tipo === 'nota') {
+      const o = buscarPorId(estado.notas, id); if (!o) return;
+      const t = val('ed-texto').trim(); if (!t) return;
+      o.texto = t; o.etiqueta = val('ed-etq'); o.fecha = val('ed-fecha') || o.fecha;
+    } else if (tipo === 'gasto') {
+      const o = buscarPorId(estado.gastos, id); if (!o) return;
+      const m = parseFloat(val('ed-monto')); if (!(m > 0)) return;
+      o.monto = m; o.cat = val('ed-cat'); o.nota = val('ed-nota').trim(); o.fecha = val('ed-fecha') || o.fecha;
+    } else if (tipo === 'tarea') {
+      const o = buscarPorId(estado.tareas, id); if (!o) return;
+      const t = val('ed-texto').trim(); if (!t) return;
+      o.texto = t; o.limite = val('ed-limite') || null;
+    } else if (tipo === 'evento') {
+      const o = buscarPorId(estado.eventos, id); if (!o) return;
+      const t = val('ed-texto').trim(); if (!t) return;
+      o.titulo = t; o.fecha = val('ed-fecha') || o.fecha; o.hora = val('ed-hora') || ''; o.anual = document.getElementById('ed-anual').checked;
+    } else if (tipo === 'lectura') {
+      const o = buscarPorId(estado.lecturas, id); if (!o) return;
+      const t = val('ed-texto').trim(), lib = val('ed-libro').trim(); if (!t || !lib) return;
+      o.texto = t; o.libro = lib; o.autor = val('ed-autor').trim();
+    } else if (tipo === 'habito') {
+      const o = buscarPorId(estado.habitos, id); if (!o) return;
+      const t = val('ed-texto').trim(); if (!t) return;
+      o.nombre = t;
+    }
+    guardar();
+    cerrarEditor();
+    refrescarTodo();
+  }
+
+  document.getElementById('editor-fondo').addEventListener('click', function (e) {
+    if (e.target === this) cerrarEditor();
+  });
+
   // ---------- Navegación ----------
   function saludo() {
     const h = new Date().getHours();
     return h < 12 ? 'Buenos días' : h < 19 ? 'Buenas tardes' : 'Buenas noches';
   }
-  const TITULOS = { hoy: saludo(), gastos: 'Gastos', agenda: 'Agenda', resumen: 'Resumen', ajustes: 'Ajustes' };
+  const TITULOS = { hoy: saludo(), gastos: 'Gastos', agenda: 'Agenda', notas: 'Notas', resumen: 'Resumen', ajustes: 'Ajustes' };
   document.getElementById('titulo').textContent = TITULOS.hoy;
   let vistaActiva = 'hoy';
   document.querySelectorAll('.tab').forEach(function (tab) {
@@ -1072,6 +1424,9 @@
       document.getElementById('titulo').textContent = TITULOS[v];
       if (v === 'resumen') pintarResumen();
       if (v === 'ajustes') pintarAjustes();
+      if (v === 'agenda') pintarCalendario();
+      if (v === 'notas') { pintarHistorial(); pintarLecturas(); }
+      if (v === 'gastos') pintarHistorialGastos();
     });
   });
 
@@ -1210,6 +1565,8 @@
       document.querySelectorAll('.tipo[data-etq]').forEach(function (c) { c.classList.toggle('activo', c === chip); });
     });
   });
+  const notaFecha = document.getElementById('nota-fecha');
+  notaFecha.value = HOY;
   notaDia.addEventListener('input', function () {
     btnNota.disabled = !notaDia.value.trim();
   });
@@ -1217,17 +1574,20 @@
     const texto = notaDia.value.trim();
     if (!texto) return;
     const hora = new Date().toTimeString().slice(0, 5);
+    const fecha = notaFecha.value || HOY;
     if (tipoActivo === 'nota') {
-      estado.notas.push({ id: 'n' + Date.now(), fecha: HOY, hora: hora, texto: texto, etiqueta: etqActiva });
+      estado.notas.push({ id: 'n' + Date.now(), fecha: fecha, hora: hora, texto: texto, etiqueta: etqActiva });
       pintarNotasHoy();
+      pintarHistorial();
     } else {
       const limite = document.getElementById('tarea-limite').value || null;
-      estado.tareas.push({ id: 't' + Date.now(), fecha: HOY, hora: hora, texto: texto, hecha: false, fechaHecha: null, limite: limite });
+      estado.tareas.push({ id: 't' + Date.now(), fecha: fecha, hora: hora, texto: texto, hecha: false, fechaHecha: null, limite: limite });
       document.getElementById('tarea-limite').value = '';
       pintarTareas();
     }
     guardar();
     notaDia.value = '';
+    notaFecha.value = HOY;
     btnNota.disabled = true;
     plegar('form-nota');
   });
@@ -1257,7 +1617,9 @@
       fila.innerHTML =
         '<button class="tarea-check" aria-label="Marcar tarea como hecha">✓</button>' +
         '<div style="flex:1"><div class="nota-texto"></div><div class="nota-hora"></div></div>' +
+        botonEditar() +
         '<button class="g-borrar" aria-label="Borrar tarea">✕</button>';
+      fila.querySelector('.g-editar').addEventListener('click', function () { abrirEditor('tarea', t.id); });
       fila.querySelector('.nota-texto').textContent = t.texto;
       fila.querySelector('.nota-hora').textContent = t.hecha
         ? 'Hecha'
@@ -1307,11 +1669,13 @@
       fila.className = 'nota-item';
       fila.innerHTML =
         '<div style="flex:1"><div class="nota-texto"></div><div class="nota-hora"></div></div>' +
+        botonEditar() +
         '<button class="g-borrar" aria-label="Borrar nota">✕</button>';
       fila.querySelector('.nota-texto').textContent = n.texto;
       fila.querySelector('.nota-hora').textContent =
         'Guardada el ' + fechaCorta(n.fecha) + (n.hora ? ' · ' + n.hora : '') +
         (n.etiqueta && ETIQUETAS[n.etiqueta] ? ' · ' + ETIQUETAS[n.etiqueta] : '');
+      fila.querySelector('.g-editar').addEventListener('click', function () { abrirEditor('nota', n.id); });
       fila.querySelector('.g-borrar').addEventListener('click', function () {
         estado.notas = estado.notas.filter(function (x) { return x.id !== n.id; });
         guardar();
@@ -1343,14 +1707,17 @@
       titulo: eventoTitulo.value.trim(),
       fecha: eventoFecha.value,
       hora: eventoHora.value || '',
+      anual: document.getElementById('evento-anual').checked,
     });
     guardar();
     eventoTitulo.value = '';
     eventoFecha.value = '';
     eventoHora.value = '';
+    document.getElementById('evento-anual').checked = false;
     btnEvento.disabled = true;
     plegar('form-evento');
     pintarEventos();
+    pintarCalendario();
   });
 
   function diasHasta(fecha) {
@@ -1358,13 +1725,26 @@
     const q = HOY.split('-');
     return Math.round((new Date(p[0], p[1] - 1, p[2]) - new Date(q[0], q[1] - 1, q[2])) / 86400000);
   }
+  // Los eventos anuales repiten cada año (mismo día y mes)
+  function eventoEnFecha(ev, clave) {
+    if (ev.anual) return ev.fecha.slice(5) === clave.slice(5);
+    return ev.fecha === clave;
+  }
+  function proximaOcurrencia(ev) {
+    if (!ev.anual) return ev.fecha;
+    const mmdd = ev.fecha.slice(5);
+    const anioHoy = HOY.slice(0, 4);
+    const esteAnio = anioHoy + '-' + mmdd;
+    return esteAnio >= HOY ? esteAnio : (parseInt(anioHoy, 10) + 1) + '-' + mmdd;
+  }
 
   function pintarEventos() {
     const cont = document.getElementById('eventos-lista');
     cont.innerHTML = '';
     const proximos = estado.eventos
-      .filter(function (ev) { return ev.fecha >= HOY; })
-      .sort(function (a, b) { return (a.fecha + (a.hora || '')) < (b.fecha + (b.hora || '')) ? -1 : 1; });
+      .map(function (ev) { return { ev: ev, occ: proximaOcurrencia(ev) }; })
+      .filter(function (x) { return x.occ >= HOY; })
+      .sort(function (a, b) { return (a.occ + (a.ev.hora || '')) < (b.occ + (b.ev.hora || '')) ? -1 : 1; });
     const card = document.getElementById('card-eventos');
     const mini = document.getElementById('mini-eventos');
     if (proximos.length === 0) {
@@ -1373,16 +1753,19 @@
     } else {
       card.classList.remove('compacta');
       mini.textContent = '';
-      proximos.forEach(function (ev) {
+      proximos.forEach(function (x) {
+        const ev = x.ev;
         const fila = document.createElement('div');
         fila.className = 'nota-item';
-        const n = diasHasta(ev.fecha);
-        const cuando = n === 0 ? 'Hoy' : n === 1 ? 'Mañana' : 'En ' + n + ' días · ' + fechaCorta(ev.fecha);
+        const n = diasHasta(x.occ);
+        const cuando = (n === 0 ? 'Hoy' : n === 1 ? 'Mañana' : 'En ' + n + ' días · ' + fechaCorta(x.occ)) + (ev.anual ? ' 🔁' : '');
         fila.innerHTML =
           '<div style="flex:1"><div class="nota-texto" style="font-style:normal;"></div><div class="nota-hora"></div></div>' +
+          botonEditar() +
           '<button class="g-borrar" aria-label="Borrar evento">✕</button>';
         fila.querySelector('.nota-texto').textContent = ev.titulo;
         fila.querySelector('.nota-hora').textContent = cuando + (ev.hora ? ' · ' + ev.hora : '');
+        fila.querySelector('.g-editar').addEventListener('click', function () { abrirEditor('evento', ev.id); });
         fila.querySelector('.g-borrar').addEventListener('click', function () {
           estado.eventos = estado.eventos.filter(function (x) { return x.id !== ev.id; });
           guardar();
@@ -1400,8 +1783,10 @@
     const cardHoy = document.getElementById('card-agenda-hoy');
     const contHoy = document.getElementById('agenda-hoy');
     contHoy.innerHTML = '';
-    const deHoy = proximos.filter(function (ev) { return ev.fecha === HOY; });
-    cardHoy.classList.toggle('oculto', deHoy.length === 0);
+    const deHoy = estado.eventos.filter(function (ev) { return eventoEnFecha(ev, HOY); })
+      .sort(function (a, b) { return (a.hora || '') < (b.hora || '') ? -1 : 1; });
+    cardHoy.classList.toggle('compacta', deHoy.length === 0);
+    document.getElementById('mini-agenda-hoy').textContent = deHoy.length === 0 ? ' · sin eventos hoy' : '';
     deHoy.forEach(function (ev) {
       const fila = document.createElement('div');
       fila.className = 'nota-item';
@@ -1411,6 +1796,282 @@
       fila.querySelector('.nota-hora').textContent = ev.hora || '—';
       fila.querySelector('.nota-texto').textContent = ev.titulo;
       contHoy.appendChild(fila);
+    });
+  }
+
+  // ---------- Calendario mensual (Agenda) ----------
+  let calAnio = new Date().getFullYear();
+  let calMesN = new Date().getMonth();
+  let calSel = HOY;
+
+  function eventosDe(clave) {
+    return estado.eventos
+      .filter(function (ev) { return eventoEnFecha(ev, clave); })
+      .sort(function (a, b) { return (a.hora || '') < (b.hora || '') ? -1 : 1; });
+  }
+
+  function pintarCalendario() {
+    const grid = document.getElementById('cal-grid');
+    grid.innerHTML = '';
+    document.getElementById('cal-mes').textContent =
+      new Date(calAnio, calMesN, 1).toLocaleDateString('es', { month: 'long', year: 'numeric' });
+    ['L', 'M', 'X', 'J', 'V', 'S', 'D'].forEach(function (d) {
+      const c = document.createElement('div');
+      c.className = 'cal-dow';
+      c.textContent = d;
+      grid.appendChild(c);
+    });
+    const primero = new Date(calAnio, calMesN, 1);
+    const offset = (primero.getDay() + 6) % 7;
+    const diasMes = new Date(calAnio, calMesN + 1, 0).getDate();
+    for (let i = 0; i < offset; i++) {
+      const v = document.createElement('div');
+      v.className = 'cal-dia vacio';
+      grid.appendChild(v);
+    }
+    for (let d = 1; d <= diasMes; d++) {
+      const clave = calAnio + '-' + String(calMesN + 1).padStart(2, '0') + '-' + String(d).padStart(2, '0');
+      const cel = document.createElement('div');
+      cel.className = 'cal-dia' + (clave === HOY ? ' hoy' : '') + (clave === calSel ? ' sel' : '');
+      cel.innerHTML = '<span>' + d + '</span>' + (eventosDe(clave).length ? '<span class="punto"></span>' : '');
+      cel.addEventListener('click', function () {
+        calSel = clave;
+        pintarCalendario();
+      });
+      grid.appendChild(cel);
+    }
+    pintarDetalleDia();
+  }
+
+  function pintarDetalleDia() {
+    const cont = document.getElementById('cal-detalle');
+    cont.innerHTML = '';
+    const enc = document.createElement('div');
+    enc.className = 'cal-detalle-fecha';
+    const p = calSel.split('-');
+    enc.textContent = (calSel === HOY ? 'Hoy · ' : '') +
+      new Date(p[0], p[1] - 1, p[2]).toLocaleDateString('es', { weekday: 'long', day: 'numeric', month: 'long' });
+    cont.appendChild(enc);
+    const evs = eventosDe(calSel);
+    if (evs.length === 0) {
+      const vac = document.createElement('p');
+      vac.className = 'vacio';
+      vac.textContent = 'Sin eventos este día.';
+      cont.appendChild(vac);
+      return;
+    }
+    evs.forEach(function (ev) {
+      const fila = document.createElement('div');
+      fila.className = 'nota-item';
+      fila.innerHTML =
+        '<span class="nota-hora" style="min-width:48px; margin-top:2px;"></span>' +
+        '<div class="nota-texto" style="font-style:normal; flex:1;"></div>' +
+        botonEditar() +
+        '<button class="g-borrar" aria-label="Borrar evento">✕</button>';
+      fila.querySelector('.nota-hora').textContent = ev.hora || '—';
+      fila.querySelector('.nota-texto').textContent = ev.titulo;
+      fila.querySelector('.g-editar').addEventListener('click', function () { abrirEditor('evento', ev.id); });
+      fila.querySelector('.g-borrar').addEventListener('click', function () {
+        estado.eventos = estado.eventos.filter(function (x) { return x.id !== ev.id; });
+        guardar();
+        pintarEventos();
+        pintarCalendario();
+        ofrecerDeshacer('Evento eliminado', function () {
+          estado.eventos.push(ev);
+          guardar();
+          pintarEventos();
+          pintarCalendario();
+        });
+      });
+      cont.appendChild(fila);
+    });
+  }
+
+  document.getElementById('cal-prev').addEventListener('click', function () {
+    calMesN--; if (calMesN < 0) { calMesN = 11; calAnio--; }
+    pintarCalendario();
+  });
+  document.getElementById('cal-sig').addEventListener('click', function () {
+    calMesN++; if (calMesN > 11) { calMesN = 0; calAnio++; }
+    pintarCalendario();
+  });
+
+  // ---------- Historial de notas ----------
+  let filtroEtq = 'todas';
+  let buscarTexto = '';
+
+  function fechaLarga(clave) {
+    if (clave === HOY) return 'Hoy';
+    const p = clave.split('-');
+    return new Date(p[0], p[1] - 1, p[2]).toLocaleDateString('es', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+  }
+
+  function pintarHistorial() {
+    const cont = document.getElementById('notas-historial');
+    cont.innerHTML = '';
+    let lista = estado.notas.slice();
+    if (filtroEtq !== 'todas') {
+      lista = lista.filter(function (n) { return (n.etiqueta || '') === filtroEtq; });
+    }
+    if (buscarTexto) {
+      lista = lista.filter(function (n) { return n.texto.toLowerCase().indexOf(buscarTexto) !== -1; });
+    }
+    lista.sort(function (a, b) {
+      const ka = a.fecha + (a.hora || ''), kb = b.fecha + (b.hora || '');
+      return ka > kb ? -1 : ka < kb ? 1 : 0;
+    });
+    document.getElementById('mini-historial').textContent =
+      ' · ' + lista.length + (lista.length === 1 ? ' nota' : ' notas');
+    if (lista.length === 0) {
+      cont.innerHTML = '<p class="vacio">' +
+        (estado.notas.length ? 'Ninguna nota coincide con tu búsqueda.' : 'Aún no has guardado notas.') + '</p>';
+      return;
+    }
+    let grupoActual = '';
+    lista.forEach(function (n) {
+      if (n.fecha !== grupoActual) {
+        grupoActual = n.fecha;
+        const h = document.createElement('div');
+        h.className = 'nota-grupo';
+        h.textContent = fechaLarga(n.fecha);
+        cont.appendChild(h);
+      }
+      const fila = document.createElement('div');
+      fila.className = 'nota-item';
+      fila.innerHTML =
+        '<div style="flex:1"><div class="nota-texto"></div><div class="nota-hora"></div></div>' +
+        botonEditar() +
+        '<button class="g-borrar" aria-label="Borrar nota">✕</button>';
+      fila.querySelector('.nota-texto').textContent = n.texto;
+      fila.querySelector('.nota-hora').textContent =
+        (n.hora || '') + (n.etiqueta && ETIQUETAS[n.etiqueta] ? ' · ' + ETIQUETAS[n.etiqueta] : '');
+      fila.querySelector('.g-editar').addEventListener('click', function () { abrirEditor('nota', n.id); });
+      fila.querySelector('.g-borrar').addEventListener('click', function () {
+        estado.notas = estado.notas.filter(function (x) { return x.id !== n.id; });
+        guardar();
+        pintarHistorial();
+        pintarNotasHoy();
+        ofrecerDeshacer('Nota eliminada', function () {
+          estado.notas.push(n);
+          guardar();
+          pintarHistorial();
+          pintarNotasHoy();
+        });
+      });
+      cont.appendChild(fila);
+    });
+  }
+
+  document.getElementById('buscar-nota').addEventListener('input', function () {
+    buscarTexto = this.value.trim().toLowerCase();
+    pintarHistorial();
+  });
+  document.querySelectorAll('#filtro-etq .tipo').forEach(function (chip) {
+    chip.addEventListener('click', function () {
+      filtroEtq = chip.dataset.fetq;
+      document.querySelectorAll('#filtro-etq .tipo').forEach(function (c) { c.classList.toggle('activo', c === chip); });
+      pintarHistorial();
+    });
+  });
+
+  // Nueva nota desde la pestaña Notas
+  let etqHist = '';
+  document.querySelectorAll('#etiquetas-hist .tipo').forEach(function (chip) {
+    chip.addEventListener('click', function () {
+      etqHist = chip.dataset.etqh;
+      document.querySelectorAll('#etiquetas-hist .tipo').forEach(function (c) { c.classList.toggle('activo', c === chip); });
+    });
+  });
+  const notaHistTexto = document.getElementById('nota-hist-texto');
+  const btnNotaHist = document.getElementById('guardar-nota-hist');
+  notaHistTexto.addEventListener('input', function () {
+    btnNotaHist.disabled = !notaHistTexto.value.trim();
+  });
+  btnNotaHist.addEventListener('click', function () {
+    const texto = notaHistTexto.value.trim();
+    if (!texto) return;
+    estado.notas.push({
+      id: 'n' + Date.now(),
+      fecha: HOY,
+      hora: new Date().toTimeString().slice(0, 5),
+      texto: texto,
+      etiqueta: etqHist,
+    });
+    guardar();
+    notaHistTexto.value = '';
+    btnNotaHist.disabled = true;
+    plegar('form-nota-hist');
+    pintarHistorial();
+    pintarNotasHoy();
+  });
+
+  // ---------- Mis lecturas ----------
+  document.querySelectorAll('#notas-modo .tipo').forEach(function (chip) {
+    chip.addEventListener('click', function () {
+      const modo = chip.dataset.modo;
+      document.querySelectorAll('#notas-modo .tipo').forEach(function (c) { c.classList.toggle('activo', c === chip); });
+      document.getElementById('sub-notas').classList.toggle('oculto', modo !== 'notas');
+      document.getElementById('sub-lecturas').classList.toggle('oculto', modo !== 'lecturas');
+      document.getElementById('sub-lecturas').style.display = modo === 'lecturas' ? 'flex' : '';
+      if (modo === 'lecturas') pintarLecturas(); else pintarHistorial();
+    });
+  });
+
+  const lecTexto = document.getElementById('lec-texto');
+  const lecLibro = document.getElementById('lec-libro');
+  const lecAutor = document.getElementById('lec-autor');
+  const btnLectura = document.getElementById('guardar-lectura');
+  function validarLectura() {
+    btnLectura.disabled = !(lecTexto.value.trim() && lecLibro.value.trim());
+  }
+  lecTexto.addEventListener('input', validarLectura);
+  lecLibro.addEventListener('input', validarLectura);
+  btnLectura.addEventListener('click', function () {
+    if (!(lecTexto.value.trim() && lecLibro.value.trim())) return;
+    estado.lecturas.push({
+      id: 'L' + Date.now(),
+      fecha: HOY,
+      texto: lecTexto.value.trim(),
+      libro: lecLibro.value.trim(),
+      autor: lecAutor.value.trim(),
+    });
+    guardar();
+    lecTexto.value = ''; lecLibro.value = ''; lecAutor.value = '';
+    btnLectura.disabled = true;
+    plegar('form-lectura');
+    pintarLecturas();
+  });
+
+  function pintarLecturas() {
+    const cont = document.getElementById('lecturas-lista');
+    cont.innerHTML = '';
+    document.getElementById('mini-lecturas').textContent =
+      ' · ' + estado.lecturas.length + (estado.lecturas.length === 1 ? ' frase' : ' frases');
+    if (estado.lecturas.length === 0) {
+      cont.innerHTML = '<p class="vacio">Aún no has guardado frases de libros. Toca ＋ para añadir la primera.</p>';
+      return;
+    }
+    estado.lecturas.slice().reverse().forEach(function (fr) {
+      const fila = document.createElement('div');
+      fila.className = 'lec-item';
+      fila.innerHTML =
+        '<div class="lec-texto"></div>' +
+        '<div class="lec-fuente"><span class="fuente"></span><span>' + botonEditar() +
+        '<button class="g-borrar" aria-label="Borrar frase">✕</button></span></div>';
+      fila.querySelector('.lec-texto').textContent = '“' + fr.texto + '”';
+      fila.querySelector('.fuente').textContent = fr.libro + (fr.autor ? ' · ' + fr.autor : '');
+      fila.querySelector('.g-editar').addEventListener('click', function () { abrirEditor('lectura', fr.id); });
+      fila.querySelector('.g-borrar').addEventListener('click', function () {
+        estado.lecturas = estado.lecturas.filter(function (x) { return x.id !== fr.id; });
+        guardar();
+        pintarLecturas();
+        ofrecerDeshacer('Frase eliminada', function () {
+          estado.lecturas.push(fr);
+          guardar();
+          pintarLecturas();
+        });
+      });
+      cont.appendChild(fila);
     });
   }
 
@@ -1430,10 +2091,10 @@
     });
   }
 
-  function agregarGasto(monto, nota) {
+  function agregarGasto(monto, nota, fecha) {
     estado.gastos.push({
       id: 'g' + Date.now(),
-      fecha: HOY,
+      fecha: fecha || HOY,
       hora: new Date().toTimeString().slice(0, 5),
       monto: monto,
       cat: catActiva,
@@ -1441,6 +2102,7 @@
     });
     guardar();
     pintarGastos();
+    pintarHistorialGastos();
   }
 
   // Gasto rápido (pestaña Hoy)
@@ -1466,15 +2128,83 @@
   montoInput.addEventListener('input', function () {
     btnAgregar.disabled = !(parseFloat(montoInput.value) > 0);
   });
+  const ngFecha = document.getElementById('ng-fecha');
+  ngFecha.value = HOY;
   btnAgregar.addEventListener('click', function () {
     const monto = parseFloat(montoInput.value);
     if (!(monto > 0)) return;
-    agregarGasto(monto, notaInput.value.trim());
+    agregarGasto(monto, notaInput.value.trim(), ngFecha.value || HOY);
     montoInput.value = '';
     notaInput.value = '';
+    ngFecha.value = HOY;
     btnAgregar.disabled = true;
     plegar('form-ng');
   });
+
+  // Historial completo de gastos (todos los días)
+  let buscarGasto = '';
+  document.getElementById('buscar-gasto').addEventListener('input', function () {
+    buscarGasto = this.value.trim().toLowerCase();
+    pintarHistorialGastos();
+  });
+  function pintarHistorialGastos() {
+    const cont = document.getElementById('gastos-historial');
+    if (!cont) return;
+    cont.innerHTML = '';
+    let lista = estado.gastos.slice();
+    if (buscarGasto) {
+      lista = lista.filter(function (g) {
+        return g.cat.toLowerCase().indexOf(buscarGasto) !== -1 ||
+          (g.nota && g.nota.toLowerCase().indexOf(buscarGasto) !== -1);
+      });
+    }
+    lista.sort(function (a, b) {
+      const ka = a.fecha + (a.hora || ''), kb = b.fecha + (b.hora || '');
+      return ka > kb ? -1 : ka < kb ? 1 : 0;
+    });
+    document.getElementById('mini-gastos-hist').textContent = ' · ' + lista.length + (lista.length === 1 ? ' gasto' : ' gastos');
+    if (lista.length === 0) {
+      cont.innerHTML = '<p class="vacio">' + (estado.gastos.length ? 'Ningún gasto coincide con tu búsqueda.' : 'Aún no has registrado gastos.') + '</p>';
+      return;
+    }
+    let grupo = '';
+    lista.forEach(function (g) {
+      if (g.fecha !== grupo) {
+        grupo = g.fecha;
+        let totalDia = 0;
+        lista.forEach(function (x) { if (x.fecha === g.fecha) totalDia += x.monto; });
+        const h = document.createElement('div');
+        h.className = 'nota-grupo';
+        h.style.cssText = 'display:flex; justify-content:space-between;';
+        h.innerHTML = '<span></span><span style="color:var(--money)">$ ' + fmtMoneda.format(totalDia) + '</span>';
+        h.querySelector('span').textContent = (g.fecha === HOY ? 'Hoy' : fechaLarga(g.fecha));
+        cont.appendChild(h);
+      }
+      const fila = document.createElement('div');
+      fila.className = 'gasto-item';
+      fila.innerHTML =
+        '<div style="flex:1"><div class="g-nota"></div><div class="g-cat"></div></div>' +
+        '<span class="g-monto">$ ' + fmtMoneda.format(g.monto) + '</span>' +
+        botonEditar() +
+        '<button class="g-borrar" aria-label="Borrar gasto">✕</button>';
+      fila.querySelector('.g-nota').textContent = g.nota || g.cat.replace(/^\S+\s/, '');
+      fila.querySelector('.g-cat').textContent = g.cat + (g.hora ? ' · ' + g.hora : '');
+      fila.querySelector('.g-editar').addEventListener('click', function () { abrirEditor('gasto', g.id); });
+      fila.querySelector('.g-borrar').addEventListener('click', function () {
+        estado.gastos = estado.gastos.filter(function (x) { return x.id !== g.id; });
+        guardar();
+        pintarGastos();
+        pintarHistorialGastos();
+        ofrecerDeshacer('Gasto eliminado', function () {
+          estado.gastos.push(g);
+          guardar();
+          pintarGastos();
+          pintarHistorialGastos();
+        });
+      });
+      cont.appendChild(fila);
+    });
+  }
 
   function claveAyerDe(clave) {
     const p = clave.split('-');
@@ -1502,19 +2232,23 @@
       const fila = document.createElement('div');
       fila.className = 'gasto-item';
       fila.innerHTML =
-        '<div><div class="g-nota"></div><div class="g-cat"></div></div>' +
+        '<div style="flex:1"><div class="g-nota"></div><div class="g-cat"></div></div>' +
         '<span class="g-monto">$ ' + fmtMoneda.format(g.monto) + '</span>' +
+        botonEditar() +
         '<button class="g-borrar" aria-label="Borrar gasto">✕</button>';
       fila.querySelector('.g-nota').textContent = g.nota || g.cat.replace(/^\S+\s/, '');
       fila.querySelector('.g-cat').textContent = g.cat + (g.hora ? ' · ' + g.hora : '');
+      fila.querySelector('.g-editar').addEventListener('click', function () { abrirEditor('gasto', g.id); });
       fila.querySelector('.g-borrar').addEventListener('click', function () {
         estado.gastos = estado.gastos.filter(function (x) { return x.id !== g.id; });
         guardar();
         pintarGastos();
+        pintarHistorialGastos();
         ofrecerDeshacer('Gasto eliminado', function () {
           estado.gastos.push(g);
           guardar();
           pintarGastos();
+          pintarHistorialGastos();
         });
       });
       cont.appendChild(fila);
@@ -1529,41 +2263,87 @@
   }
 
   // ---------- Resumen ----------
-  let semanaOffset = 0;
-  function ultimos7(offset) {
+  let resumenModo = 'semana';
+  let periodoOffset = 0;
+
+  function lunesDe(fecha) {
+    const x = new Date(fecha.getFullYear(), fecha.getMonth(), fecha.getDate());
+    const dow = (x.getDay() + 6) % 7; // 0 = lunes
+    x.setDate(x.getDate() - dow);
+    return x;
+  }
+  // Devuelve los días del período (semana Lun-Dom o mes real completo)
+  function diasDelPeriodo(modo, offset) {
     const dias = [];
-    const atras = (offset || 0) * 7;
-    for (let i = 6; i >= 0; i--) {
-      const d = new Date();
-      d.setDate(d.getDate() - i - atras);
-      dias.push({ clave: claveDia(d), letra: d.toLocaleDateString('es', { weekday: 'narrow' }) });
+    if (modo === 'semana') {
+      const lun = lunesDe(new Date());
+      lun.setDate(lun.getDate() - offset * 7);
+      for (let i = 0; i < 7; i++) {
+        const d = new Date(lun.getFullYear(), lun.getMonth(), lun.getDate() + i);
+        dias.push({ clave: claveDia(d), letra: d.toLocaleDateString('es', { weekday: 'narrow' }) });
+      }
+    } else {
+      const base = new Date();
+      const primero = new Date(base.getFullYear(), base.getMonth() - offset, 1);
+      const n = new Date(primero.getFullYear(), primero.getMonth() + 1, 0).getDate(); // 28/29/30/31
+      for (let i = 1; i <= n; i++) {
+        const d = new Date(primero.getFullYear(), primero.getMonth(), i);
+        dias.push({ clave: claveDia(d), letra: String(i) });
+      }
     }
     return dias;
   }
+  // Días del período que ya ocurrieron (para promedios y cumplimiento reales)
+  function transcurridos(dias) {
+    let n = 0;
+    dias.forEach(function (d) { if (d.clave <= HOY) n++; });
+    return n || dias.length;
+  }
+  function rotuloPeriodo(modo, offset, dias) {
+    if (modo === 'semana') {
+      return offset === 0 ? 'Esta semana' : fechaCorta(dias[0].clave) + ' – ' + fechaCorta(dias[dias.length - 1].clave);
+    }
+    const p = dias[0].clave.split('-');
+    const nombre = new Date(p[0], p[1] - 1, 1).toLocaleDateString('es', { month: 'long', year: 'numeric' });
+    const cap = nombre.charAt(0).toUpperCase() + nombre.slice(1);
+    return offset === 0 ? 'Este mes · ' + cap : cap;
+  }
+
+  document.querySelectorAll('#resumen-modo .tipo').forEach(function (chip) {
+    chip.addEventListener('click', function () {
+      resumenModo = chip.dataset.rmodo;
+      periodoOffset = 0;
+      document.querySelectorAll('#resumen-modo .tipo').forEach(function (c) { c.classList.toggle('activo', c === chip); });
+      pintarResumen();
+    });
+  });
   document.getElementById('sem-prev').addEventListener('click', function () {
-    semanaOffset++;
+    periodoOffset++;
     pintarResumen();
   });
   document.getElementById('sem-sig').addEventListener('click', function () {
-    if (semanaOffset > 0) {
-      semanaOffset--;
-      pintarResumen();
-    }
+    if (periodoOffset > 0) { periodoOffset--; pintarResumen(); }
   });
 
   function pintarResumen() {
-    const dias = ultimos7(semanaOffset);
-    document.getElementById('sem-sig').disabled = semanaOffset === 0;
-    document.getElementById('sem-rotulo').textContent = semanaOffset === 0
-      ? 'Esta semana'
-      : fechaCorta(dias[0].clave) + ' – ' + fechaCorta(dias[6].clave);
+    const esSemana = resumenModo === 'semana';
+    const dias = diasDelPeriodo(resumenModo, periodoOffset);
+    const claves = dias.map(function (d) { return d.clave; });
+    const cursando = periodoOffset === 0;
+    const baseDias = cursando ? transcurridos(dias) : dias.length;
 
-    // Grid de hábitos
+    document.getElementById('sem-sig').disabled = periodoOffset === 0;
+    document.getElementById('sem-rotulo').textContent = rotuloPeriodo(resumenModo, periodoOffset, dias);
+    document.getElementById('grid-titulo').textContent = esSemana ? 'Hábitos de la semana' : 'Hábitos del mes';
+    document.getElementById('stats-titulo').textContent = cursando ? (esSemana ? 'Esta semana' : 'Este mes') : (esSemana ? 'Semana' : 'Mes');
+    document.getElementById('total-rotulo').textContent = esSemana ? 'Total semana' : 'Total mes';
+
+    // --- Grid de hábitos ---
     const grid = document.getElementById('semana-grid');
     grid.innerHTML = '';
     if (estado.habitos.length === 0) {
-      grid.innerHTML = '<p class="vacio">Agrega hábitos en Ajustes para ver tu semana.</p>';
-    } else {
+      grid.innerHTML = '<p class="vacio">Agrega hábitos en Ajustes para ver tu progreso.</p>';
+    } else if (esSemana) {
       const cab = document.createElement('div');
       cab.className = 'sg-fila';
       cab.innerHTML = '<span></span>' + dias.map(function (d) {
@@ -1586,28 +2366,42 @@
         });
         grid.appendChild(fila);
       });
+    } else {
+      // Mes: barra de cumplimiento por hábito (cabe cualquier cantidad de días)
+      estado.habitos.forEach(function (h) {
+        let hechosH = 0;
+        claves.forEach(function (c) {
+          if (c <= HOY && estado.dias[c] && estado.dias[c].habitos[h.id]) hechosH++;
+        });
+        const fila = document.createElement('div');
+        fila.className = 'cat-barra-fila';
+        fila.innerHTML =
+          '<span class="nombre"></span>' +
+          '<div class="cat-barra"><div style="width:' + (baseDias ? Math.round(hechosH / baseDias * 100) : 0) + '%; background: var(--accent)"></div></div>' +
+          '<span class="monto">' + hechosH + '/' + baseDias + '</span>';
+        fila.querySelector('.nombre').textContent = h.nombre;
+        grid.appendChild(fila);
+      });
     }
 
-    // Stats de la semana
+    // --- Stats de hábitos del período ---
     const fechasGasto = {};
     estado.gastos.forEach(function (g) { fechasGasto[g.fecha] = true; });
-    const fechasNota = {};
-    estado.notas.forEach(function (n) { fechasNota[n.fecha] = true; });
+    const fechasAct = {};
+    estado.notas.forEach(function (n) { fechasAct[n.fecha] = true; });
     estado.tareas.forEach(function (t) {
-      fechasNota[t.fecha] = true;
-      if (t.fechaHecha) fechasNota[t.fechaHecha] = true;
+      fechasAct[t.fecha] = true;
+      if (t.fechaHecha) fechasAct[t.fechaHecha] = true;
     });
-    let hechos = 0, posibles = 0, activos = 0;
-    dias.forEach(function (d) {
-      const dia = estado.dias[d.clave];
-      posibles += estado.habitos.length;
-      let activo = !!fechasGasto[d.clave] || !!fechasNota[d.clave];
-      if (dia) {
-        hechos += Object.keys(dia.habitos).length;
-        if (Object.keys(dia.habitos).length) activo = true;
-      }
+    let hechos = 0, activos = 0;
+    claves.forEach(function (c) {
+      if (c > HOY) return;
+      const dia = estado.dias[c];
+      let activo = !!fechasGasto[c] || !!fechasAct[c];
+      if (dia && Object.keys(dia.habitos).length) { hechos += Object.keys(dia.habitos).length; activo = true; }
       if (activo) activos++;
     });
+    const posibles = estado.habitos.length * baseDias;
     const pct = posibles ? Math.round((hechos / posibles) * 100) : 0;
     let mejorRacha = 0;
     estado.habitos.forEach(function (h) {
@@ -1617,28 +2411,38 @@
     document.getElementById('stats-semana').innerHTML =
       '<div class="stat"><div class="valor">' + pct + '%</div><div class="desc">hábitos cumplidos</div></div>' +
       '<div class="stat"><div class="valor">🔥 ' + mejorRacha + '</div><div class="desc">mejor racha</div></div>' +
-      '<div class="stat"><div class="valor">' + activos + '/7</div><div class="desc">días activos</div></div>';
+      '<div class="stat"><div class="valor">' + activos + '/' + baseDias + '</div><div class="desc">días activos</div></div>';
 
-    // Gastos por categoría
-    const claves = dias.map(function (d) { return d.clave; });
-    const semana = estado.gastos.filter(function (g) { return claves.indexOf(g.fecha) !== -1; });
+    // --- Financiero del período ---
+    const gastosP = estado.gastos.filter(function (g) { return claves.indexOf(g.fecha) !== -1; });
     const porCat = {};
     let total = 0;
-    semana.forEach(function (g) {
-      porCat[g.cat] = (porCat[g.cat] || 0) + g.monto;
-      total += g.monto;
+    gastosP.forEach(function (g) { porCat[g.cat] = (porCat[g.cat] || 0) + g.monto; total += g.monto; });
+
+    const totalesPorDia = {};
+    gastosP.forEach(function (g) { totalesPorDia[g.fecha] = (totalesPorDia[g.fecha] || 0) + g.monto; });
+    let diaMasAlto = 0, claveMasAlta = '';
+    Object.keys(totalesPorDia).forEach(function (f) {
+      if (totalesPorDia[f] > diaMasAlto) { diaMasAlto = totalesPorDia[f]; claveMasAlta = f; }
     });
+    const promedio = baseDias ? Math.round(total / baseDias) : 0;
+    document.getElementById('fin-stats').innerHTML =
+      '<div class="stat"><div class="valor">$ ' + fmtMoneda.format(promedio) + '</div><div class="desc">promedio por día</div></div>' +
+      '<div class="stat"><div class="valor">$ ' + fmtMoneda.format(diaMasAlto) + '</div><div class="desc">' + (claveMasAlta ? 'día más alto · ' + fechaCorta(claveMasAlta) : 'día más alto') + '</div></div>' +
+      '<div class="stat"><div class="valor">' + gastosP.length + '</div><div class="desc">gastos</div></div>';
+
     const cont = document.getElementById('cat-resumen');
     cont.innerHTML = '';
     const entradas = Object.keys(porCat).map(function (c) { return [c, porCat[c]]; })
       .sort(function (a, b) { return b[1] - a[1]; });
     if (entradas.length === 0) {
-      cont.innerHTML = '<p class="vacio">Sin gastos esta semana.</p>';
+      cont.innerHTML = '<p class="vacio">Sin gastos en este período.</p>';
     }
     const max = entradas.length ? entradas[0][1] : 1;
     entradas.forEach(function (par) {
       const cat = par[0], monto = par[1];
-      const tope = estado.presupuestos[cat];
+      const presu = estado.presupuestos[cat] || {};
+      const tope = esSemana ? presu.semanal : presu.mensual;
       const fila = document.createElement('div');
       fila.className = 'cat-barra-fila';
       let ancho, colorCss = '', montoTxt = '$ ' + fmtMoneda.format(monto);
@@ -1658,36 +2462,23 @@
     });
     document.getElementById('total-semana').textContent = '$ ' + fmtMoneda.format(total);
 
-    // Financiero: indicadores de la semana
-    const totalesPorDia = {};
-    semana.forEach(function (g) { totalesPorDia[g.fecha] = (totalesPorDia[g.fecha] || 0) + g.monto; });
-    let diaMasAlto = 0;
-    Object.keys(totalesPorDia).forEach(function (f) {
-      if (totalesPorDia[f] > diaMasAlto) diaMasAlto = totalesPorDia[f];
-    });
-    document.getElementById('fin-stats').innerHTML =
-      '<div class="stat"><div class="valor">$ ' + fmtMoneda.format(Math.round(total / 7)) + '</div><div class="desc">promedio por día</div></div>' +
-      '<div class="stat"><div class="valor">$ ' + fmtMoneda.format(diaMasAlto) + '</div><div class="desc">día más alto</div></div>' +
-      '<div class="stat"><div class="valor">' + semana.length + '</div><div class="desc">gastos registrados</div></div>';
-
-    // Resúmenes temáticos: uno por hábito (lectura, ejercicio, etc.)
+    // --- Resúmenes temáticos por hábito, según el período ---
     const contTematico = document.getElementById('resumen-tematico');
     contTematico.innerHTML = '';
+    const etiquetaP = esSemana ? 'esta semana' : 'este mes';
     estado.habitos.forEach(function (h) {
-      let n7 = 0, n30 = 0;
+      let nP = 0;
       const conteoVar = {};
-      for (let i = 0; i < 30; i++) {
-        const d = new Date();
-        d.setDate(d.getDate() - i);
-        const dd = estado.dias[claveDia(d)];
+      claves.forEach(function (c) {
+        if (c > HOY) return;
+        const dd = estado.dias[c];
         if (dd && dd.habitos[h.id]) {
-          n30++;
-          if (i < 7) n7++;
+          nP++;
           if (dd.variantes && dd.variantes[h.id]) {
             conteoVar[dd.variantes[h.id]] = (conteoVar[dd.variantes[h.id]] || 0) + 1;
           }
         }
-      }
+      });
       let topVar = null;
       Object.keys(conteoVar).forEach(function (v) {
         if (!topVar || conteoVar[v] > conteoVar[topVar]) topVar = v;
@@ -1698,14 +2489,14 @@
         '<h2></h2>' +
         '<div class="stats-fila">' +
         '<div class="stat"><div class="valor">🔥 ' + racha(h.id) + '</div><div class="desc">racha actual</div></div>' +
-        '<div class="stat"><div class="valor">' + n7 + '/7</div><div class="desc">esta semana</div></div>' +
-        '<div class="stat"><div class="valor">' + n30 + '/30</div><div class="desc">último mes</div></div>' +
+        '<div class="stat"><div class="valor">' + nP + '/' + baseDias + '</div><div class="desc">' + etiquetaP + '</div></div>' +
+        '<div class="stat"><div class="valor">' + (baseDias ? Math.round(nP / baseDias * 100) : 0) + '%</div><div class="desc">cumplimiento</div></div>' +
         '</div>' +
-        (topVar ? '<p class="ayuda" style="margin-top: 10px;" id="top-var"></p>' : '');
+        (topVar ? '<p class="ayuda ayuda-topvar" style="margin-top: 10px;"></p>' : '');
       card.querySelector('h2').textContent = 'Resumen · ' + h.nombre;
       if (topVar) {
-        card.querySelector('#top-var').textContent =
-          'Lo que más practicas: ' + topVar + ' (' + conteoVar[topVar] + (conteoVar[topVar] === 1 ? ' vez' : ' veces') + ' en 30 días)';
+        card.querySelector('.ayuda-topvar').textContent =
+          'Lo que más practicas: ' + topVar + ' (' + conteoVar[topVar] + (conteoVar[topVar] === 1 ? ' vez' : ' veces') + ' ' + etiquetaP + ')';
       }
       contTematico.appendChild(card);
     });
@@ -1713,7 +2504,7 @@
       const nota = document.createElement('p');
       nota.className = 'ayuda';
       nota.style.padding = '0 6px';
-      nota.textContent = 'Estos resúmenes se irán profundizando a medida que acumules más días de datos.';
+      nota.textContent = 'Estos resúmenes se irán profundizando a medida que acumules más datos.';
       contTematico.appendChild(nota);
     }
   }
@@ -1733,10 +2524,12 @@
       fila.innerHTML =
         '<span class="nombre"></span>' +
         (r > 0 ? '<span class="aj-racha">🔥 ' + r + '</span>' : '') +
+        '<button class="aj-editar g-editar" aria-label="Renombrar hábito">✎</button>' +
         '<button class="aj-var" aria-label="Configurar variantes">🔀</button>' +
         '<button class="aj-borrar" aria-label="Eliminar hábito">✕</button>';
       fila.querySelector('.nombre').textContent = h.nombre +
         (h.variantes && h.variantes.length ? ' · ' + h.variantes.length + ' variantes' : '');
+      fila.querySelector('.aj-editar').addEventListener('click', function () { abrirEditor('habito', h.id); });
       fila.querySelector('.aj-var').addEventListener('click', function () {
         varEditando = varEditando === h.id ? null : h.id;
         pintarAjustes();
@@ -1827,20 +2620,30 @@
   function pintarPresupuestos() {
     const cont = document.getElementById('lista-presu');
     cont.innerHTML = '';
+    const cab = document.createElement('div');
+    cab.style.cssText = 'display:flex; align-items:center; gap:8px; font-size:0.68rem; color:var(--ink-soft); text-transform:uppercase; letter-spacing:0.05em;';
+    cab.innerHTML = '<span style="flex:1"></span><span style="width:96px; text-align:center;">Semanal</span><span style="width:96px; text-align:center;">Mensual</span>';
+    cont.appendChild(cab);
     CATEGORIAS.forEach(function (c) {
+      const presu = estado.presupuestos[c] || {};
       const fila = document.createElement('div');
-      fila.style.cssText = 'display:flex; align-items:center; gap:10px;';
+      fila.style.cssText = 'display:flex; align-items:center; gap:8px;';
       fila.innerHTML =
-        '<span style="flex:1; font-size:0.9rem;"></span>' +
-        '<input type="number" inputmode="decimal" placeholder="$ 0" style="width:130px; height:42px; padding:0 10px; border-radius:10px; border:1px solid var(--line); background:var(--surface); color:var(--ink); text-align:right; font-variant-numeric:tabular-nums; font-size:0.95rem;">';
+        '<span style="flex:1; font-size:0.85rem;"></span>' +
+        '<input class="presu-inp" data-tipo="semanal" type="number" inputmode="decimal" placeholder="—">' +
+        '<input class="presu-inp" data-tipo="mensual" type="number" inputmode="decimal" placeholder="—">';
       fila.querySelector('span').textContent = c;
-      const inp = fila.querySelector('input');
-      if (estado.presupuestos[c]) inp.value = estado.presupuestos[c];
-      inp.addEventListener('change', function () {
-        const v = parseFloat(inp.value);
-        if (v > 0) estado.presupuestos[c] = v;
-        else delete estado.presupuestos[c];
-        guardar();
+      const inps = fila.querySelectorAll('input');
+      if (presu.semanal) inps[0].value = presu.semanal;
+      if (presu.mensual) inps[1].value = presu.mensual;
+      Array.prototype.forEach.call(inps, function (inp) {
+        inp.addEventListener('change', function () {
+          const v = parseFloat(inp.value);
+          if (!estado.presupuestos[c]) estado.presupuestos[c] = { semanal: null, mensual: null };
+          estado.presupuestos[c][inp.dataset.tipo] = v > 0 ? v : null;
+          if (!estado.presupuestos[c].semanal && !estado.presupuestos[c].mensual) delete estado.presupuestos[c];
+          guardar();
+        });
       });
       cont.appendChild(fila);
     });
@@ -2085,6 +2888,7 @@
         ahora.toLocaleDateString('es', { weekday: 'long', day: 'numeric', month: 'long' });
       pintarHabitos();
       pintarGastos();
+      pintarHistorialGastos();
       pintarNotasHoy();
       pintarTareas();
       pintarEventos();
@@ -2100,6 +2904,7 @@
   pintarHabitos();
   pintarCats();
   pintarGastos();
+  pintarHistorialGastos();
   pintarNotasHoy();
   pintarTareas();
   pintarEventos();
