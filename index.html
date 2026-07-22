@@ -261,6 +261,9 @@
   .hab-c-nombre { display: block; width: 66px; font-size: 0.66rem; color: var(--ink-soft); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; text-align: center; }
   .hab-circulo.hecho .hab-c-nombre { color: var(--ink); }
   .hab-c-racha { font-size: 0.6rem; color: var(--accent); min-height: 0.8em; }
+  .emoji-picker { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; }
+  .emoji-op { width: 40px; height: 40px; border-radius: 10px; border: 1px solid var(--line); background: var(--surface-2); font-size: 1.2rem; }
+  .emoji-op.activo { border-color: var(--accent); background: var(--accent-soft); }
   /* Línea de tiempo de la agenda */
   .timeline { display: flex; flex-direction: column; }
   .tl-item { display: flex; align-items: flex-start; gap: 10px; padding: 5px 0; }
@@ -1016,9 +1019,11 @@
           <button class="abrir" data-plegable="form-habito" aria-expanded="false" aria-label="Añadir un hábito">＋</button>
         </div>
         <div class="plegable oculto" id="form-habito">
+          <label class="ayuda" style="display:block; margin:0 0 6px;">Elige un emoji (obligatorio)</label>
+          <div class="emoji-picker" id="emoji-nuevo"></div>
           <div class="nuevo-habito">
-            <input id="nuevo-habito-nombre" type="text" placeholder="Nuevo hábito (ej. 🏃 Correr)" maxlength="40">
-            <button id="agregar-habito">Añadir</button>
+            <input id="nuevo-habito-nombre" type="text" placeholder="Nombre (ej. Correr)" maxlength="30">
+            <button id="agregar-habito" disabled>Añadir</button>
           </div>
           <p class="ayuda">Consejo de coach: máximo 5 hábitos a la vez. Es mejor cumplir 3 todos los días que fallar en 8.</p>
         </div>
@@ -1097,14 +1102,38 @@
   const CLAVE = 'vida-tracker-v1';
   const CATEGORIAS = ['🍔 Comida', '🚌 Transporte', '🎉 Ocio', '🏠 Hogar', '🛒 Compras', '📦 Otro'];
   const fmtMoneda = new Intl.NumberFormat('es-CO', { maximumFractionDigits: 0 });
+  const EMOJIS_HABITO = ['🏃','💪','🧘','📖','📚','✍️','💧','🥗','😴','🎯','🧠','🚴','🚶','🙏','🎨','🎵','🧹','💰','☀️','🌙','⏰','🚭','🍎','🧴','⚽','🎸','💻','🌱'];
+
+  function nombreHabito(h) { return (h.emoji ? h.emoji + ' ' : '') + h.nombre; }
+  function inicialHabito(h) {
+    if (h.emoji) return h.emoji;
+    const m = (h.nombre || '').match(/[A-Za-z0-9ÁÉÍÓÚÜáéíóúüÑñ]/);
+    return m ? m[0].toUpperCase() : '•';
+  }
+  function construirEmojiPicker(cont, sel, onSelect) {
+    cont.innerHTML = '';
+    cont.className = 'emoji-picker';
+    EMOJIS_HABITO.forEach(function (e) {
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'emoji-op' + (e === sel ? ' activo' : '');
+      b.textContent = e;
+      b.addEventListener('click', function () {
+        Array.prototype.forEach.call(cont.querySelectorAll('.emoji-op'), function (x) { x.classList.remove('activo'); });
+        b.classList.add('activo');
+        onSelect(e);
+      });
+      cont.appendChild(b);
+    });
+  }
 
   // ---------- Estado ----------
   function estadoInicial() {
     return {
       habitos: [
-        { id: 'h1', nombre: '🏃 Ejercicio' },
-        { id: 'h2', nombre: '📖 Leer' },
-        { id: 'h3', nombre: '🧘 Meditar' },
+        { id: 'h1', nombre: 'Ejercicio', emoji: '🏃' },
+        { id: 'h2', nombre: 'Leer', emoji: '📖' },
+        { id: 'h3', nombre: 'Meditar', emoji: '🧘' },
       ],
       dias: {},      // 'YYYY-MM-DD' -> { habitos: {id:true} }
       gastos: [],    // { id, fecha, monto, cat, nota }
@@ -1129,6 +1158,18 @@
   }
   if (!estado || typeof estado !== 'object') estado = estadoInicial();
   if (!estado.habitos) estado.habitos = [];
+  // Migración: separar el emoji del nombre (antes venían juntos, ej. "🏃 Ejercicio")
+  estado.habitos.forEach(function (h) {
+    if (typeof h.emoji === 'undefined') {
+      const partes = h.nombre.split(' ');
+      if (partes.length > 1 && !/[A-Za-z0-9ÁÉÍÓÚÜáéíóúüÑñ]/.test(partes[0])) {
+        h.emoji = partes[0];
+        h.nombre = partes.slice(1).join(' ');
+      } else {
+        h.emoji = '';
+      }
+    }
+  });
   if (!estado.dias) estado.dias = {};
   if (!estado.gastos) estado.gastos = [];
   if (!estado.notas) {
@@ -1474,7 +1515,7 @@
         '<label>Libro</label><input id="ed-libro" type="text" maxlength="80"><label>Autor</label><input id="ed-autor" type="text" maxlength="60">';
     } else if (tipo === 'habito') {
       o = buscarPorId(estado.habitos, id); if (!o) return;
-      html = '<h3>Editar hábito</h3><label>Nombre (incluye el emoji)</label><input id="ed-texto" type="text" maxlength="40">';
+      html = '<h3>Editar hábito</h3><label>Emoji (obligatorio)</label><div id="ed-emoji"></div><label>Nombre</label><input id="ed-texto" type="text" maxlength="30">';
     } else if (tipo === 'tiempo') {
       o = buscarPorId(estado.tiempos, id); if (!o) return;
       html = '<h3>Editar tiempo</h3><label>Actividad</label><input id="ed-texto" type="text" maxlength="40">' +
@@ -1497,7 +1538,7 @@
     else if (tipo === 'tarea') { set('ed-texto', o.texto); set('ed-limite', o.limite); }
     else if (tipo === 'evento') { set('ed-texto', o.titulo); set('ed-fecha', o.fecha); set('ed-hora', o.hora); document.getElementById('ed-anual').checked = !!o.anual; }
     else if (tipo === 'lectura') { set('ed-texto', o.texto); set('ed-libro', o.libro); set('ed-autor', o.autor); }
-    else if (tipo === 'habito') { set('ed-texto', o.nombre); }
+    else if (tipo === 'habito') { set('ed-texto', o.nombre); editando.emoji = o.emoji || ''; construirEmojiPicker(document.getElementById('ed-emoji'), o.emoji || '', function (e) { editando.emoji = e; }); }
     else if (tipo === 'tiempo') { set('ed-texto', o.actividad); set('ed-min', o.minutos); set('ed-detalle', o.detalle); set('ed-fecha', o.fecha); }
     else if (tipo === 'reto') { set('ed-texto', o.nombre); set('ed-meta', o.tipo === 'abstinencia' ? o.metaDias : Math.round(o.metaMinutos / 60)); set('ed-fecha', o.inicio); }
 
@@ -1542,8 +1583,9 @@
       o.texto = t; o.libro = lib; o.autor = val('ed-autor').trim();
     } else if (tipo === 'habito') {
       const o = buscarPorId(estado.habitos, id); if (!o) return;
-      const t = val('ed-texto').trim(); if (!t) return;
+      const t = val('ed-texto').trim(); if (!t || !editando.emoji) return;
       o.nombre = t;
+      o.emoji = editando.emoji;
     } else if (tipo === 'tiempo') {
       const o = buscarPorId(estado.tiempos, id); if (!o) return;
       const t = val('ed-texto').trim(), m = parseInt(val('ed-min'), 10);
@@ -1636,7 +1678,7 @@
         dia.variantes[h.id] = variante;
       }
       if (minutos > 0) {
-        estado.tiempos.push({ id: 'ti' + Date.now(), fecha: HOY, actividad: h.nombre, minutos: minutos, detalle: variante || '', habitoId: h.id });
+        estado.tiempos.push({ id: 'ti' + Date.now(), fecha: HOY, actividad: nombreHabito(h), minutos: minutos, detalle: variante || '', habitoId: h.id });
       }
       habitoAbierto = null;
       guardar();
@@ -1647,10 +1689,6 @@
 
     function circuloHabito(h) {
       const hecho = !!dia.habitos[h.id];
-      // Si el hábito empieza con letra/número, no hay emoji: muestra su inicial en el círculo
-      const esTexto = /^[A-Za-z0-9ÁÉÍÓÚÜáéíóúüÑñ]/.test(h.nombre.trim());
-      const emoji = esTexto ? h.nombre.trim().charAt(0).toUpperCase() : h.nombre.split(' ')[0];
-      const label = esTexto ? h.nombre : (h.nombre.replace(/^\S+\s*/, '') || h.nombre);
       const variante = hecho && dia.variantes && dia.variantes[h.id];
       const r = racha(h.id);
       const c = document.createElement('button');
@@ -1660,8 +1698,8 @@
         '<span class="hab-c-ring">' + (hecho ? '✓' : '') + '</span>' +
         '<span class="hab-c-nombre"></span>' +
         '<span class="hab-c-racha">' + (r > 0 ? '🔥 ' + r : ' ') + '</span>';
-      if (!hecho) c.querySelector('.hab-c-ring').textContent = emoji;
-      c.querySelector('.hab-c-nombre').textContent = label + (variante ? ' · ' + variante : '');
+      if (!hecho) c.querySelector('.hab-c-ring').textContent = inicialHabito(h);
+      c.querySelector('.hab-c-nombre').textContent = h.nombre + (variante ? ' · ' + variante : '');
       c.addEventListener('click', function () {
         if (hecho) {
           delete dia.habitos[h.id];
@@ -1725,7 +1763,7 @@
       const fila = document.createElement('div'); fila.className = 'gr-fila'; fila.style.marginTop = '10px';
       const btnCr = document.createElement('button'); btnCr.className = 'btn-secundario'; btnCr.style.flex = '1'; btnCr.textContent = '▶ Cronómetro';
       btnCr.addEventListener('click', function () {
-        estado.timer = { actividad: h.nombre, detalle: selVar || '', inicio: Date.now(), habitoId: h.id };
+        estado.timer = { actividad: nombreHabito(h), detalle: selVar || '', inicio: Date.now(), habitoId: h.id };
         habitoAbierto = null; guardar(); pintarHabitos(); pintarTiempo();
       });
       btnOk.className = 'btn-primario'; btnOk.style.flex = '1'; btnOk.textContent = 'Marcar hecho'; btnOk.disabled = true;
@@ -2396,7 +2434,7 @@
   function pintarTiempo() {
     const dl = document.getElementById('lista-actividades');
     const nombres = {};
-    estado.habitos.forEach(function (h) { nombres[h.nombre] = true; });
+    estado.habitos.forEach(function (h) { nombres[nombreHabito(h)] = true; });
     estado.tiempos.forEach(function (t) { nombres[t.actividad] = true; });
     dl.innerHTML = Object.keys(nombres).map(function (n) { return '<option value="' + n.replace(/"/g, '&quot;') + '">'; }).join('');
 
@@ -2919,7 +2957,7 @@
         fila.className = 'sg-fila';
         const nombre = document.createElement('span');
         nombre.className = 'sg-nombre';
-        nombre.textContent = h.nombre;
+        nombre.textContent = nombreHabito(h);
         fila.appendChild(nombre);
         dias.forEach(function (d) {
           const celda = document.createElement('span');
@@ -2943,7 +2981,7 @@
           '<span class="nombre"></span>' +
           '<div class="cat-barra"><div style="width:' + (baseDias ? Math.round(hechosH / baseDias * 100) : 0) + '%; background: var(--accent)"></div></div>' +
           '<span class="monto">' + hechosH + '/' + baseDias + '</span>';
-        fila.querySelector('.nombre').textContent = h.nombre;
+        fila.querySelector('.nombre').textContent = nombreHabito(h);
         grid.appendChild(fila);
       });
     }
@@ -3081,7 +3119,7 @@
         '<div class="stat"><div class="valor">' + (baseDias ? Math.round(nP / baseDias * 100) : 0) + '%</div><div class="desc">cumplimiento</div></div>' +
         '</div>' +
         (topVar ? '<p class="ayuda ayuda-topvar" style="margin-top: 10px;"></p>' : '');
-      card.querySelector('h2').textContent = 'Resumen · ' + h.nombre;
+      card.querySelector('h2').textContent = 'Resumen · ' + nombreHabito(h);
       if (topVar) {
         card.querySelector('.ayuda-topvar').textContent =
           'Lo que más practicas: ' + topVar + ' (' + conteoVar[topVar] + (conteoVar[topVar] === 1 ? ' vez' : ' veces') + ' ' + etiquetaP + ')';
@@ -3115,7 +3153,7 @@
         '<button class="aj-editar g-editar" aria-label="Renombrar hábito">✎</button>' +
         '<button class="aj-var" aria-label="Configurar variantes">🔀</button>' +
         '<button class="aj-borrar" aria-label="Eliminar hábito">✕</button>';
-      fila.querySelector('.nombre').textContent = h.nombre +
+      fila.querySelector('.nombre').textContent = nombreHabito(h) +
         (h.variantes && h.variantes.length ? ' · ' + h.variantes.length + ' variantes' : '');
       fila.querySelector('.aj-editar').addEventListener('click', function () { abrirEditor('habito', h.id); });
       fila.querySelector('.aj-var').addEventListener('click', function () {
@@ -3237,13 +3275,21 @@
     });
   }
 
-  document.getElementById('agregar-habito').addEventListener('click', function () {
-    const input = document.getElementById('nuevo-habito-nombre');
-    const nombre = input.value.trim();
-    if (!nombre) return;
-    estado.habitos.push({ id: 'h' + Date.now(), nombre: nombre });
+  let emojiNuevo = '';
+  const inputNuevoHab = document.getElementById('nuevo-habito-nombre');
+  const btnNuevoHab = document.getElementById('agregar-habito');
+  function validarNuevoHab() { btnNuevoHab.disabled = !(emojiNuevo && inputNuevoHab.value.trim()); }
+  construirEmojiPicker(document.getElementById('emoji-nuevo'), '', function (e) { emojiNuevo = e; validarNuevoHab(); });
+  inputNuevoHab.addEventListener('input', validarNuevoHab);
+  btnNuevoHab.addEventListener('click', function () {
+    const nombre = inputNuevoHab.value.trim();
+    if (!nombre || !emojiNuevo) return;
+    estado.habitos.push({ id: 'h' + Date.now(), nombre: nombre, emoji: emojiNuevo });
     guardar();
-    input.value = '';
+    inputNuevoHab.value = '';
+    emojiNuevo = '';
+    construirEmojiPicker(document.getElementById('emoji-nuevo'), '', function (e) { emojiNuevo = e; validarNuevoHab(); });
+    btnNuevoHab.disabled = true;
     pintarAjustes();
     pintarHabitos();
     plegar('form-habito');
