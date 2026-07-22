@@ -253,11 +253,12 @@
     width: 54px; height: 54px; border-radius: 50%;
     border: 2px solid var(--line); background: var(--surface);
     display: grid; place-items: center; font-size: 1.4rem;
+    overflow: hidden; line-height: 1;
     transition: transform 0.12s;
   }
   .hab-circulo.hecho .hab-c-ring { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
   .hab-circulo.activo .hab-c-ring { border-color: var(--accent); transform: scale(1.06); }
-  .hab-c-nombre { font-size: 0.66rem; color: var(--ink-soft); max-width: 66px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; text-align: center; }
+  .hab-c-nombre { display: block; width: 66px; font-size: 0.66rem; color: var(--ink-soft); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; text-align: center; }
   .hab-circulo.hecho .hab-c-nombre { color: var(--ink); }
   .hab-c-racha { font-size: 0.6rem; color: var(--accent); min-height: 0.8em; }
   /* Línea de tiempo de la agenda */
@@ -282,6 +283,12 @@
   .reto-check { flex: 1; height: 44px; border-radius: 12px; font-weight: 600; background: var(--surface-2); color: var(--ink); }
   .reto-check.ok { background: var(--accent); color: var(--accent-ink); }
   .reto-panel { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; align-items: center; }
+  .reto-hoy { padding: 10px 0; border-bottom: 1px solid var(--line); }
+  .reto-hoy:last-child { border-bottom: none; }
+  .reto-hoy-top { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+  .reto-hoy-nombre { font-size: 0.95rem; font-weight: 500; }
+  .reto-hoy-prog { font-size: 0.78rem; color: var(--ink-soft); font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .reto-hoy-acc { margin-top: 8px; display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
   .deshacer {
     position: fixed;
     left: 50%;
@@ -710,6 +717,11 @@
         <h2>Hábitos</h2>
         <div id="lista-habitos"></div>
         <div class="dia-completo oculto" id="dia-completo">🎉 ¡Día completo!</div>
+      </section>
+
+      <section class="card oculto" id="card-retos-hoy">
+        <h2>🎯 Retos de hoy</h2>
+        <div id="retos-hoy"></div>
       </section>
 
       <section class="card" id="card-tiempo">
@@ -1635,8 +1647,10 @@
 
     function circuloHabito(h) {
       const hecho = !!dia.habitos[h.id];
-      const emoji = h.nombre.split(' ')[0];
-      const label = h.nombre.replace(/^\S+\s*/, '') || h.nombre;
+      // Si el hábito empieza con letra/número, no hay emoji: muestra su inicial en el círculo
+      const esTexto = /^[A-Za-z0-9ÁÉÍÓÚÜáéíóúüÑñ]/.test(h.nombre.trim());
+      const emoji = esTexto ? h.nombre.trim().charAt(0).toUpperCase() : h.nombre.split(' ')[0];
+      const label = esTexto ? h.nombre : (h.nombre.replace(/^\S+\s*/, '') || h.nombre);
       const variante = hecho && dia.variantes && dia.variantes[h.id];
       const r = racha(h.id);
       const c = document.createElement('button');
@@ -2499,12 +2513,68 @@
     pintarTiempo();
   }
 
+  function retoCheckIn(r) {
+    if (r.dias[HOY]) delete r.dias[HOY]; else r.dias[HOY] = true;
+    guardar();
+    pintarRetos();
+  }
+
+  function retosActivos() {
+    return estado.retos.filter(function (r) {
+      if (r.tipo === 'abstinencia') return rachaReto(r) < r.metaDias;
+      return (r.acumulado || 0) < r.metaMinutos;
+    });
+  }
+
+  function pintarRetosHoy() {
+    const card = document.getElementById('card-retos-hoy');
+    const cont = document.getElementById('retos-hoy');
+    if (!cont) return;
+    cont.innerHTML = '';
+    const activos = retosActivos();
+    card.classList.toggle('oculto', activos.length === 0);
+    activos.forEach(function (r) {
+      const row = document.createElement('div');
+      row.className = 'reto-hoy';
+      const top = document.createElement('div');
+      top.className = 'reto-hoy-top';
+      const nom = document.createElement('span'); nom.className = 'reto-hoy-nombre';
+      nom.textContent = (r.tipo === 'abstinencia' ? '🚫 ' : '📚 ') + r.nombre;
+      const prog = document.createElement('span'); prog.className = 'reto-hoy-prog';
+      prog.textContent = r.tipo === 'abstinencia'
+        ? '🔥 ' + rachaReto(r) + '/' + r.metaDias
+        : fmtDur(r.acumulado || 0) + ' / ' + Math.round(r.metaMinutos / 60) + 'h';
+      top.appendChild(nom); top.appendChild(prog);
+      row.appendChild(top);
+      const acc = document.createElement('div'); acc.className = 'reto-hoy-acc';
+      if (r.tipo === 'abstinencia') {
+        const hoyOk = !!r.dias[HOY];
+        const btn = document.createElement('button');
+        btn.className = 'reto-check' + (hoyOk ? ' ok' : '');
+        btn.style.flex = '1';
+        btn.textContent = hoyOk ? '✓ Mantenido hoy' : 'Lo mantuve hoy';
+        btn.addEventListener('click', function () { retoCheckIn(r); });
+        acc.appendChild(btn);
+      } else {
+        [15, 30, 60].forEach(function (m) {
+          const b = document.createElement('button'); b.className = 'tipo'; b.textContent = '+' + (m < 60 ? m + 'm' : '1h');
+          b.addEventListener('click', function () { avanzarReto(r, m); });
+          acc.appendChild(b);
+        });
+      }
+      row.appendChild(acc);
+      cont.appendChild(row);
+    });
+  }
+
   function pintarRetos() {
     const cont = document.getElementById('retos-lista');
     cont.innerHTML = '';
     document.getElementById('mini-retos').textContent = estado.retos.length ? ' · ' + estado.retos.length : '';
     if (estado.retos.length === 0) {
       cont.innerHTML = '<p class="vacio">Aún no tienes retos. Toca ＋ para crear el primero (ej. 90 días sin redes, o estudiar CCNA 60 h).</p>';
+      pintarRetosHoy();
+      pintarPanelDia();
       return;
     }
     estado.retos.forEach(function (r) {
@@ -2546,11 +2616,7 @@
           const btn = document.createElement('button');
           btn.className = 'reto-check' + (hoyOk ? ' ok' : '');
           btn.textContent = hoyOk ? '✓ Mantenido hoy' : 'Lo mantuve hoy';
-          btn.addEventListener('click', function () {
-            if (r.dias[HOY]) delete r.dias[HOY]; else r.dias[HOY] = true;
-            guardar();
-            pintarRetos();
-          });
+          btn.addEventListener('click', function () { retoCheckIn(r); });
           const acc = document.createElement('div'); acc.className = 'reto-acciones'; acc.appendChild(btn);
           holder.appendChild(acc);
         } else {
@@ -2569,6 +2635,7 @@
       }
       cont.appendChild(card);
     });
+    pintarRetosHoy();
     pintarPanelDia();
   }
 
