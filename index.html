@@ -320,6 +320,21 @@
     white-space: nowrap;
   }
   .deshacer button { text-decoration: underline; font-weight: 700; color: inherit; }
+  .aviso-guardar {
+    position: fixed;
+    left: 50%;
+    transform: translateX(-50%);
+    bottom: calc(78px + env(safe-area-inset-bottom));
+    max-width: 92vw;
+    background: var(--danger);
+    color: #fff;
+    border-radius: 12px;
+    padding: 12px 16px;
+    font-size: 0.85rem;
+    line-height: 1.35;
+    z-index: 70;
+    box-shadow: var(--shadow);
+  }
   .vencida .nota-hora { color: var(--danger); font-weight: 600; }
   .sem-nav { display: flex; align-items: center; justify-content: space-between; padding: 0 4px; }
   .paso-sem {
@@ -1140,6 +1155,10 @@
     <button id="deshacer-btn">Deshacer</button>
   </div>
 
+  <div class="aviso-guardar oculto" id="aviso-guardar">
+    ⚠️ No se pudo guardar: el almacenamiento del navegador está lleno o bloqueado. Descarga un respaldo (Ajustes → Descargar) para no perder cambios.
+  </div>
+
   <div class="modal-fondo oculto" id="editor-fondo">
     <div class="modal" id="editor-modal"></div>
   </div>
@@ -1280,19 +1299,63 @@
     if (typeof ev.repeticion === 'undefined') ev.repeticion = ev.anual ? 'anual' : 'ninguna';
   });
 
+  // Pedir al navegador que marque el almacenamiento como PERSISTENTE.
+  // Sin esto, el navegador puede DESALOJAR localStorage cuando el equipo anda
+  // bajo de espacio, llevándose datos y respaldos. Esta es la causa raíz de las
+  // pérdidas. No borra ni cambia nada; solo protege lo que ya está guardado.
+  (function () {
+    try {
+      if (navigator.storage && navigator.storage.persist) {
+        navigator.storage.persisted().then(function (ok) {
+          if (!ok) navigator.storage.persist();
+        }).catch(function () {});
+      }
+    } catch (e) {}
+  })();
+
+  // "Volumen" de un estado: sirve para no pisar un buen respaldo con uno más pobre.
+  function volumenDatos(s) {
+    if (!s || typeof s !== 'object') return -1;
+    return (s.dias ? Object.keys(s.dias).length : 0) + (s.gastos ? s.gastos.length : 0) +
+      (s.notas ? s.notas.length : 0) + (s.tareas ? s.tareas.length : 0) +
+      (s.tiempos ? s.tiempos.length : 0) + (s.eventos ? s.eventos.length : 0) +
+      (s.retos ? s.retos.length : 0) + (s.lecturas ? s.lecturas.length : 0);
+  }
+
   // Respaldo automático: una foto del estado al primer arranque de cada día.
-  // Nunca se sobrescribe con un estado vacío, para que sirva de salvavidas.
+  // Nunca se sobrescribe con un estado vacío NI con uno más pobre que el guardado,
+  // para que siempre sirva de salvavidas. Al rotar de día, el anterior se conserva
+  // como "-respaldo-auto-prev" (dos salvavidas en vez de uno).
   try {
-    const hayDatos = Object.keys(estado.dias).length || estado.gastos.length ||
-      estado.notas.length || estado.tareas.length;
     const auto = JSON.parse(localStorage.getItem(CLAVE + '-respaldo-auto') || 'null');
-    if (hayDatos && (!auto || auto.fecha !== claveDia())) {
+    const volActual = volumenDatos(estado);
+    const volAuto = auto ? volumenDatos(auto.datos || auto) : -1;
+    if (volActual > 0 && (!auto || auto.fecha !== claveDia()) && volActual >= volAuto) {
+      if (auto && auto.fecha && auto.fecha !== claveDia()) {
+        localStorage.setItem(CLAVE + '-respaldo-auto-prev', JSON.stringify(auto));
+      }
       localStorage.setItem(CLAVE + '-respaldo-auto', JSON.stringify({ fecha: claveDia(), datos: estado }));
     }
   } catch (e) {}
 
+  let guardadoFallido = false;
   function guardar() {
-    localStorage.setItem(CLAVE, JSON.stringify(estado));
+    try {
+      localStorage.setItem(CLAVE, JSON.stringify(estado));
+      if (guardadoFallido) { guardadoFallido = false; ocultarAvisoGuardar(); }
+    } catch (e) {
+      // Almacenamiento lleno o bloqueado: NO fallar en silencio.
+      guardadoFallido = true;
+      mostrarAvisoGuardar();
+    }
+  }
+  function mostrarAvisoGuardar() {
+    var el = document.getElementById('aviso-guardar');
+    if (el) el.classList.remove('oculto');
+  }
+  function ocultarAvisoGuardar() {
+    var el = document.getElementById('aviso-guardar');
+    if (el) el.classList.add('oculto');
   }
 
   function claveDia(d) {
@@ -2057,6 +2120,7 @@
   }
 
   // ---------- Agenda ----------
+  const DIAS_CORTO = ['L', 'M', 'X', 'J', 'V', 'S', 'D'];
   const eventoTitulo = document.getElementById('evento-titulo');
   const eventoFecha = document.getElementById('evento-fecha');
   const eventoHora = document.getElementById('evento-hora');
@@ -2215,7 +2279,6 @@
     if (ev.hora && ev.horaFin) return ev.hora + '–' + ev.horaFin;
     return ev.hora || '';
   }
-  const DIAS_CORTO = ['L', 'M', 'X', 'J', 'V', 'S', 'D'];
   const DIAS_LARGO = ['lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado', 'domingo'];
   function labelRep(ev) {
     const rep = repDe(ev);
@@ -3576,6 +3639,7 @@
     cont.innerHTML = '';
     const fuentes = [
       { clave: CLAVE + '-respaldo-auto', rotulo: 'respaldo automático' },
+      { clave: CLAVE + '-respaldo-auto-prev', rotulo: 'respaldo del día anterior' },
       { clave: CLAVE + '-copia-pre-importacion', rotulo: 'copia previa a la última importación' },
     ];
     fuentes.forEach(function (f) {
