@@ -1,0 +1,197 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Rescate - Vida Tracker</title>
+<style>
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: #000; color: #eee;
+    font-family: -apple-system, system-ui, "Segoe UI", Roboto, sans-serif;
+    padding: 20px 16px 60px; line-height: 1.5;
+  }
+  .wrap { max-width: 520px; margin: 0 auto; }
+  h1 { font-size: 22px; margin: 0 0 4px; }
+  .sub { color: #9aa; font-size: 14px; margin: 0 0 20px; }
+  .card {
+    background: #141414; border: 1px solid #262626; border-radius: 14px;
+    padding: 16px; margin: 0 0 16px;
+  }
+  .estado { font-size: 17px; font-weight: 600; margin: 0 0 8px; }
+  .ok { color: #4ade80; }
+  .warn { color: #fbbf24; }
+  .bad { color: #f87171; }
+  ul { margin: 8px 0 0; padding-left: 18px; font-size: 13px; color: #bbb; }
+  li { margin: 2px 0; word-break: break-all; }
+  button {
+    display: block; width: 100%; border: 0; border-radius: 12px;
+    padding: 16px; font-size: 16px; font-weight: 700; margin: 10px 0 0;
+    cursor: pointer;
+  }
+  .b1 { background: #2563eb; color: #fff; }
+  .b2 { background: #16a34a; color: #fff; }
+  .b3 { background: #333; color: #eee; }
+  .paso { color: #9aa; font-size: 13px; margin: 18px 0 6px; text-transform: uppercase; letter-spacing: .5px; }
+  .nota { font-size: 12px; color: #888; margin-top: 6px; }
+  #log { font-size: 12px; color: #9aa; white-space: pre-wrap; margin-top: 10px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>🛟 Rescate — Vida Tracker</h1>
+  <p class="sub">Herramienta para revisar tus datos y reparar la app sin borrar nada.</p>
+
+  <div class="card">
+    <div class="estado" id="estado">Revisando…</div>
+    <div id="detalle"></div>
+  </div>
+
+  <div class="paso">Paso 1 — Guarda una copia por seguridad</div>
+  <button class="b1" id="btnDescargar">⬇️ Descargar copia de mis datos</button>
+  <button class="b3" id="btnCopiar">📋 Copiar mis datos como texto</button>
+  <p class="nota">Se guarda un archivo con todo lo que hay en este dispositivo. No cambia nada.</p>
+
+  <div class="paso">Paso 2 — Reparar la app</div>
+  <button class="b2" id="btnReparar">🔧 Reparar y abrir la app</button>
+  <p class="nota">Quita el service worker viejo y la caché atascada. <b>No toca tus datos.</b> Si tus datos estaban aquí, reaparecen solos.</p>
+
+  <div id="log"></div>
+</div>
+
+<script>
+(function () {
+  var PREFIJO = 'vida-tracker';
+  var estadoEl = document.getElementById('estado');
+  var detEl = document.getElementById('detalle');
+  var logEl = document.getElementById('log');
+
+  function log(msg) { logEl.textContent += msg + '\n'; }
+
+  // ---- Revisar localStorage ----
+  var todas = {};
+  var claves = [];
+  var relevantes = [];
+  var totalChars = 0;
+  try {
+    for (var i = 0; i < localStorage.length; i++) {
+      var k = localStorage.key(i);
+      var v = localStorage.getItem(k);
+      todas[k] = v;
+      claves.push(k);
+      totalChars += (v ? v.length : 0);
+      if (k.toLowerCase().indexOf(PREFIJO) !== -1) relevantes.push({ k: k, len: v ? v.length : 0 });
+    }
+  } catch (e) {
+    log('No se pudo leer el almacenamiento: ' + e.message);
+  }
+
+  var hayDatos = relevantes.some(function (r) { return r.len > 5; });
+
+  if (hayDatos) {
+    estadoEl.textContent = '✅ ¡Tus datos SIGUEN aquí!';
+    estadoEl.className = 'estado ok';
+    var html = 'Encontré datos guardados en este dispositivo. Al reparar la app, deberían reaparecer solos.<ul>';
+    relevantes.forEach(function (r) { html += '<li>' + r.k + ' — ' + r.len + ' caracteres</li>'; });
+    html += '</ul>';
+    detEl.innerHTML = html;
+  } else if (claves.length > 0) {
+    estadoEl.textContent = '⚠️ No veo datos de Vida Tracker';
+    estadoEl.className = 'estado warn';
+    detEl.innerHTML = 'Hay ' + claves.length + ' cosas guardadas pero ninguna parece ser tus datos de la app. Tras reparar, importa tu respaldo del 19.<ul>' +
+      claves.map(function (k) { return '<li>' + k + '</li>'; }).join('') + '</ul>';
+  } else {
+    estadoEl.textContent = '⚠️ Este dispositivo está vacío';
+    estadoEl.className = 'estado warn';
+    detEl.innerHTML = 'No hay nada guardado aquí. Después de reparar la app, importa tu respaldo <b>vida-tracker-respaldo-2026-07-19.json</b>.';
+  }
+
+  // ---- Descargar copia ----
+  function construirDump() {
+    return JSON.stringify({
+      _tipo: 'copia-localStorage-vida-tracker',
+      _origen: location.origin,
+      _fecha: new Date().toISOString(),
+      _totalChars: totalChars,
+      datos: todas
+    }, null, 2);
+  }
+
+  document.getElementById('btnDescargar').addEventListener('click', function () {
+    try {
+      var texto = construirDump();
+      var blob = new Blob([texto], { type: 'application/json' });
+      var url = URL.createObjectURL(blob);
+      var a = document.createElement('a');
+      var fecha = new Date().toISOString().slice(0, 10);
+      a.href = url;
+      a.download = 'vida-tracker-rescate-dispositivo-' + fecha + '.json';
+      document.body.appendChild(a);
+      a.click();
+      setTimeout(function () { URL.revokeObjectURL(url); a.remove(); }, 1000);
+      log('Copia descargada.');
+    } catch (e) {
+      log('No se pudo descargar: ' + e.message + '. Usa el botón de copiar como texto.');
+    }
+  });
+
+  document.getElementById('btnCopiar').addEventListener('click', function () {
+    var texto = construirDump();
+    try {
+      navigator.clipboard.writeText(texto).then(function () {
+        log('Copiado al portapapeles. Pégalo en una nota y guárdalo.');
+      }, function () { mostrarParaCopiar(texto); });
+    } catch (e) { mostrarParaCopiar(texto); }
+  });
+
+  function mostrarParaCopiar(texto) {
+    var ta = document.createElement('textarea');
+    ta.value = texto;
+    ta.style.width = '100%';
+    ta.style.height = '160px';
+    ta.style.marginTop = '10px';
+    ta.style.background = '#000';
+    ta.style.color = '#0f0';
+    logEl.parentNode.insertBefore(ta, logEl);
+    ta.focus(); ta.select();
+    log('Selecciona el texto de arriba y cópialo a mano.');
+  }
+
+  // ---- Reparar (sin tocar localStorage) ----
+  document.getElementById('btnReparar').addEventListener('click', function () {
+    var btn = this;
+    btn.disabled = true;
+    btn.textContent = 'Reparando…';
+    reparar();
+  });
+
+  async function reparar() {
+    try {
+      if ('serviceWorker' in navigator) {
+        var regs = await navigator.serviceWorker.getRegistrations();
+        for (var i = 0; i < regs.length; i++) {
+          try { await regs[i].unregister(); log('Service worker viejo eliminado.'); } catch (e) {}
+        }
+      }
+    } catch (e) { log('SW: ' + e.message); }
+
+    try {
+      if ('caches' in window) {
+        var names = await caches.keys();
+        for (var j = 0; j < names.length; j++) {
+          try { await caches.delete(names[j]); log('Caché borrada: ' + names[j]); } catch (e) {}
+        }
+      }
+    } catch (e) { log('Caché: ' + e.message); }
+
+    log('Listo. Abriendo la app fresca…');
+    // NO se toca localStorage. Se abre la app evitando cualquier caché HTTP.
+    setTimeout(function () {
+      location.replace('./index.html?fresco=' + Date.now());
+    }, 800);
+  }
+})();
+</script>
+</body>
+</html>
