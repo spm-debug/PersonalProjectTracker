@@ -838,6 +838,24 @@
 
     <!-- ============ GASTOS ============ -->
     <div id="vista-gastos" class="vista oculto" style="flex-direction:column; gap:14px;">
+      <section class="card" id="card-balance">
+        <h2 id="balance-titulo">💰 Balance</h2>
+        <div class="stats-fila" id="balance-stats"></div>
+      </section>
+      <section class="card">
+        <div class="card-cab">
+          <h2>Nuevo ingreso</h2>
+          <button class="abrir" data-plegable="form-ni" aria-expanded="false" aria-label="Registrar un ingreso">＋</button>
+        </div>
+        <div class="gasto-form plegable oculto" id="form-ni">
+          <input class="monto-input" id="ing-monto" type="number" inputmode="decimal" placeholder="$ 0">
+          <div class="cats" id="ing-cats"></div>
+          <input class="nota-input" id="ing-nota" type="text" placeholder="Nota (opcional)" maxlength="60">
+          <label class="ayuda" for="ni-fecha" style="display:block; margin: 0 0 4px;">Fecha (puedes registrar días pasados)</label>
+          <input class="nota-input" id="ni-fecha" type="date">
+          <button class="btn-primario" id="agregar-ingreso" disabled style="margin-top:10px;">Agregar ingreso</button>
+        </div>
+      </section>
       <section class="card">
         <div class="card-cab">
           <h2>Nuevo gasto</h2>
@@ -876,6 +894,16 @@
         <div class="plegable oculto" id="gastos-hist-panel">
           <input class="buscar-nota" id="buscar-gasto" type="search" placeholder="Buscar por categoría o comentario…" style="margin-bottom:10px;">
           <div class="notas-lista" id="gastos-historial"></div>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="card-cab">
+          <h2>Historial de ingresos<span class="mini-info" id="mini-ingresos-hist"></span></h2>
+          <button class="abrir" data-plegable="ingresos-hist-panel" aria-expanded="false" aria-label="Ver historial de ingresos">＋</button>
+        </div>
+        <div class="plegable oculto" id="ingresos-hist-panel">
+          <div class="notas-lista" id="ingresos-historial"></div>
         </div>
       </section>
     </div>
@@ -1045,6 +1073,8 @@
         <div class="stats-fila" id="fin-stats" style="margin-bottom: 12px;"></div>
         <div class="cat-resumen" id="cat-resumen"></div>
         <div class="total-dia"><span id="total-rotulo">Total semana</span><span id="total-semana">$ 0</span></div>
+        <div class="total-dia"><span>Ingresos del período</span><span id="fin-ingresos">$ 0</span></div>
+        <div class="total-dia" style="border-top:1px solid var(--line); padding-top:8px; margin-top:4px;"><span>Balance</span><span id="fin-balance" style="font-weight:700;">$ 0</span></div>
       </section>
 
       <section class="card">
@@ -1184,9 +1214,51 @@
 </div>
 
 <script>
+/* Red de seguridad: si la app falla al cargar por cualquier error, garantiza
+   que el usuario SIEMPRE pueda descargar sus datos. Es totalmente independiente
+   del resto de la app (no usa ninguna función interna) para que funcione incluso
+   si el script principal se rompe entero. */
+(function () {
+  var mostrado = false;
+  function salvavidas() {
+    if (mostrado) return;
+    mostrado = true;
+    try {
+      var datos = localStorage.getItem('vida-tracker-v1') || '';
+      var bar = document.createElement('div');
+      bar.style.cssText = 'position:fixed;left:0;right:0;bottom:0;z-index:2147483647;background:#7f1d1d;color:#fff;padding:14px 16px;font-family:system-ui,sans-serif;font-size:14px;line-height:1.45;box-shadow:0 -2px 12px rgba(0,0,0,.4)';
+      var msg = document.createElement('div');
+      msg.textContent = datos
+        ? '⚠️ La app tuvo un problema al cargar, pero tus datos están a salvo. Descárgalos por seguridad:'
+        : '⚠️ La app tuvo un problema al cargar.';
+      bar.appendChild(msg);
+      if (datos) {
+        var b = document.createElement('button');
+        b.textContent = '⬇️ Descargar respaldo de mis datos';
+        b.style.cssText = 'margin-top:10px;padding:10px 14px;border:0;border-radius:8px;background:#fff;color:#7f1d1d;font-weight:700;font-size:14px';
+        b.onclick = function () {
+          try {
+            var blob = new Blob([datos], { type: 'application/json' });
+            var a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = 'vida-tracker-respaldo-emergencia-' + new Date().toISOString().slice(0, 10) + '.json';
+            document.body.appendChild(a); a.click(); a.remove();
+          } catch (e) {}
+        };
+        bar.appendChild(b);
+      }
+      (document.body || document.documentElement).appendChild(bar);
+    } catch (e) {}
+  }
+  window.addEventListener('error', salvavidas);
+})();
+</script>
+<script>
 (function () {
   const CLAVE = 'vida-tracker-v1';
-  const CATEGORIAS = ['🍔 Comida', '🚌 Transporte', '🎉 Ocio', '🏠 Hogar', '🛒 Compras', '📦 Otro'];
+  const CATEGORIAS = ['🍔 Comida', '🚌 Transporte', '🎉 Ocio', '🏠 Hogar', '🛒 Compras', '🩺 Salud', '📦 Otro'];
+  const CATS_INGRESO = ['💼 Salario', '➕ Extra', '🎁 Regalo', '💵 Otro'];
+  const VERDE = '#4CC38A';
   const fmtMoneda = new Intl.NumberFormat('es-CO', { maximumFractionDigits: 0 });
   const EMOJIS_HABITO = ['🏃','💪','🧘','📖','📚','✍️','💧','🥗','😴','🎯','🧠','🚴','🚶','🙏','🎨','🎵','🧹','💰','☀️','🌙','⏰','🚭','🍎','🧴','⚽','🎸','💻','🌱'];
   const CATS_EVENTO = [
@@ -1234,6 +1306,7 @@
       ],
       dias: {},      // 'YYYY-MM-DD' -> { habitos: {id:true} }
       gastos: [],    // { id, fecha, monto, cat, nota }
+      ingresos: [],  // { id, fecha, monto, cat, nota }
       notas: [],     // { id, fecha, hora, texto, etiqueta }
       tareas: [],    // { id, fecha, hora, texto, hecha, fechaHecha, limite }
       eventos: [],   // { id, titulo, fecha, hora }
@@ -1270,6 +1343,7 @@
   });
   if (!estado.dias) estado.dias = {};
   if (!estado.gastos) estado.gastos = [];
+  if (!estado.ingresos) estado.ingresos = [];
   if (!estado.notas) {
     estado.notas = [];
     Object.keys(estado.dias).forEach(function (f) {
@@ -1647,6 +1721,12 @@
         '<label>Categoría</label><select id="ed-cat">' + opciones(CATEGORIAS, o.cat) + '</select>' +
         '<label>Comentario</label><input id="ed-nota" type="text" maxlength="60">' +
         '<label>Fecha</label><input id="ed-fecha" type="date">';
+    } else if (tipo === 'ingreso') {
+      o = buscarPorId(estado.ingresos, id); if (!o) return;
+      html = '<h3>Editar ingreso</h3><label>Monto</label><input id="ed-monto" type="number" inputmode="decimal">' +
+        '<label>Categoría</label><select id="ed-cat">' + opciones(CATS_INGRESO, o.cat) + '</select>' +
+        '<label>Comentario</label><input id="ed-nota" type="text" maxlength="60">' +
+        '<label>Fecha</label><input id="ed-fecha" type="date">';
     } else if (tipo === 'tarea') {
       o = buscarPorId(estado.tareas, id); if (!o) return;
       html = '<h3>Editar tarea</h3><label>Tarea</label><input id="ed-texto" type="text" maxlength="280">' +
@@ -1687,6 +1767,7 @@
     function set(k, v) { const e = document.getElementById(k); if (e) e.value = (v == null ? '' : v); }
     if (tipo === 'nota') { set('ed-texto', o.texto); set('ed-fecha', o.fecha); }
     else if (tipo === 'gasto') { set('ed-monto', o.monto); set('ed-nota', o.nota); set('ed-fecha', o.fecha); }
+    else if (tipo === 'ingreso') { set('ed-monto', o.monto); set('ed-nota', o.nota); set('ed-fecha', o.fecha); }
     else if (tipo === 'tarea') { set('ed-texto', o.texto); set('ed-limite', o.limite); }
     else if (tipo === 'evento') { set('ed-texto', o.titulo); set('ed-fecha', o.fecha); set('ed-hora', o.hora); document.getElementById('ed-anual').checked = !!o.anual; }
     else if (tipo === 'lectura') { set('ed-texto', o.texto); set('ed-libro', o.libro); set('ed-autor', o.autor); }
@@ -1720,6 +1801,10 @@
       o.texto = t; o.etiqueta = val('ed-etq'); o.fecha = val('ed-fecha') || o.fecha;
     } else if (tipo === 'gasto') {
       const o = buscarPorId(estado.gastos, id); if (!o) return;
+      const m = parseFloat(val('ed-monto')); if (!(m > 0)) return;
+      o.monto = m; o.cat = val('ed-cat'); o.nota = val('ed-nota').trim(); o.fecha = val('ed-fecha') || o.fecha;
+    } else if (tipo === 'ingreso') {
+      const o = buscarPorId(estado.ingresos, id); if (!o) return;
       const m = parseFloat(val('ed-monto')); if (!(m > 0)) return;
       o.monto = m; o.cat = val('ed-cat'); o.nota = val('ed-nota').trim(); o.fecha = val('ed-fecha') || o.fecha;
     } else if (tipo === 'tarea') {
@@ -1788,7 +1873,7 @@
     if (v === 'ajustes') pintarAjustes();
     if (v === 'agenda') pintarCalendario();
     if (v === 'notas') { pintarHistorial(); pintarLecturas(); }
-    if (v === 'gastos') pintarHistorialGastos();
+    if (v === 'gastos') { pintarHistorialGastos(); pintarIngresos(); }
     if (v === 'retos') pintarRetos();
   }
   document.querySelectorAll('.tab[data-vista]').forEach(function (tab) {
@@ -3289,6 +3374,127 @@
     const totalHoy = pintarDiaGastos(HOY, 'card-gastos-hoy', 'gastos-hoy', 'total-hoy', 'mini-gastos-hoy');
     pintarDiaGastos(claveAyerDe(HOY), 'card-gastos-ayer', 'gastos-ayer', 'total-ayer', 'mini-gastos-ayer');
     document.getElementById('gr-total').textContent = 'Hoy llevas $ ' + fmtMoneda.format(totalHoy);
+    pintarIngresos();
+  }
+
+  // ---------- Ingresos y balance ----------
+  let catIngresoActiva = CATS_INGRESO[0];
+  function pintarCatsIngreso() {
+    const cont = document.getElementById('ing-cats');
+    if (!cont) return;
+    cont.innerHTML = '';
+    CATS_INGRESO.forEach(function (c) {
+      const b = document.createElement('button');
+      b.className = 'cat' + (c === catIngresoActiva ? ' activa' : '');
+      b.textContent = c;
+      b.addEventListener('click', function () { catIngresoActiva = c; pintarCatsIngreso(); });
+      cont.appendChild(b);
+    });
+  }
+
+  function agregarIngreso(monto, nota, fecha) {
+    estado.ingresos.push({
+      id: 'i' + Date.now(),
+      fecha: fecha || HOY,
+      hora: new Date().toTimeString().slice(0, 5),
+      monto: monto,
+      cat: catIngresoActiva,
+      nota: nota || '',
+    });
+    guardar();
+    pintarIngresos();
+  }
+
+  const ingMonto = document.getElementById('ing-monto');
+  const btnIngreso = document.getElementById('agregar-ingreso');
+  ingMonto.addEventListener('input', function () {
+    btnIngreso.disabled = !(parseFloat(ingMonto.value) > 0);
+  });
+  const niFecha = document.getElementById('ni-fecha');
+  niFecha.value = HOY;
+  btnIngreso.addEventListener('click', function () {
+    const monto = parseFloat(ingMonto.value);
+    if (!(monto > 0)) return;
+    agregarIngreso(monto, document.getElementById('ing-nota').value.trim(), niFecha.value || HOY);
+    ingMonto.value = '';
+    document.getElementById('ing-nota').value = '';
+    niFecha.value = HOY;
+    btnIngreso.disabled = true;
+    plegar('form-ni');
+  });
+
+  // Suma de montos del MES calendario en curso (para la tarjeta de balance)
+  function montoDelMes(lista) {
+    const ahora = new Date();
+    const pre = ahora.getFullYear() + '-' + String(ahora.getMonth() + 1).padStart(2, '0');
+    let t = 0;
+    lista.forEach(function (x) { if ((x.fecha || '').indexOf(pre) === 0) t += x.monto; });
+    return t;
+  }
+
+  function pintarIngresos() {
+    // Tarjeta de balance del mes en curso
+    const bEl = document.getElementById('balance-stats');
+    if (bEl) {
+      const ing = montoDelMes(estado.ingresos);
+      const gas = montoDelMes(estado.gastos);
+      const bal = ing - gas;
+      bEl.innerHTML =
+        '<div class="stat"><div class="valor" style="color:' + VERDE + '">$ ' + fmtMoneda.format(ing) + '</div><div class="desc">ingresos</div></div>' +
+        '<div class="stat"><div class="valor" style="color:var(--danger)">$ ' + fmtMoneda.format(gas) + '</div><div class="desc">gastos</div></div>' +
+        '<div class="stat"><div class="valor" style="color:' + (bal >= 0 ? VERDE : 'var(--danger)') + '">$ ' + fmtMoneda.format(bal) + '</div><div class="desc">balance</div></div>';
+      const tEl = document.getElementById('balance-titulo');
+      if (tEl) tEl.textContent = '💰 Balance de ' + new Date().toLocaleDateString('es', { month: 'long' });
+    }
+    // Historial de ingresos
+    const cont = document.getElementById('ingresos-historial');
+    if (!cont) return;
+    cont.innerHTML = '';
+    const lista = estado.ingresos.slice().sort(function (a, b) {
+      const ka = a.fecha + (a.hora || ''), kb = b.fecha + (b.hora || '');
+      return ka > kb ? -1 : ka < kb ? 1 : 0;
+    });
+    const mEl = document.getElementById('mini-ingresos-hist');
+    if (mEl) mEl.textContent = ' · ' + lista.length + (lista.length === 1 ? ' ingreso' : ' ingresos');
+    if (lista.length === 0) {
+      cont.innerHTML = '<p class="vacio">Aún no has registrado ingresos.</p>';
+      return;
+    }
+    let grupo = '';
+    lista.forEach(function (g) {
+      if (g.fecha !== grupo) {
+        grupo = g.fecha;
+        let totalDia = 0;
+        lista.forEach(function (x) { if (x.fecha === g.fecha) totalDia += x.monto; });
+        const h = document.createElement('div');
+        h.className = 'nota-grupo';
+        h.style.cssText = 'display:flex; justify-content:space-between;';
+        h.innerHTML = '<span></span><span style="color:' + VERDE + '">$ ' + fmtMoneda.format(totalDia) + '</span>';
+        h.querySelector('span').textContent = (g.fecha === HOY ? 'Hoy' : fechaLarga(g.fecha));
+        cont.appendChild(h);
+      }
+      const fila = document.createElement('div');
+      fila.className = 'gasto-item';
+      fila.innerHTML =
+        '<div style="flex:1"><div class="g-nota"></div><div class="g-cat"></div></div>' +
+        '<span class="g-monto" style="color:' + VERDE + '">$ ' + fmtMoneda.format(g.monto) + '</span>' +
+        botonEditar() +
+        '<button class="g-borrar" aria-label="Borrar ingreso">✕</button>';
+      fila.querySelector('.g-nota').textContent = g.nota || g.cat.replace(/^\S+\s/, '');
+      fila.querySelector('.g-cat').textContent = g.cat + (g.hora ? ' · ' + g.hora : '');
+      fila.querySelector('.g-editar').addEventListener('click', function () { abrirEditor('ingreso', g.id); });
+      fila.querySelector('.g-borrar').addEventListener('click', function () {
+        estado.ingresos = estado.ingresos.filter(function (x) { return x.id !== g.id; });
+        guardar();
+        pintarIngresos();
+        ofrecerDeshacer('Ingreso eliminado', function () {
+          estado.ingresos.push(g);
+          guardar();
+          pintarIngresos();
+        });
+      });
+      cont.appendChild(fila);
+    });
   }
 
   // ---------- Resumen ----------
@@ -3490,6 +3696,13 @@
       cont.appendChild(fila);
     });
     document.getElementById('total-semana').textContent = '$ ' + fmtMoneda.format(total);
+    const ingresosP = estado.ingresos.filter(function (g) { return claves.indexOf(g.fecha) !== -1; });
+    let totalIng = 0; ingresosP.forEach(function (g) { totalIng += g.monto; });
+    document.getElementById('fin-ingresos').textContent = '$ ' + fmtMoneda.format(totalIng);
+    const balP = totalIng - total;
+    const finBal = document.getElementById('fin-balance');
+    finBal.textContent = '$ ' + fmtMoneda.format(balP);
+    finBal.style.color = balP >= 0 ? VERDE : 'var(--danger)';
 
     // --- Tiempo invertido del período ---
     const tiemposP = estado.tiempos.filter(function (t) { return claves.indexOf(t.fecha) !== -1; });
@@ -3851,6 +4064,36 @@
     });
   })();
 
+  // Respaldo automático cada 5 días: al abrir la app descarga solo un .json de
+  // seguridad (mismo formato que "Descargar respaldo", así se puede reimportar).
+  // Saca los datos del localStorage a un archivo en el dispositivo → aunque el
+  // navegador borre el almacenamiento, el respaldo sobrevive.
+  (function () {
+    try {
+      const hayDatos = Object.keys(estado.dias).length || estado.gastos.length ||
+        estado.notas.length || estado.tareas.length || estado.tiempos.length ||
+        estado.eventos.length || estado.retos.length;
+      if (!hayDatos) return;
+      const ultima = localStorage.getItem(CLAVE + '-descarga-auto');
+      let diasSin = 999;
+      if (ultima) {
+        const p = ultima.split('-');
+        diasSin = Math.round((new Date() - new Date(p[0], p[1] - 1, p[2])) / 86400000);
+      }
+      if (diasSin < 5) return;
+      const blob = new Blob([JSON.stringify(estado, null, 2)], { type: 'application/json' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'vida-tracker-respaldo-auto-' + HOY + '.json';
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      setTimeout(function () { try { URL.revokeObjectURL(a.href); } catch (e) {} }, 3000);
+      localStorage.setItem(CLAVE + '-descarga-auto', claveDia());
+      localStorage.setItem(CLAVE + '-ultimo-respaldo', claveDia());
+    } catch (e) {}
+  })();
+
   // Recordatorio de respaldo: si hay datos y llevas 7+ días sin exportar
   (function () {
     try {
@@ -3972,6 +4215,7 @@
   }
   pintarHabitos();
   pintarCats();
+  pintarCatsIngreso();
   pintarGastos();
   pintarHistorialGastos();
   pintarNotasHoy();
