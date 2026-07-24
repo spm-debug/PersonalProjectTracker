@@ -297,6 +297,10 @@
   .reto-hoy-nombre { font-size: 0.95rem; font-weight: 500; }
   .reto-hoy-prog { font-size: 0.78rem; color: var(--ink-soft); font-variant-numeric: tabular-nums; white-space: nowrap; }
   .reto-hoy-acc { margin-top: 8px; display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
+  .reto-hoy-compacto { display: flex; width: 100%; align-items: center; justify-content: space-between; gap: 8px; padding: 9px 2px; border-bottom: 1px solid var(--line); background: transparent; text-align: left; }
+  .reto-hoy-compacto:last-child { border-bottom: none; }
+  .rhc-nom { font-size: 0.9rem; color: var(--ink-soft); }
+  .rhc-racha { font-size: 0.8rem; color: var(--accent); font-variant-numeric: tabular-nums; white-space: nowrap; }
   .meta-fila { padding: 9px 0; border-bottom: 1px solid var(--line); }
   .meta-fila:last-child { border-bottom: none; }
   .meta-fila-top { display: flex; justify-content: space-between; gap: 8px; font-size: 0.9rem; margin-bottom: 6px; }
@@ -880,7 +884,7 @@
 
       <section class="card" id="card-gastos-ayer">
         <div class="dia-cab">
-          <h2>Ayer<span class="mini-info" id="mini-gastos-ayer"></span></h2>
+          <h2>Ayer<span class="mini-info" id="ayer-fecha"></span><span class="mini-info" id="mini-gastos-ayer"></span></h2>
           <span class="dia-total" id="total-ayer"></span>
         </div>
         <div class="gastos-lista" id="gastos-ayer"></div>
@@ -1091,6 +1095,26 @@
       <div id="resumen-tematico" style="display: flex; flex-direction: column; gap: 14px;"></div>
     </div>
 
+    <!-- ============ GRÁFICAS ============ -->
+    <div id="vista-graficas" class="vista oculto" style="flex-direction:column; gap:14px;">
+      <section class="card">
+        <h2>💰 Ingresos vs Gastos<span class="mini-info"> · últimos 6 meses</span></h2>
+        <div id="graf-balance"></div>
+      </section>
+      <section class="card">
+        <h2>🍔 Gastos por categoría<span class="mini-info" id="graf-cat-mes"></span></h2>
+        <div id="graf-categorias"></div>
+      </section>
+      <section class="card">
+        <h2>🔥 Constancia de hábitos<span class="mini-info"> · últimas 12 semanas</span></h2>
+        <div id="graf-habitos"></div>
+      </section>
+      <section class="card">
+        <h2>⏱ Tiempo por semana<span class="mini-info"> · últimas 8 semanas</span></h2>
+        <div id="graf-tiempo"></div>
+      </section>
+    </div>
+
     <!-- ============ AJUSTES ============ -->
     <div id="vista-ajustes" class="vista oculto" style="flex-direction:column; gap:14px;">
       <section class="card">
@@ -1198,6 +1222,7 @@
       <h3>Más</h3>
       <button class="mas-item" data-vista="retos"><span>🎯</span> Retos</button>
       <button class="mas-item" data-vista="resumen"><span>📈</span> Resumen</button>
+      <button class="mas-item" data-vista="graficas"><span>📊</span> Gráficas</button>
       <button class="mas-item" data-vista="ajustes"><span>⚙️</span> Ajustes</button>
     </div>
   </div>
@@ -1855,7 +1880,7 @@
     const h = new Date().getHours();
     return h < 12 ? 'Buenos días' : h < 19 ? 'Buenas tardes' : 'Buenas noches';
   }
-  const TITULOS = { hoy: saludo(), gastos: 'Gastos', agenda: 'Agenda', notas: 'Notas', resumen: 'Resumen', ajustes: 'Ajustes' };
+  const TITULOS = { hoy: saludo(), gastos: 'Gastos', agenda: 'Agenda', notas: 'Notas', resumen: 'Resumen', graficas: '📊 Gráficas', retos: 'Retos', ajustes: 'Ajustes' };
   document.getElementById('titulo').textContent = TITULOS.hoy;
   let vistaActiva = 'hoy';
   function navegarA(v) {
@@ -1875,6 +1900,7 @@
     if (v === 'notas') { pintarHistorial(); pintarLecturas(); }
     if (v === 'gastos') { pintarHistorialGastos(); pintarIngresos(); }
     if (v === 'retos') pintarRetos();
+    if (v === 'graficas') pintarGraficas();
   }
   document.querySelectorAll('.tab[data-vista]').forEach(function (tab) {
     tab.addEventListener('click', function () { navegarA(tab.dataset.vista); });
@@ -2960,6 +2986,19 @@
     const activos = retosActivos();
     card.classList.toggle('oculto', activos.length === 0);
     activos.forEach(function (r) {
+      // Reto de abstinencia ya mantenido hoy → fila compacta (una línea, tocable para deshacer)
+      if (r.tipo === 'abstinencia' && r.dias[HOY]) {
+        const comp = document.createElement('button');
+        comp.className = 'reto-hoy-compacto';
+        comp.title = 'Tocar para deshacer';
+        const nom = document.createElement('span'); nom.className = 'rhc-nom'; nom.textContent = '✓ ' + r.nombre;
+        const rac = document.createElement('span'); rac.className = 'rhc-racha';
+        const n = rachaReto(r); rac.textContent = '🔥 ' + n + (n === 1 ? ' día' : ' días');
+        comp.appendChild(nom); comp.appendChild(rac);
+        comp.addEventListener('click', function () { retoCheckIn(r); });
+        cont.appendChild(comp);
+        return;
+      }
       const row = document.createElement('div');
       row.className = 'reto-hoy';
       const top = document.createElement('div');
@@ -3373,6 +3412,8 @@
   function pintarGastos() {
     const totalHoy = pintarDiaGastos(HOY, 'card-gastos-hoy', 'gastos-hoy', 'total-hoy', 'mini-gastos-hoy');
     pintarDiaGastos(claveAyerDe(HOY), 'card-gastos-ayer', 'gastos-ayer', 'total-ayer', 'mini-gastos-ayer');
+    const efAyer = document.getElementById('ayer-fecha');
+    if (efAyer) efAyer.textContent = ' · ' + fechaCorta(claveAyerDe(HOY));
     document.getElementById('gr-total').textContent = 'Hoy llevas $ ' + fmtMoneda.format(totalHoy);
     pintarIngresos();
   }
@@ -4180,6 +4221,123 @@
     localStorage.removeItem(CLAVE);
     location.reload();
   });
+
+  // ---------- Gráficas ----------
+  function pintarGraficas() {
+    const TXT = '#8A8A8A', ROJO = '#E5705E', AZUL = '#5AA9E6';
+
+    // 1) Ingresos vs Gastos por mes (6 meses)
+    function graficaBalance() {
+      const base = new Date(), meses = [];
+      for (let i = 5; i >= 0; i--) {
+        const d = new Date(base.getFullYear(), base.getMonth() - i, 1);
+        const pre = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0');
+        let ing = 0, gas = 0;
+        estado.ingresos.forEach(function (x) { if ((x.fecha || '').indexOf(pre) === 0) ing += x.monto; });
+        estado.gastos.forEach(function (x) { if ((x.fecha || '').indexOf(pre) === 0) gas += x.monto; });
+        meses.push({ label: d.toLocaleDateString('es', { month: 'short' }), ing: ing, gas: gas });
+      }
+      if (meses.every(function (m) { return m.ing === 0 && m.gas === 0; }))
+        return '<p class="vacio">Aún no hay datos financieros para graficar.</p>';
+      const max = Math.max.apply(null, [1].concat(meses.map(function (m) { return Math.max(m.ing, m.gas); })));
+      const W = 320, H = 170, padB = 22, padT = 10, gw = W / 6, esc = H - padB - padT;
+      let s = '';
+      meses.forEach(function (m, i) {
+        const x0 = i * gw, bw = gw * 0.3;
+        const hI = (m.ing / max) * esc, hG = (m.gas / max) * esc;
+        s += '<rect x="' + (x0 + gw * 0.16) + '" y="' + (H - padB - hI) + '" width="' + bw + '" height="' + hI + '" rx="2" style="fill:' + VERDE + '"/>';
+        s += '<rect x="' + (x0 + gw * 0.52) + '" y="' + (H - padB - hG) + '" width="' + bw + '" height="' + hG + '" rx="2" style="fill:' + ROJO + '"/>';
+        s += '<text x="' + (x0 + gw / 2) + '" y="' + (H - 7) + '" text-anchor="middle" style="fill:' + TXT + ';font-size:10px">' + m.label + '</text>';
+      });
+      return '<svg viewBox="0 0 ' + W + ' ' + H + '" width="100%">' + s + '</svg>' +
+        '<div style="display:flex;gap:16px;justify-content:center;margin-top:4px;font-size:12px;color:' + TXT + '">' +
+        '<span><span style="color:' + VERDE + '">■</span> Ingresos</span><span><span style="color:' + ROJO + '">■</span> Gastos</span></div>';
+    }
+
+    // 2) Gastos por categoría (mes actual) — dona
+    function graficaCategorias() {
+      const ahora = new Date();
+      const pre = ahora.getFullYear() + '-' + String(ahora.getMonth() + 1).padStart(2, '0');
+      const etq = document.getElementById('graf-cat-mes');
+      if (etq) etq.textContent = ' · ' + ahora.toLocaleDateString('es', { month: 'long' });
+      const porCat = {}; let total = 0;
+      estado.gastos.forEach(function (g) { if ((g.fecha || '').indexOf(pre) === 0) { porCat[g.cat] = (porCat[g.cat] || 0) + g.monto; total += g.monto; } });
+      if (total === 0) return '<p class="vacio">Sin gastos este mes.</p>';
+      const ent = Object.keys(porCat).map(function (c) { return [c, porCat[c]]; }).sort(function (a, b) { return b[1] - a[1]; });
+      const cols = ['#E5705E', '#E8A94C', '#5AA9E6', '#4CC38A', '#A78BDB', '#A34E5F', '#8A8A8A'];
+      const r = 52, cx = 70, cy = 70, circ = 2 * Math.PI * r;
+      let off = 0, segs = '', leg = '';
+      ent.forEach(function (e, i) {
+        const len = (e[1] / total) * circ, col = cols[i % cols.length];
+        segs += '<circle cx="' + cx + '" cy="' + cy + '" r="' + r + '" fill="none" stroke="' + col + '" stroke-width="22" stroke-dasharray="' + len + ' ' + (circ - len) + '" stroke-dashoffset="' + (-off) + '" transform="rotate(-90 ' + cx + ' ' + cy + ')"/>';
+        off += len;
+        const pct = Math.round(e[1] / total * 100);
+        leg += '<div style="display:flex;align-items:center;gap:6px;font-size:12px;margin:3px 0"><span style="color:' + col + '">■</span><span style="flex:1;color:var(--ink)">' + e[0] + '</span><span style="color:' + TXT + '">' + pct + '% · $' + fmtMoneda.format(e[1]) + '</span></div>';
+      });
+      return '<div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap">' +
+        '<svg viewBox="0 0 140 140" width="140" height="140" style="flex-shrink:0">' + segs +
+        '<text x="70" y="66" text-anchor="middle" style="fill:#E8E8E8;font-size:13px;font-weight:700">$' + fmtMoneda.format(total) + '</text>' +
+        '<text x="70" y="82" text-anchor="middle" style="fill:' + TXT + ';font-size:9px">total mes</text></svg>' +
+        '<div style="flex:1;min-width:150px">' + leg + '</div></div>';
+    }
+
+    // 3) Constancia de hábitos — mapa de calor (12 semanas)
+    function graficaHabitos() {
+      const totalHab = estado.habitos.length;
+      if (totalHab === 0) return '<p class="vacio">Agrega hábitos para ver tu constancia.</p>';
+      const hoyD = new Date(), lun = lunesDe(hoyD);
+      const cell = 14, gap = 3, cols = 12, rows = 7;
+      const W = cols * (cell + gap), H = rows * (cell + gap);
+      let s = '';
+      for (let c = 0; c < cols; c++) {
+        const lunSem = new Date(lun.getFullYear(), lun.getMonth(), lun.getDate() - (cols - 1 - c) * 7);
+        for (let rIdx = 0; rIdx < rows; rIdx++) {
+          const d = new Date(lunSem.getFullYear(), lunSem.getMonth(), lunSem.getDate() + rIdx);
+          const dia = estado.dias[claveDia(d)];
+          const hechos = dia ? Object.keys(dia.habitos || {}).length : 0;
+          const ratio = Math.min(1, hechos / totalHab);
+          let col = '#1C1C1C';
+          if (d <= hoyD && ratio > 0) col = ratio >= 1 ? '#4CC38A' : ratio >= 0.66 ? '#3E9E72' : ratio >= 0.33 ? '#2E6F52' : '#244F3D';
+          s += '<rect x="' + (c * (cell + gap)) + '" y="' + (rIdx * (cell + gap)) + '" width="' + cell + '" height="' + cell + '" rx="3" style="fill:' + col + '"/>';
+        }
+      }
+      const leyenda = ['#1C1C1C', '#244F3D', '#2E6F52', '#3E9E72', '#4CC38A']
+        .map(function (c) { return '<span style="width:11px;height:11px;background:' + c + ';border-radius:2px;display:inline-block"></span>'; }).join('');
+      return '<svg viewBox="0 0 ' + W + ' ' + H + '" width="100%" style="max-width:280px">' + s + '</svg>' +
+        '<div style="display:flex;gap:5px;justify-content:flex-end;align-items:center;font-size:11px;color:' + TXT + ';margin-top:4px">menos ' + leyenda + ' más</div>';
+    }
+
+    // 4) Tiempo por semana (8 semanas)
+    function graficaTiempo() {
+      const lun = lunesDe(new Date()), sem = [];
+      for (let i = 7; i >= 0; i--) {
+        const ini = new Date(lun.getFullYear(), lun.getMonth(), lun.getDate() - i * 7);
+        const fin = new Date(ini.getFullYear(), ini.getMonth(), ini.getDate() + 6);
+        let min = 0;
+        estado.tiempos.forEach(function (t) {
+          const p = (t.fecha || '').split('-');
+          if (p.length === 3) { const dt = new Date(p[0], p[1] - 1, p[2]); if (dt >= ini && dt <= fin) min += t.minutos; }
+        });
+        sem.push({ label: ini.getDate() + '/' + (ini.getMonth() + 1), min: min });
+      }
+      if (sem.every(function (x) { return x.min === 0; })) return '<p class="vacio">Aún no registras tiempo para graficar.</p>';
+      const max = Math.max.apply(null, [1].concat(sem.map(function (x) { return x.min; })));
+      const W = 320, H = 160, padB = 20, padT = 16, gw = W / 8, esc = H - padB - padT;
+      let s = '';
+      sem.forEach(function (x, i) {
+        const x0 = i * gw, bw = gw * 0.55, h = (x.min / max) * esc;
+        s += '<rect x="' + (x0 + gw * 0.22) + '" y="' + (H - padB - h) + '" width="' + bw + '" height="' + h + '" rx="2" style="fill:' + AZUL + '"/>';
+        if (x.min > 0) s += '<text x="' + (x0 + gw / 2) + '" y="' + (H - padB - h - 4) + '" text-anchor="middle" style="fill:' + TXT + ';font-size:9px">' + fmtDur(x.min) + '</text>';
+        s += '<text x="' + (x0 + gw / 2) + '" y="' + (H - 6) + '" text-anchor="middle" style="fill:' + TXT + ';font-size:9px">' + x.label + '</text>';
+      });
+      return '<svg viewBox="0 0 ' + W + ' ' + H + '" width="100%">' + s + '</svg>';
+    }
+
+    document.getElementById('graf-balance').innerHTML = graficaBalance();
+    document.getElementById('graf-categorias').innerHTML = graficaCategorias();
+    document.getElementById('graf-habitos').innerHTML = graficaHabitos();
+    document.getElementById('graf-tiempo').innerHTML = graficaTiempo();
+  }
 
   // ---------- Reloj y cambio de día ----------
   function tick() {
