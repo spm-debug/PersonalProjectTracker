@@ -1201,6 +1201,11 @@
           <p class="ayuda">Tus datos viven solo en este dispositivo. Importar reemplaza lo que haya donde importas (antes se guarda una copia interna de emergencia). Consejo: descarga un respaldo cada semana.</p>
         </div>
       </section>
+
+      <section class="card" id="card-nube">
+        <h2>☁️ Respaldo en la nube</h2>
+        <div id="nube-panel"></div>
+      </section>
     </div>
   </main>
 
@@ -1447,6 +1452,8 @@
       guardadoFallido = true;
       mostrarAvisoGuardar();
     }
+    try { localStorage.setItem(CLAVE + '-mtime', new Date().toISOString()); } catch (e) {}
+    try { nubeAutoGuardar(); } catch (e) {}
   }
   function mostrarAvisoGuardar() {
     var el = document.getElementById('aviso-guardar');
@@ -1455,6 +1462,205 @@
   function ocultarAvisoGuardar() {
     var el = document.getElementById('aviso-guardar');
     if (el) el.classList.add('oculto');
+  }
+
+  // ---------- Respaldo en la nube (Supabase) ----------
+  const NUBE_URL = 'https://gvbmxianvflxmbxnkpjq.supabase.co';
+  const NUBE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd2Ym14aWFudmZseG1ieG5rcGpxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQ5MDI0MzEsImV4cCI6MjEwMDQ3ODQzMX0.FMhNHNdeEUh4NFo1oQac9dzAyFzeFt4p-UVEWWrAoIA';
+  const NUBE_SESION = CLAVE + '-nube-sesion';
+  let nubeTimer = null;
+  let nubeUltima = null; // ISO de la última copia subida
+
+  function nubeSesion() { try { return JSON.parse(localStorage.getItem(NUBE_SESION) || 'null'); } catch (e) { return null; } }
+  function nubeSetSesion(s) { try { localStorage.setItem(NUBE_SESION, JSON.stringify(s)); } catch (e) {} }
+  function nubeBorrarSesion() { try { localStorage.removeItem(NUBE_SESION); } catch (e) {} }
+  function nubeLocalMtime() { try { return localStorage.getItem(CLAVE + '-mtime') || '1970-01-01T00:00:00.000Z'; } catch (e) { return '1970-01-01T00:00:00.000Z'; } }
+
+  function sesionDeToken(j) {
+    return {
+      access_token: j.access_token, refresh_token: j.refresh_token,
+      expira: Date.now() + ((j.expires_in || 3600) * 1000),
+      uid: j.user && j.user.id, email: j.user && j.user.email
+    };
+  }
+  function mensajeNube(j) { return (j && (j.msg || j.error_description || j.message || j.error)) || 'Algo salió mal con la nube'; }
+
+  async function nubeApiAuth(ruta, body) {
+    const r = await fetch(NUBE_URL + '/auth/v1/' + ruta, {
+      method: 'POST', headers: { apikey: NUBE_KEY, 'Content-Type': 'application/json' }, body: JSON.stringify(body)
+    });
+    const j = await r.json().catch(function () { return {}; });
+    return { ok: r.ok, j: j };
+  }
+  async function nubeRegistrar(email, password) {
+    const res = await nubeApiAuth('signup', { email: email, password: password });
+    if (!res.ok) throw new Error(mensajeNube(res.j));
+    if (res.j.access_token) { const s = sesionDeToken(res.j); nubeSetSesion(s); return { sesion: s }; }
+    return { pendienteCorreo: true };
+  }
+  async function nubeEntrar(email, password) {
+    const res = await nubeApiAuth('token?grant_type=password', { email: email, password: password });
+    if (!res.ok) throw new Error(mensajeNube(res.j));
+    const s = sesionDeToken(res.j); nubeSetSesion(s); return s;
+  }
+  async function nubeRefrescar() {
+    const s = nubeSesion(); if (!s || !s.refresh_token) return null;
+    const res = await nubeApiAuth('token?grant_type=refresh_token', { refresh_token: s.refresh_token });
+    if (!res.ok) { nubeBorrarSesion(); return null; }
+    const ns = sesionDeToken(res.j); nubeSetSesion(ns); return ns;
+  }
+  async function nubeSesionValida() {
+    let s = nubeSesion(); if (!s) return null;
+    if (Date.now() > s.expira - 60000) s = await nubeRefrescar();
+    return s;
+  }
+  async function nubeSubir() {
+    const s = await nubeSesionValida();
+    if (!s) return { ok: false, error: 'Sin sesión' };
+    const cuerpo = { user_id: s.uid, data: estado, updated_at: new Date().toISOString() };
+    const r = await fetch(NUBE_URL + '/rest/v1/backups', {
+      method: 'POST',
+      headers: { apikey: NUBE_KEY, Authorization: 'Bearer ' + s.access_token, 'Content-Type': 'application/json', Prefer: 'resolution=merge-duplicates' },
+      body: JSON.stringify(cuerpo)
+    });
+    if (!r.ok) return { ok: false, error: (await r.text()).slice(0, 200) };
+    nubeUltima = cuerpo.updated_at;
+    try { localStorage.setItem(CLAVE + '-mtime', cuerpo.updated_at); } catch (e) {}
+    return { ok: true, fecha: cuerpo.updated_at };
+  }
+  async function nubeBajar() {
+    const s = await nubeSesionValida();
+    if (!s) return { ok: false, error: 'Sin sesión' };
+    const r = await fetch(NUBE_URL + '/rest/v1/backups?select=data,updated_at&user_id=eq.' + s.uid, {
+      headers: { apikey: NUBE_KEY, Authorization: 'Bearer ' + s.access_token }
+    });
+    if (!r.ok) return { ok: false, error: (await r.text()).slice(0, 200) };
+    const arr = await r.json();
+    if (!arr.length) return { ok: true, vacio: true };
+    return { ok: true, data: arr[0].data, updated_at: arr[0].updated_at };
+  }
+  // Sincronización segura (el más nuevo gana): al entrar/abrir, decide subir o bajar
+  // según la marca de tiempo, para NUNCA pisar un respaldo bueno con datos vacíos/viejos.
+  async function nubeSincronizar() {
+    const res = await nubeBajar();
+    if (!res.ok) return { ok: false, error: res.error };
+    if (res.vacio) { await nubeSubir(); return { ok: true, accion: 'subida-inicial' }; }
+    nubeUltima = res.updated_at;
+    if (res.updated_at > nubeLocalMtime()) {
+      // la nube es más reciente → traer esos datos a este dispositivo
+      try {
+        localStorage.setItem(CLAVE + '-copia-pre-importacion', localStorage.getItem(CLAVE) || '');
+        localStorage.setItem(CLAVE, JSON.stringify(res.data));
+        localStorage.setItem(CLAVE + '-mtime', res.updated_at);
+      } catch (e) {}
+      return { ok: true, accion: 'restaurada', recargar: true };
+    }
+    return { ok: true, accion: 'al-dia' };
+  }
+  function nubeAutoGuardar() {
+    if (!nubeSesion()) return;
+    clearTimeout(nubeTimer);
+    nubeTimer = setTimeout(function () { nubeSubir().then(function (res) { if (res.ok) pintarNube(); }).catch(function () {}); }, 3000);
+  }
+  function nubeHaceCuanto(iso) {
+    if (!iso) return '';
+    const seg = Math.floor((Date.now() - new Date(iso).getTime()) / 1000);
+    if (seg < 60) return 'hace un momento';
+    if (seg < 3600) return 'hace ' + Math.floor(seg / 60) + ' min';
+    if (seg < 86400) return 'hace ' + Math.floor(seg / 3600) + ' h';
+    return 'el ' + new Date(iso).toLocaleDateString('es', { day: 'numeric', month: 'short' });
+  }
+  function nubeTraducir(m) {
+    m = (m || '').toLowerCase();
+    if (m.indexOf('email not confirmed') !== -1) return 'Debes confirmar tu correo antes de entrar (revisa tu email).';
+    if (m.indexOf('invalid login') !== -1 || m.indexOf('credentials') !== -1) return 'Correo o contraseña incorrectos.';
+    if (m.indexOf('already') !== -1 && m.indexOf('regist') !== -1) return 'Ese correo ya tiene cuenta. Usa "Entrar".';
+    if (m.indexOf('user already') !== -1) return 'Ese correo ya tiene cuenta. Usa "Entrar".';
+    if (m.indexOf('password') !== -1) return 'La contraseña debe tener al menos 6 caracteres.';
+    return m ? (m.charAt(0).toUpperCase() + m.slice(1)) : 'No se pudo conectar con la nube.';
+  }
+
+  function pintarNube() {
+    const cont = document.getElementById('nube-panel');
+    if (!cont) return;
+    cont.innerHTML = '';
+    const sesion = nubeSesion();
+
+    if (!sesion) {
+      const intro = document.createElement('p'); intro.className = 'ayuda';
+      intro.textContent = 'Entra o crea una cuenta para guardar una copia de tus datos en la nube y recuperarla en cualquier dispositivo.';
+      const email = document.createElement('input');
+      email.className = 'nota-input'; email.type = 'email'; email.placeholder = 'Tu correo'; email.autocomplete = 'email';
+      const pass = document.createElement('input');
+      pass.className = 'nota-input'; pass.type = 'password'; pass.placeholder = 'Contraseña (mín. 6)'; pass.style.marginTop = '8px';
+      const fila = document.createElement('div'); fila.className = 'gr-fila'; fila.style.marginTop = '10px';
+      const bEntrar = document.createElement('button'); bEntrar.className = 'btn-primario'; bEntrar.style.flex = '1'; bEntrar.textContent = 'Entrar';
+      const bCrear = document.createElement('button'); bCrear.className = 'btn-secundario'; bCrear.style.flex = '1'; bCrear.textContent = 'Crear cuenta';
+      fila.appendChild(bEntrar); fila.appendChild(bCrear);
+      const msg = document.createElement('p'); msg.className = 'ayuda'; msg.style.marginTop = '8px';
+      [intro, email, pass, fila, msg].forEach(function (x) { cont.appendChild(x); });
+      function setMsg(t, err) { msg.textContent = t; msg.style.color = err ? 'var(--danger)' : VERDE; }
+      function valido() { return /.+@.+\..+/.test(email.value.trim()) && pass.value.length >= 6; }
+      bEntrar.addEventListener('click', async function () {
+        if (!valido()) { setMsg('Escribe un correo válido y una contraseña de 6+ caracteres.', true); return; }
+        bEntrar.disabled = true; msg.style.color = ''; msg.textContent = 'Entrando…';
+        try {
+          await nubeEntrar(email.value.trim(), pass.value);
+          const sinc = await nubeSincronizar();
+          if (sinc.recargar) { location.reload(); return; }
+          pintarNube();
+        } catch (e) { setMsg(nubeTraducir(e.message), true); bEntrar.disabled = false; }
+      });
+      bCrear.addEventListener('click', async function () {
+        if (!valido()) { setMsg('Escribe un correo válido y una contraseña de 6+ caracteres.', true); return; }
+        bCrear.disabled = true; msg.style.color = ''; msg.textContent = 'Creando cuenta…';
+        try {
+          const res = await nubeRegistrar(email.value.trim(), pass.value);
+          if (res.pendienteCorreo) { setMsg('Cuenta creada. Revisa tu correo, confirma, y luego toca "Entrar".'); bCrear.disabled = false; }
+          else { const sinc = await nubeSincronizar(); if (sinc.recargar) { location.reload(); return; } pintarNube(); }
+        } catch (e) { setMsg(nubeTraducir(e.message), true); bCrear.disabled = false; }
+      });
+    } else {
+      const quien = document.createElement('p'); quien.className = 'ayuda';
+      quien.innerHTML = 'Conectado como <b></b>'; quien.querySelector('b').textContent = sesion.email || '';
+      const info = document.createElement('p'); info.className = 'ayuda';
+      info.textContent = nubeUltima ? 'Última copia en la nube: ' + nubeHaceCuanto(nubeUltima) : 'Al cambiar tus datos, se guardan solos en la nube.';
+      const f1 = document.createElement('div'); f1.className = 'gr-fila'; f1.style.marginTop = '10px';
+      const bGuardar = document.createElement('button'); bGuardar.className = 'btn-primario'; bGuardar.style.flex = '1'; bGuardar.textContent = '☁️ Guardar ahora';
+      const bBajar = document.createElement('button'); bBajar.className = 'btn-secundario'; bBajar.style.flex = '1'; bBajar.textContent = '⬇️ Restaurar de la nube';
+      f1.appendChild(bGuardar); f1.appendChild(bBajar);
+      const bSalir = document.createElement('button'); bSalir.className = 'btn-secundario'; bSalir.style.marginTop = '8px'; bSalir.textContent = 'Cerrar sesión';
+      const msg = document.createElement('p'); msg.className = 'ayuda'; msg.style.marginTop = '8px';
+      [quien, info, f1, bSalir, msg].forEach(function (x) { cont.appendChild(x); });
+      function setMsg(t, err) { msg.textContent = t; msg.style.color = err ? 'var(--danger)' : VERDE; }
+      bGuardar.addEventListener('click', async function () {
+        bGuardar.disabled = true; msg.style.color = ''; msg.textContent = 'Guardando…';
+        const res = await nubeSubir();
+        if (res.ok) { setMsg('Guardado en la nube ✓'); info.textContent = 'Última copia en la nube: hace un momento'; }
+        else { setMsg('No se pudo guardar: ' + res.error, true); }
+        bGuardar.disabled = false;
+      });
+      bBajar.addEventListener('click', async function () {
+        if (bBajar.dataset.confirmar !== '1') {
+          bBajar.dataset.confirmar = '1'; bBajar.textContent = '¿Seguro? Reemplaza este dispositivo';
+          setTimeout(function () { bBajar.dataset.confirmar = ''; bBajar.textContent = '⬇️ Restaurar de la nube'; }, 4000);
+          return;
+        }
+        msg.style.color = ''; msg.textContent = 'Restaurando…';
+        const res = await nubeBajar();
+        bBajar.dataset.confirmar = ''; bBajar.textContent = '⬇️ Restaurar de la nube';
+        if (!res.ok) { setMsg('No se pudo restaurar: ' + res.error, true); return; }
+        if (res.vacio) { setMsg('No hay ninguna copia en la nube todavía.', true); return; }
+        try {
+          localStorage.setItem(CLAVE + '-copia-pre-importacion', localStorage.getItem(CLAVE) || '');
+          localStorage.setItem(CLAVE, JSON.stringify(res.data));
+          localStorage.setItem(CLAVE + '-mtime', res.updated_at || new Date().toISOString());
+          setMsg('Restaurado ✓ Recargando…');
+          setTimeout(function () { location.reload(); }, 700);
+        } catch (e) { setMsg('Error al aplicar: ' + e.message, true); }
+      });
+      bSalir.addEventListener('click', function () { nubeBorrarSesion(); pintarNube(); });
+    }
   }
 
   function claveDia(d) {
@@ -4382,5 +4588,18 @@
   pintarTiempo();
   pintarRetos();
   tick();
+
+  // Nube: dibujar panel y, si hay sesión, refrescarla + traer fecha de la última copia
+  pintarNube();
+  (function () {
+    if (!nubeSesion()) return;
+    nubeSesionValida().then(function (s) {
+      if (!s) { pintarNube(); return; }
+      nubeSincronizar().then(function (r) {
+        if (r && r.recargar) { location.reload(); return; }
+        pintarNube();
+      }).catch(function () { pintarNube(); });
+    }).catch(function () {});
+  })();
 })();
 </script>
