@@ -943,6 +943,38 @@
         <h2>Mis retos<span class="mini-info" id="mini-retos"></span></h2>
         <div id="retos-lista"></div>
       </section>
+      <section class="card">
+        <div class="card-cab">
+          <h2>🏁 Mis metas</h2>
+          <button class="abrir" data-plegable="form-meta" aria-expanded="false" aria-label="Crear una meta">＋</button>
+        </div>
+        <div class="plegable oculto" id="form-meta">
+          <div class="tipos" id="meta-tipo">
+            <button class="tipo activo" data-mtipo="habito">✅ Hábito</button>
+            <button class="tipo" data-mtipo="tiempo">⏱ Tiempo</button>
+          </div>
+          <div id="meta-campo-habito" style="margin-top:10px;">
+            <label class="ayuda" style="display:block; margin:0 0 4px;">Hábito</label>
+            <select class="nota-input" id="meta-habito"></select>
+            <label class="ayuda" style="display:block; margin:8px 0 4px;">Veces por período</label>
+            <input class="nota-input" id="meta-veces" type="number" inputmode="numeric" placeholder="ej. 4">
+          </div>
+          <div id="meta-campo-tiempo" class="oculto" style="margin-top:10px;">
+            <label class="ayuda" style="display:block; margin:0 0 4px;">Actividad</label>
+            <input class="nota-input" id="meta-actividad" type="text" list="lista-actividades" placeholder="ej. Lectura" maxlength="40" autocomplete="off">
+            <label class="ayuda" style="display:block; margin:8px 0 4px;">Horas por período</label>
+            <input class="nota-input" id="meta-horas" type="number" inputmode="numeric" placeholder="ej. 5">
+          </div>
+          <label class="ayuda" for="meta-periodo" style="display:block; margin:10px 0 4px;">Período</label>
+          <select class="nota-input" id="meta-periodo">
+            <option value="semana">Por semana</option>
+            <option value="mes">Por mes</option>
+          </select>
+          <button class="btn-primario btn-nota" id="agregar-meta" disabled>Crear meta</button>
+          <p class="ayuda">Las metas son estándares que mantienes (se reinician cada semana o mes). El avance se ve en Hoy y en Resumen. Distinto de los Retos, que tienen un final.</p>
+        </div>
+        <div class="ajuste-habitos" id="metas-lista"></div>
+      </section>
     </div>
 
     <!-- ============ AGENDA ============ -->
@@ -1135,38 +1167,6 @@
       </section>
       <section class="card">
         <div class="card-cab">
-          <h2>Mis metas</h2>
-          <button class="abrir" data-plegable="form-meta" aria-expanded="false" aria-label="Crear una meta">＋</button>
-        </div>
-        <div class="plegable oculto" id="form-meta">
-          <div class="tipos" id="meta-tipo">
-            <button class="tipo activo" data-mtipo="habito">✅ Hábito</button>
-            <button class="tipo" data-mtipo="tiempo">⏱ Tiempo</button>
-          </div>
-          <div id="meta-campo-habito" style="margin-top:10px;">
-            <label class="ayuda" style="display:block; margin:0 0 4px;">Hábito</label>
-            <select class="nota-input" id="meta-habito"></select>
-            <label class="ayuda" style="display:block; margin:8px 0 4px;">Veces por período</label>
-            <input class="nota-input" id="meta-veces" type="number" inputmode="numeric" placeholder="ej. 4">
-          </div>
-          <div id="meta-campo-tiempo" class="oculto" style="margin-top:10px;">
-            <label class="ayuda" style="display:block; margin:0 0 4px;">Actividad</label>
-            <input class="nota-input" id="meta-actividad" type="text" list="lista-actividades" placeholder="ej. Lectura" maxlength="40" autocomplete="off">
-            <label class="ayuda" style="display:block; margin:8px 0 4px;">Horas por período</label>
-            <input class="nota-input" id="meta-horas" type="number" inputmode="numeric" placeholder="ej. 5">
-          </div>
-          <label class="ayuda" for="meta-periodo" style="display:block; margin:10px 0 4px;">Período</label>
-          <select class="nota-input" id="meta-periodo">
-            <option value="semana">Por semana</option>
-            <option value="mes">Por mes</option>
-          </select>
-          <button class="btn-primario btn-nota" id="agregar-meta" disabled>Crear meta</button>
-          <p class="ayuda">Las metas son estándares que mantienes (se reinician cada período). El avance se ve en Hoy y en Resumen. Distinto de los Retos, que tienen un final.</p>
-        </div>
-        <div class="ajuste-habitos" id="metas-lista"></div>
-      </section>
-      <section class="card">
-        <div class="card-cab">
           <h2>Presupuestos</h2>
           <button class="abrir" data-plegable="form-presu" aria-expanded="false" aria-label="Editar presupuestos">＋</button>
         </div>
@@ -1225,7 +1225,7 @@
   <div class="modal-fondo oculto" id="mas-fondo">
     <div class="modal" id="mas-modal">
       <h3>Más</h3>
-      <button class="mas-item" data-vista="retos"><span>🎯</span> Retos</button>
+      <button class="mas-item" data-vista="retos"><span>🎯</span> Objetivos</button>
       <button class="mas-item" data-vista="resumen"><span>📈</span> Resumen</button>
       <button class="mas-item" data-vista="graficas"><span>📊</span> Gráficas</button>
       <button class="mas-item" data-vista="ajustes"><span>⚙️</span> Ajustes</button>
@@ -2086,7 +2086,7 @@
     const h = new Date().getHours();
     return h < 12 ? 'Buenos días' : h < 19 ? 'Buenas tardes' : 'Buenas noches';
   }
-  const TITULOS = { hoy: saludo(), gastos: 'Gastos', agenda: 'Agenda', notas: 'Notas', resumen: 'Resumen', graficas: '📊 Gráficas', retos: 'Retos', ajustes: 'Ajustes' };
+  const TITULOS = { hoy: saludo(), gastos: 'Gastos', agenda: 'Agenda', notas: 'Notas', resumen: 'Resumen', graficas: '📊 Gráficas', retos: '🎯 Objetivos', ajustes: 'Ajustes' };
   document.getElementById('titulo').textContent = TITULOS.hoy;
   let vistaActiva = 'hoy';
   function navegarA(v) {
@@ -2105,7 +2105,7 @@
     if (v === 'agenda') pintarCalendario();
     if (v === 'notas') { pintarHistorial(); pintarLecturas(); }
     if (v === 'gastos') { pintarHistorialGastos(); pintarIngresos(); }
-    if (v === 'retos') pintarRetos();
+    if (v === 'retos') { pintarRetos(); pintarMetas(); }
     if (v === 'graficas') pintarGraficas();
   }
   document.querySelectorAll('.tab[data-vista]').forEach(function (tab) {
