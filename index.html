@@ -299,6 +299,31 @@
   .reto-hoy-acc { margin-top: 8px; display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
   .reto-hoy-compacto { display: flex; width: 100%; align-items: center; justify-content: space-between; gap: 8px; padding: 9px 2px; border-bottom: 1px solid var(--line); background: transparent; text-align: left; }
   .reto-hoy-compacto:last-child { border-bottom: none; }
+  /* --- Malos hábitos (dejar / reducir) --- */
+  .malo { border: 1px solid var(--line); border-radius: 14px; padding: 14px; margin-bottom: 10px; }
+  .malo-cab { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; }
+  .malo-nombre { font-weight: 600; font-size: 1rem; }
+  .malo-modo { font-size: 0.72rem; color: var(--ink-soft); white-space: nowrap; }
+  .malo-crono { font-variant-numeric: tabular-nums; font-size: 1.6rem; font-weight: 700; letter-spacing: -0.01em; margin: 10px 0 2px; }
+  .malo-crono-rot { font-size: 0.75rem; color: var(--ink-soft); }
+  .malo-hoy { display: flex; align-items: baseline; gap: 8px; margin: 10px 0 4px; }
+  .malo-hoy b { font-size: 1.5rem; font-variant-numeric: tabular-nums; }
+  .malo-datos { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 10px; font-size: 0.78rem; color: var(--ink-soft); }
+  .malo-datos b { display: block; color: var(--ink); font-size: 0.95rem; font-variant-numeric: tabular-nums; }
+  .malo-acciones { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
+  .malo-btn { flex: 1; min-width: 120px; height: 44px; border-radius: 12px; font-weight: 600; background: var(--surface-2); color: var(--ink); }
+  .malo-btn.peligro { background: var(--danger); color: #FFF6F2; }
+  .malo-medallas { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 10px; }
+  .malo-med { font-size: 0.7rem; padding: 3px 8px; border-radius: 999px; border: 1px solid var(--line); color: var(--ink-soft); }
+  .malo-med.ganada { background: var(--accent); color: var(--accent-ink); border-color: transparent; font-weight: 600; }
+  .malo-tira { display: flex; gap: 2px; margin-top: 10px; }
+  .malo-dia { flex: 1; height: 22px; border-radius: 3px; background: var(--surface-2); }
+  .malo-razones { margin-top: 10px; padding: 10px 12px; border-radius: 10px; background: var(--surface-2); font-size: 0.85rem; }
+  .malo-razones ul { margin: 6px 0 0; padding-left: 18px; }
+  .malo-razones li { margin: 3px 0; }
+  .malo-hist { margin-top: 10px; font-size: 0.8rem; color: var(--ink-soft); }
+  .malo-hist-item { display: flex; justify-content: space-between; gap: 8px; padding: 6px 0; border-bottom: 1px solid var(--line); }
+  .malo-hist-item:last-child { border-bottom: none; }
   .rhc-nom { font-size: 0.9rem; color: var(--ink-soft); }
   .rhc-racha { font-size: 0.8rem; color: var(--accent); font-variant-numeric: tabular-nums; white-space: nowrap; }
   .meta-fila { padding: 9px 0; border-bottom: 1px solid var(--line); }
@@ -945,6 +970,44 @@
       </section>
       <section class="card">
         <div class="card-cab">
+          <h2>🚭 Dejar o reducir<span class="mini-info" id="mini-malos"></span></h2>
+          <button class="abrir" data-plegable="form-malo" aria-expanded="false" aria-label="Añadir un hábito a dejar">＋</button>
+        </div>
+        <div class="plegable oculto" id="form-malo">
+          <label class="ayuda" style="display:block; margin:0 0 6px;">Elige un emoji</label>
+          <div class="emoji-picker" id="malo-emoji"></div>
+          <input class="nota-input" id="malo-nombre" type="text" placeholder="¿Qué hábito? (ej. Redes sociales)" maxlength="40" style="margin-top:10px;">
+          <div class="tipos" id="malo-modo" style="margin-top:10px;">
+            <button class="tipo activo" data-mmodo="dejar">🚭 Dejarlo</button>
+            <button class="tipo" data-mmodo="reducir">📉 Reducirlo</button>
+          </div>
+          <div id="malo-campo-limite" class="oculto" style="margin-top:10px;">
+            <label class="ayuda" for="malo-limite" style="display:block; margin:0 0 4px;">Límite: máximo por día</label>
+            <input class="nota-input" id="malo-limite" type="number" inputmode="numeric" placeholder="ej. 3">
+          </div>
+          <label class="ayuda" for="malo-base" style="display:block; margin:10px 0 4px;">¿Cuántas veces al día lo hacías? (para calcular tu ahorro)</label>
+          <input class="nota-input" id="malo-base" type="number" inputmode="numeric" placeholder="ej. 10">
+          <div class="gr-fila" style="margin-top:10px;">
+            <div style="flex:1;">
+              <label class="ayuda" for="malo-costo" style="display:block; margin:0 0 4px;">$ por vez (opcional)</label>
+              <input class="nota-input" id="malo-costo" type="number" inputmode="decimal" placeholder="ej. 5000">
+            </div>
+            <div style="flex:1;">
+              <label class="ayuda" for="malo-min" style="display:block; margin:0 0 4px;">Minutos por vez (opcional)</label>
+              <input class="nota-input" id="malo-min" type="number" inputmode="numeric" placeholder="ej. 15">
+            </div>
+          </div>
+          <label class="ayuda" for="malo-razones" style="display:block; margin:10px 0 4px;">Mis razones (una por línea) — las verás cuando flaquees</label>
+          <textarea class="nota-dia" id="malo-razones" rows="3" placeholder="Quiero dormir mejor&#10;Recuperar mi concentración" style="font-family: inherit; font-style: normal; font-size: 0.85rem;"></textarea>
+          <label class="ayuda" for="malo-inicio" style="display:block; margin:10px 0 4px;">Desde cuándo</label>
+          <input class="nota-input" id="malo-inicio" type="date">
+          <button class="btn-primario btn-nota" id="guardar-malo" disabled>Empezar</button>
+          <p class="ayuda">🚭 Dejarlo = el contador corre solo desde la última vez; solo tocas si recaes. 📉 Reducirlo = registras cada vez y el día queda verde si no pasas tu límite.</p>
+        </div>
+        <div id="malos-lista"></div>
+      </section>
+      <section class="card">
+        <div class="card-cab">
           <h2>🏁 Mis metas</h2>
           <button class="abrir" data-plegable="form-meta" aria-expanded="false" aria-label="Crear una meta">＋</button>
         </div>
@@ -1346,6 +1409,8 @@
       timer: null,   // { actividad, detalle, inicio } — cronómetro en marcha
       retos: [],     // { id, nombre, tipo, inicio, metaDias|metaMinutos, dias|acumulado, completado }
       metas: [],     // { id, tipo:'habito'|'tiempo', habitoId|actividad, objetivo, periodo:'semana'|'mes' }
+      malos: [],     // hábitos a dejar/reducir: { id, nombre, emoji, modo:'dejar'|'reducir', inicio,
+                     //   ultima (ISO, modo dejar), limite, base, costo, min, razones:[], registros:[{f,h,n,c}], recordMs }
     };
   }
 
@@ -1398,6 +1463,14 @@
   if (typeof estado.timer === 'undefined') estado.timer = null;
   if (!estado.retos) estado.retos = [];
   if (!estado.metas) estado.metas = [];
+  if (!estado.malos) estado.malos = [];
+  // Migración defensiva: cada mal hábito debe tener sus listas y su marca de inicio
+  estado.malos.forEach(function (m) {
+    if (!m.razones) m.razones = [];
+    if (!m.registros) m.registros = [];
+    if (typeof m.recordMs !== 'number') m.recordMs = 0;
+    if (!m.ultima) m.ultima = new Date(m.inicio + 'T00:00:00').toISOString();
+  });
   // Migración eventos: el booleano "anual" pasa a "repeticion"
   estado.eventos.forEach(function (ev) {
     if (typeof ev.repeticion === 'undefined') ev.repeticion = ev.anual ? 'anual' : 'ninguna';
@@ -1985,6 +2058,14 @@
       html = '<h3>Editar reto</h3><label>Nombre</label><input id="ed-texto" type="text" maxlength="50">' +
         '<label>' + (o.tipo === 'abstinencia' ? 'Meta (días seguidos)' : 'Meta (horas)') + '</label><input id="ed-meta" type="number" inputmode="numeric">' +
         '<label>Fecha de inicio</label><input id="ed-fecha" type="date">';
+    } else if (tipo === 'malo') {
+      o = buscarPorId(estado.malos, id); if (!o) return;
+      html = '<h3>Editar hábito</h3><label>Nombre</label><input id="ed-texto" type="text" maxlength="40">' +
+        (o.modo === 'reducir' ? '<label>Límite por día</label><input id="ed-limite-n" type="number" inputmode="numeric">' : '') +
+        '<label>Veces al día que lo hacías</label><input id="ed-base" type="number" inputmode="numeric">' +
+        '<label>$ por vez</label><input id="ed-costo" type="number" inputmode="decimal">' +
+        '<label>Minutos por vez</label><input id="ed-min2" type="number" inputmode="numeric">' +
+        '<label>Mis razones (una por línea)</label><textarea id="ed-razones" rows="3"></textarea>';
     } else if (tipo === 'meta') {
       o = buscarPorId(estado.metas, id); if (!o) return;
       html = '<h3>Editar meta</h3><p class="ayuda" id="ed-meta-nom" style="margin-bottom:8px;"></p>' +
@@ -2005,6 +2086,7 @@
     else if (tipo === 'habito') { set('ed-texto', o.nombre); editando.emoji = o.emoji || ''; construirEmojiPicker(document.getElementById('ed-emoji'), o.emoji || '', function (e) { editando.emoji = e; }); }
     else if (tipo === 'tiempo') { set('ed-texto', o.actividad); set('ed-min', o.minutos); set('ed-detalle', o.detalle); set('ed-fecha', o.fecha); }
     else if (tipo === 'reto') { set('ed-texto', o.nombre); set('ed-meta', o.tipo === 'abstinencia' ? o.metaDias : Math.round(o.metaMinutos / 60)); set('ed-fecha', o.inicio); }
+    else if (tipo === 'malo') { set('ed-texto', o.nombre); set('ed-limite-n', o.limite); set('ed-base', o.base); set('ed-costo', o.costo); set('ed-min2', o.min); set('ed-razones', (o.razones || []).join('\n')); }
     else if (tipo === 'meta') { document.getElementById('ed-meta-nom').textContent = nombreMeta(o); set('ed-meta', o.tipo === 'habito' ? o.objetivo : Math.round(o.objetivo / 60)); document.getElementById('ed-periodo').value = o.periodo; }
 
     document.getElementById('editor-cancelar').addEventListener('click', cerrarEditor);
@@ -2019,7 +2101,7 @@
 
   function refrescarTodo() {
     pintarNotasHoy(); pintarHistorial(); pintarGastos(); pintarHistorialGastos();
-    pintarTareas(); pintarEventos(); pintarCalendario(); pintarLecturas(); pintarHabitos(); pintarAjustes(); pintarTiempo(); pintarRetos(); pintarMetas();
+    pintarTareas(); pintarEventos(); pintarCalendario(); pintarLecturas(); pintarHabitos(); pintarAjustes(); pintarTiempo(); pintarRetos(); pintarMetas(); pintarMalos();
   }
 
   function guardarEdicion() {
@@ -2066,6 +2148,15 @@
       if (!t || !(meta > 0)) return;
       o.nombre = t; o.inicio = val('ed-fecha') || o.inicio;
       if (o.tipo === 'abstinencia') o.metaDias = meta; else o.metaMinutos = meta * 60;
+    } else if (tipo === 'malo') {
+      const o = buscarPorId(estado.malos, id); if (!o) return;
+      const t = val('ed-texto').trim(); if (!t) return;
+      o.nombre = t;
+      if (o.modo === 'reducir') { const l = parseInt(val('ed-limite-n'), 10); if (l >= 0) o.limite = l; }
+      o.base = parseFloat(val('ed-base')) || 0;
+      o.costo = parseFloat(val('ed-costo')) || 0;
+      o.min = parseFloat(val('ed-min2')) || 0;
+      o.razones = val('ed-razones').split('\n').map(function (x) { return x.trim(); }).filter(Boolean);
     } else if (tipo === 'meta') {
       const o = buscarPorId(estado.metas, id); if (!o) return;
       const v = parseFloat(val('ed-meta')); if (!(v > 0)) return;
@@ -2105,7 +2196,7 @@
     if (v === 'agenda') pintarCalendario();
     if (v === 'notas') { pintarHistorial(); pintarLecturas(); }
     if (v === 'gastos') { pintarHistorialGastos(); pintarIngresos(); }
-    if (v === 'retos') { pintarRetos(); pintarMetas(); }
+    if (v === 'retos') { pintarRetos(); pintarMetas(); pintarMalos(); }
     if (v === 'graficas') pintarGraficas();
   }
   document.querySelectorAll('.tab[data-vista]').forEach(function (tab) {
@@ -3434,6 +3525,362 @@
     pintarMetas();
   });
 
+  // ---------- Malos hábitos: dejar o reducir ----------
+  // Filosofía: el contador corre SOLO desde la última vez. No hay que marcar nada
+  // cada día; solo se toca el botón cuando hay una recaída (o un consumo, si el
+  // modo es "reducir"). Así olvidar abrir la app nunca castiga tu progreso.
+  const HITOS_MALO = [
+    { d: 1, n: '1 día', e: '🌱' }, { d: 3, n: '3 días', e: '💪' }, { d: 7, n: '1 semana', e: '⭐' },
+    { d: 14, n: '2 semanas', e: '🔥' }, { d: 30, n: '1 mes', e: '🏅' }, { d: 60, n: '2 meses', e: '🥈' },
+    { d: 90, n: '3 meses', e: '🥇' }, { d: 180, n: '6 meses', e: '💎' }, { d: 365, n: '1 año', e: '👑' }
+  ];
+  const malosAbiertos = {}; // id -> 'razones' | 'historial' | null
+
+  function maloLimite(m) { return m.modo === 'reducir' ? (m.limite || 0) : 0; }
+  function maloFechaInicio(m) {
+    const p = (m.inicio || '').split('-');
+    return p.length === 3 ? new Date(p[0], p[1] - 1, p[2]) : null;
+  }
+  function maloDiasDesdeInicio(m) {
+    const ini = maloFechaInicio(m);
+    if (!ini) return 1;
+    const hoy = new Date();
+    return Math.max(1, Math.floor((new Date(hoy.getFullYear(), hoy.getMonth(), hoy.getDate()) - ini) / 86400000) + 1);
+  }
+  function maloConsumo(m, fecha) {
+    let t = 0;
+    m.registros.forEach(function (r) { if (r.f === fecha) t += (r.c || 1); });
+    return t;
+  }
+  function maloTotal(m) {
+    let t = 0;
+    m.registros.forEach(function (r) { t += (r.c || 1); });
+    return t;
+  }
+  function maloEvitadas(m) {
+    return Math.max(0, maloDiasDesdeInicio(m) * (m.base || 0) - maloTotal(m));
+  }
+  function maloAhorro(m) { return maloEvitadas(m) * (m.costo || 0); }
+  function maloMinutos(m) { return maloEvitadas(m) * (m.min || 0); }
+  function maloMsLimpio(m) {
+    const t = new Date(m.ultima).getTime();
+    return isNaN(t) ? 0 : Math.max(0, Date.now() - t);
+  }
+  function maloRachaDias(m) {
+    if (m.modo === 'dejar') return Math.floor(maloMsLimpio(m) / 86400000);
+    const ini = maloFechaInicio(m);
+    const d = new Date();
+    let n = 0;
+    while (n < 3700) {
+      if (ini && new Date(d.getFullYear(), d.getMonth(), d.getDate()) < ini) break;
+      if (maloConsumo(m, claveDia(d)) <= maloLimite(m)) { n++; d.setDate(d.getDate() - 1); }
+      else break;
+    }
+    return n;
+  }
+  function fmtCronoLargo(ms) {
+    const s = Math.floor(ms / 1000);
+    const d = Math.floor(s / 86400), h = Math.floor((s % 86400) / 3600), mi = Math.floor((s % 3600) / 60), se = s % 60;
+    if (d > 0) return d + 'd ' + h + 'h ' + mi + 'm';
+    if (h > 0) return h + 'h ' + mi + 'm ' + se + 's';
+    return mi + 'm ' + se + 's';
+  }
+  // Patrones de recaída: día de la semana y franja horaria más frecuentes
+  function maloDisparadores(m) {
+    if (m.registros.length < 3) return null;
+    const dias = [0, 0, 0, 0, 0, 0, 0];
+    const franjas = { 'de madrugada': 0, 'en la mañana': 0, 'en la tarde': 0, 'en la noche': 0 };
+    m.registros.forEach(function (r) {
+      const p = (r.f || '').split('-');
+      if (p.length === 3) dias[(new Date(p[0], p[1] - 1, p[2]).getDay() + 6) % 7]++;
+      const hh = parseInt((r.h || '').slice(0, 2), 10);
+      if (!isNaN(hh)) {
+        if (hh < 6) franjas['de madrugada']++;
+        else if (hh < 12) franjas['en la mañana']++;
+        else if (hh < 19) franjas['en la tarde']++;
+        else franjas['en la noche']++;
+      }
+    });
+    let iDia = 0;
+    for (let i = 1; i < 7; i++) if (dias[i] > dias[iDia]) iDia = i;
+    let mejorF = '', nF = 0;
+    Object.keys(franjas).forEach(function (k) { if (franjas[k] > nF) { nF = franjas[k]; mejorF = k; } });
+    // Solo afirmamos un patrón cuando algo se repite de verdad (2+ veces).
+    // Con una sola vez no hay patrón, y decirlo sería engañoso.
+    const partes = [];
+    if (dias[iDia] >= 2) partes.push('los ' + DIAS_LARGO[iDia] + ' (' + dias[iDia] + ' veces)');
+    if (nF >= 2) partes.push(mejorF + ' (' + nF + ' veces)');
+    if (!partes.length) return null;
+    return { texto: 'Recaes sobre todo ' + partes.join(' y ') + '.' };
+  }
+
+  // El récord debe subir en vivo: si tu racha actual ya supera tu mejor marca,
+  // esa marca ES la nueva (no hay que esperar a recaer para reconocerlo).
+  function maloSyncRecord(m) {
+    const actualMs = m.modo === 'dejar' ? maloMsLimpio(m) : maloRachaDias(m) * 86400000;
+    if (actualMs > (m.recordMs || 0)) { m.recordMs = actualMs; return true; }
+    return false;
+  }
+
+  function maloRegistrar(m, nota) {
+    const ahora = new Date();
+    if (m.modo === 'dejar') {
+      const rachaMs = maloMsLimpio(m);
+      if (rachaMs > (m.recordMs || 0)) m.recordMs = rachaMs;
+    }
+    m.registros.push({ f: claveDia(ahora), h: ahora.toTimeString().slice(0, 5), n: nota || '', c: 1 });
+    if (m.modo === 'dejar') m.ultima = ahora.toISOString();
+    guardar();
+    pintarMalos();
+  }
+
+  function pintarMalos() {
+    const cont = document.getElementById('malos-lista');
+    if (!cont) return;
+    cont.innerHTML = '';
+    const mini = document.getElementById('mini-malos');
+    if (mini) mini.textContent = estado.malos.length ? ' · ' + estado.malos.length : '';
+    if (estado.malos.length === 0) {
+      cont.innerHTML = '<p class="vacio">Nada por ahora. Toca ＋ para dejar o reducir un hábito (ej. redes sociales, azúcar).</p>';
+      return;
+    }
+    let cambioRecord = false;
+    estado.malos.forEach(function (m) { if (maloSyncRecord(m)) cambioRecord = true; });
+    if (cambioRecord) { try { localStorage.setItem(CLAVE, JSON.stringify(estado)); } catch (e) {} }
+    estado.malos.forEach(function (m) {
+      const racha = maloRachaDias(m);
+      const recordDias = Math.floor((m.recordMs || 0) / 86400000);
+      const card = document.createElement('div');
+      card.className = 'malo';
+
+      // Cabecera
+      const cab = document.createElement('div');
+      cab.className = 'malo-cab';
+      const izq = document.createElement('div');
+      const nom = document.createElement('div'); nom.className = 'malo-nombre';
+      nom.textContent = (m.emoji ? m.emoji + ' ' : '') + m.nombre;
+      const modo = document.createElement('div'); modo.className = 'malo-modo';
+      modo.textContent = (m.modo === 'dejar' ? '🚭 Dejarlo' : '📉 Máx ' + maloLimite(m) + '/día') + ' · desde ' + fechaCorta(m.inicio);
+      izq.appendChild(nom); izq.appendChild(modo);
+      const acc = document.createElement('div');
+      acc.innerHTML = botonEditar() + '<button class="g-borrar" aria-label="Borrar">✕</button>';
+      cab.appendChild(izq); cab.appendChild(acc);
+      card.appendChild(cab);
+
+      // Contador principal
+      if (m.modo === 'dejar') {
+        const cr = document.createElement('div'); cr.className = 'malo-crono';
+        cr.dataset.ultima = m.ultima;
+        cr.textContent = fmtCronoLargo(maloMsLimpio(m));
+        const rot = document.createElement('div'); rot.className = 'malo-crono-rot';
+        rot.textContent = 'sin ' + m.nombre.toLowerCase();
+        card.appendChild(cr); card.appendChild(rot);
+      } else {
+        const hoyN = maloConsumo(m, HOY), lim = maloLimite(m);
+        const fila = document.createElement('div'); fila.className = 'malo-hoy';
+        const b = document.createElement('b');
+        b.textContent = hoyN + ' / ' + lim;
+        b.style.color = hoyN > lim ? 'var(--danger)' : VERDE;
+        const et = document.createElement('span'); et.className = 'malo-crono-rot';
+        et.textContent = hoyN > lim ? 'te pasaste hoy' : 'hoy vas bien';
+        fila.appendChild(b); fila.appendChild(et);
+        card.appendChild(fila);
+        const barra = document.createElement('div'); barra.className = 'reto-barra';
+        const dentro = document.createElement('div');
+        dentro.style.width = Math.min(100, lim ? Math.round(hoyN / lim * 100) : 100) + '%';
+        if (hoyN > lim) dentro.style.background = 'var(--danger)';
+        barra.appendChild(dentro); card.appendChild(barra);
+      }
+
+      // Datos: racha, récord, ahorro, tiempo
+      const datos = document.createElement('div'); datos.className = 'malo-datos';
+      function dato(valor, rot) {
+        const d = document.createElement('div');
+        const bb = document.createElement('b'); bb.textContent = valor;
+        d.appendChild(bb); d.appendChild(document.createTextNode(rot));
+        return d;
+      }
+      datos.appendChild(dato(racha + (racha === 1 ? ' día' : ' días'), 'racha actual'));
+      datos.appendChild(dato('🏆 ' + recordDias, 'tu récord (días)'));
+      if (m.costo > 0) datos.appendChild(dato('$ ' + fmtMoneda.format(maloAhorro(m)), 'ahorrado'));
+      if (m.min > 0) datos.appendChild(dato(fmtDur(maloMinutos(m)), 'recuperado'));
+      card.appendChild(datos);
+
+      // Medallas
+      const meds = document.createElement('div'); meds.className = 'malo-medallas';
+      HITOS_MALO.forEach(function (h) {
+        const s = document.createElement('span');
+        s.className = 'malo-med' + (racha >= h.d ? ' ganada' : '');
+        s.textContent = h.e + ' ' + h.n;
+        meds.appendChild(s);
+      });
+      card.appendChild(meds);
+
+      // Tira de los últimos 30 días (verde / rojo)
+      const tira = document.createElement('div'); tira.className = 'malo-tira';
+      const ini = maloFechaInicio(m);
+      for (let i = 29; i >= 0; i--) {
+        const d = new Date(); d.setDate(d.getDate() - i);
+        const cel = document.createElement('div'); cel.className = 'malo-dia';
+        const dNorm = new Date(d.getFullYear(), d.getMonth(), d.getDate());
+        if (!ini || dNorm >= ini) {
+          cel.style.background = maloConsumo(m, claveDia(d)) > maloLimite(m) ? 'var(--danger)' : VERDE;
+        }
+        cel.title = fechaCorta(claveDia(d));
+        tira.appendChild(cel);
+      }
+      card.appendChild(tira);
+
+      // Acciones
+      const accs = document.createElement('div'); accs.className = 'malo-acciones';
+      const bPrin = document.createElement('button');
+      bPrin.className = 'malo-btn' + (m.modo === 'dejar' ? ' peligro' : '');
+      bPrin.textContent = m.modo === 'dejar' ? 'Recaí' : '+1 vez';
+      bPrin.addEventListener('click', function () {
+        if (m.modo === 'reducir') { maloRegistrar(m, ''); return; }
+        if (bPrin.dataset.confirmar !== '1') {
+          bPrin.dataset.confirmar = '1';
+          bPrin.textContent = '¿Seguro? Toca otra vez';
+          setTimeout(function () { bPrin.dataset.confirmar = ''; bPrin.textContent = 'Recaí'; }, 4000);
+          return;
+        }
+        maloRegistrar(m, '');
+      });
+      accs.appendChild(bPrin);
+      if ((m.razones || []).length) {
+        const bRaz = document.createElement('button');
+        bRaz.className = 'malo-btn'; bRaz.textContent = '💭 Mis razones';
+        bRaz.addEventListener('click', function () {
+          malosAbiertos[m.id] = malosAbiertos[m.id] === 'razones' ? null : 'razones';
+          pintarMalos();
+        });
+        accs.appendChild(bRaz);
+      }
+      if (m.registros.length) {
+        const bHist = document.createElement('button');
+        bHist.className = 'malo-btn';
+        bHist.textContent = '📜 Historial (' + m.registros.length + ')';
+        bHist.addEventListener('click', function () {
+          malosAbiertos[m.id] = malosAbiertos[m.id] === 'historial' ? null : 'historial';
+          pintarMalos();
+        });
+        accs.appendChild(bHist);
+      }
+      card.appendChild(accs);
+
+      // Paneles desplegables
+      if (malosAbiertos[m.id] === 'razones') {
+        const raz = document.createElement('div'); raz.className = 'malo-razones';
+        raz.innerHTML = '<b>Por qué lo estoy dejando:</b><ul></ul>';
+        const ul = raz.querySelector('ul');
+        (m.razones || []).forEach(function (r) {
+          const li = document.createElement('li'); li.textContent = r; ul.appendChild(li);
+        });
+        card.appendChild(raz);
+      }
+      if (malosAbiertos[m.id] === 'historial') {
+        const hist = document.createElement('div'); hist.className = 'malo-hist';
+        const disp = maloDisparadores(m);
+        if (disp) {
+          const p = document.createElement('div');
+          p.className = 'malo-razones';
+          p.style.marginBottom = '8px';
+          p.textContent = '🔎 ' + disp.texto;
+          hist.appendChild(p);
+        }
+        m.registros.slice().reverse().slice(0, 15).forEach(function (r) {
+          const it = document.createElement('div'); it.className = 'malo-hist-item';
+          const izqT = document.createElement('span');
+          izqT.textContent = fechaCorta(r.f) + (r.h ? ' · ' + r.h : '') + (r.n ? ' — ' + r.n : '');
+          const del = document.createElement('button');
+          del.className = 'g-borrar'; del.textContent = '✕'; del.setAttribute('aria-label', 'Borrar registro');
+          del.addEventListener('click', function () {
+            const idx = m.registros.indexOf(r);
+            if (idx !== -1) m.registros.splice(idx, 1);
+            guardar(); pintarMalos();
+          });
+          it.appendChild(izqT); it.appendChild(del);
+          hist.appendChild(it);
+        });
+        card.appendChild(hist);
+      }
+
+      // Editar / borrar
+      cab.querySelector('.g-editar').addEventListener('click', function () { abrirEditor('malo', m.id); });
+      cab.querySelector('.g-borrar').addEventListener('click', function () {
+        estado.malos = estado.malos.filter(function (x) { return x.id !== m.id; });
+        guardar(); pintarMalos();
+        ofrecerDeshacer('Hábito eliminado', function () {
+          estado.malos.push(m); guardar(); pintarMalos();
+        });
+      });
+
+      cont.appendChild(card);
+    });
+  }
+
+  // Formulario de nuevo mal hábito
+  let maloModoNuevo = 'dejar';
+  let maloEmojiNuevo = '';
+  (function () {
+    const cont = document.getElementById('malo-emoji');
+    if (!cont) return;
+    construirEmojiPicker(cont, '', function (e) { maloEmojiNuevo = e; validarMalo(); });
+    document.querySelectorAll('#malo-modo .tipo').forEach(function (chip) {
+      chip.addEventListener('click', function () {
+        maloModoNuevo = chip.dataset.mmodo;
+        document.querySelectorAll('#malo-modo .tipo').forEach(function (c) { c.classList.toggle('activo', c === chip); });
+        document.getElementById('malo-campo-limite').classList.toggle('oculto', maloModoNuevo !== 'reducir');
+        validarMalo();
+      });
+    });
+    const inicio = document.getElementById('malo-inicio');
+    if (inicio) inicio.value = HOY;
+    ['malo-nombre', 'malo-limite'].forEach(function (id) {
+      const el = document.getElementById(id);
+      if (el) el.addEventListener('input', validarMalo);
+    });
+    const btn = document.getElementById('guardar-malo');
+    if (btn) btn.addEventListener('click', function () {
+      if (btn.disabled) return;
+      const nombre = document.getElementById('malo-nombre').value.trim();
+      const inicioV = document.getElementById('malo-inicio').value || HOY;
+      const nuevo = {
+        id: 'mh' + Date.now(),
+        nombre: nombre,
+        emoji: maloEmojiNuevo,
+        modo: maloModoNuevo,
+        inicio: inicioV,
+        ultima: new Date(inicioV + 'T00:00:00').toISOString(),
+        limite: maloModoNuevo === 'reducir' ? (parseInt(document.getElementById('malo-limite').value, 10) || 0) : 0,
+        base: parseFloat(document.getElementById('malo-base').value) || 0,
+        costo: parseFloat(document.getElementById('malo-costo').value) || 0,
+        min: parseFloat(document.getElementById('malo-min').value) || 0,
+        razones: document.getElementById('malo-razones').value.split('\n').map(function (x) { return x.trim(); }).filter(Boolean),
+        registros: [],
+        recordMs: 0
+      };
+      estado.malos.push(nuevo);
+      guardar();
+      ['malo-nombre', 'malo-limite', 'malo-base', 'malo-costo', 'malo-min', 'malo-razones'].forEach(function (id) {
+        const el = document.getElementById(id); if (el) el.value = '';
+      });
+      maloEmojiNuevo = '';
+      construirEmojiPicker(document.getElementById('malo-emoji'), '', function (e) { maloEmojiNuevo = e; validarMalo(); });
+      document.getElementById('malo-inicio').value = HOY;
+      btn.disabled = true;
+      plegar('form-malo');
+      pintarMalos();
+    });
+  })();
+  function validarMalo() {
+    const btn = document.getElementById('guardar-malo');
+    if (!btn) return;
+    const nombre = (document.getElementById('malo-nombre') || {}).value || '';
+    const limOk = maloModoNuevo !== 'reducir' || parseInt((document.getElementById('malo-limite') || {}).value, 10) >= 0;
+    btn.disabled = !(nombre.trim() && maloEmojiNuevo && limOk);
+  }
+
   // ---------- Gastos ----------
   let catActiva = CATEGORIAS[0];
   function pintarCats() {
@@ -4551,6 +4998,14 @@
     document.getElementById('reloj').textContent = '· ' + ahora.toTimeString().slice(0, 5);
     TITULOS.hoy = saludo();
     if (vistaActiva === 'hoy') document.getElementById('titulo').textContent = TITULOS.hoy;
+    // Contadores en vivo de los hábitos que estás dejando (solo si la vista está abierta)
+    if (vistaActiva === 'retos') {
+      const cronos = document.querySelectorAll('.malo-crono[data-ultima]');
+      for (let i = 0; i < cronos.length; i++) {
+        const t = new Date(cronos[i].dataset.ultima).getTime();
+        if (!isNaN(t)) cronos[i].textContent = fmtCronoLargo(Math.max(0, Date.now() - t));
+      }
+    }
     if (estado.timer) {
       const cr = document.querySelector('#timer-activo .t-crono');
       if (cr) cr.textContent = fmtCrono(Math.floor((Date.now() - estado.timer.inicio) / 1000));
@@ -4587,6 +5042,7 @@
   pintarEventos();
   pintarTiempo();
   pintarRetos();
+  pintarMalos();
   tick();
 
   // Nube: dibujar panel y, si hay sesión, refrescarla + traer fecha de la última copia
