@@ -2,12 +2,38 @@
   "name": "Tracker",
   "short_name": "Tracker",
   "description": "Tracker personal de hábitos, gastos, notas, tareas y agenda",
+  "lang": "es",
+  "dir": "ltr",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
-  "background_color": "#FAFAF8",
-  "theme_color": "#FAFAF8",
+  "background_color": "#0A0A0A",
+  "theme_color": "#0A0A0A",
   "icons": [
-    { "src": "icon.png?v=2", "sizes": "512x512", "type": "image/png", "purpose": "any" }
+    { "src": "icon.png?v=2", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icon.png?v=2", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ],
+  "shortcuts": [
+    {
+      "name": "Gasto rápido",
+      "short_name": "Gasto",
+      "description": "Registrar un gasto al instante",
+      "url": "./?ir=gasto",
+      "icons": [{ "src": "icon.png?v=2", "sizes": "512x512", "type": "image/png" }]
+    },
+    {
+      "name": "Nota o tarea",
+      "short_name": "Nota",
+      "description": "Apuntar una nota o un pendiente",
+      "url": "./?ir=nota",
+      "icons": [{ "src": "icon.png?v=2", "sizes": "512x512", "type": "image/png" }]
+    },
+    {
+      "name": "Dejando",
+      "short_name": "Dejando",
+      "description": "Ver los hábitos que estoy dejando",
+      "url": "./?ir=malos",
+      "icons": [{ "src": "icon.png?v=2", "sizes": "512x512", "type": "image/png" }]
+    }
   ]
 }

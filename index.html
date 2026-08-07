@@ -1,3 +1,4 @@
+<meta charset="utf-8">
 <title>Tracker</title>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#0A0A0A">
@@ -6,7 +7,7 @@
 <link rel="apple-touch-icon" href="icon.png?v=2">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Tracker">
-<script>document.documentElement.setAttribute('data-theme', 'dark');</script>
+<script>document.documentElement.setAttribute('data-theme', 'dark');document.documentElement.lang = 'es';</script>
 <style>
   :root {
     --bg: #FAFAF8;
@@ -324,6 +325,14 @@
   .malo-hist { margin-top: 10px; font-size: 0.8rem; color: var(--ink-soft); }
   .malo-hist-item { display: flex; justify-content: space-between; gap: 8px; padding: 6px 0; border-bottom: 1px solid var(--line); }
   .malo-hist-item:last-child { border-bottom: none; }
+  /* Fila compacta en la pantalla Hoy */
+  .malo-hoy-fila { display: flex; align-items: center; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--line); }
+  .malo-hoy-fila:last-child { border-bottom: none; }
+  .malo-hoy-tocar { flex: 1; display: flex; align-items: center; gap: 10px; background: transparent; text-align: left; color: var(--ink); min-width: 0; }
+  .malo-hoy-emoji { font-size: 1.25rem; flex: none; }
+  .malo-hoy-nom { flex: 1; font-size: 0.95rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .malo-hoy-val { font-variant-numeric: tabular-nums; font-weight: 700; font-size: 0.95rem; white-space: nowrap; }
+  .malo-hoy-mas { flex: none; width: 46px; height: 38px; border-radius: 10px; background: var(--surface-2); color: var(--ink); font-weight: 700; font-size: 0.95rem; }
   .rhc-nom { font-size: 0.9rem; color: var(--ink-soft); }
   .rhc-racha { font-size: 0.8rem; color: var(--accent); font-variant-numeric: tabular-nums; white-space: nowrap; }
   .meta-fila { padding: 9px 0; border-bottom: 1px solid var(--line); }
@@ -766,49 +775,15 @@
         </div>
       </div>
       <div class="stats-fila" id="panel-dia" style="margin-bottom:2px;"></div>
-      <section class="card" id="card-agenda-hoy">
-        <h2>📅 Agenda de hoy<span class="mini-info" id="mini-agenda-hoy"></span></h2>
-        <div class="notas-lista" id="agenda-hoy"></div>
-      </section>
       <section class="card">
         <h2>Hábitos</h2>
         <div id="lista-habitos"></div>
         <div class="dia-completo oculto" id="dia-completo">🎉 ¡Día completo!</div>
       </section>
 
-      <section class="card oculto" id="card-retos-hoy">
-        <h2>🎯 Retos de hoy</h2>
-        <div id="retos-hoy"></div>
-      </section>
-
-      <section class="card oculto" id="card-metas-hoy">
-        <h2>🏁 Mis metas</h2>
-        <div id="metas-hoy"></div>
-      </section>
-
-      <section class="card" id="card-tiempo">
-        <div id="timer-activo" class="oculto"></div>
-        <div class="card-cab">
-          <h2>⏱ Registrar otro tiempo<span class="mini-info" id="mini-tiempo"></span></h2>
-          <button class="abrir" data-plegable="form-tiempo" aria-expanded="false" aria-label="Registrar tiempo de una actividad suelta">＋</button>
-        </div>
-        <div class="plegable oculto" id="form-tiempo">
-          <input class="nota-input" id="tiempo-actividad" type="text" placeholder="¿En qué? (ej. Lectura, Estudiar CCNA)" maxlength="40" list="lista-actividades" autocomplete="off">
-          <datalist id="lista-actividades"></datalist>
-          <div class="tipos" id="tiempo-chips" style="margin-top:10px;">
-            <button class="tipo" data-min="15">15 min</button>
-            <button class="tipo" data-min="30">30 min</button>
-            <button class="tipo" data-min="45">45 min</button>
-            <button class="tipo" data-min="60">1 h</button>
-          </div>
-          <input class="nota-input" id="tiempo-min" type="number" inputmode="numeric" placeholder="o escribe los minutos" style="margin-top:8px;">
-          <input class="nota-input" id="tiempo-detalle" type="text" placeholder="Detalle (libro, tema…) — opcional" maxlength="60" style="margin-top:8px;">
-          <div class="gr-fila" style="margin-top:10px;">
-            <button class="btn-secundario" id="tiempo-cronometro" style="flex:1;">▶ Cronómetro</button>
-            <button class="btn-primario" id="tiempo-guardar" style="flex:1;" disabled>Guardar</button>
-          </div>
-        </div>
-        <div class="notas-lista" id="tiempos-hoy"></div>
+      <section class="card oculto" id="card-malos-hoy">
+        <h2>🚭 Dejando</h2>
+        <div id="malos-hoy"></div>
       </section>
 
       <section class="card">
@@ -862,6 +837,46 @@
       <section class="card" id="card-notas">
         <h2>Notas de hoy<span class="mini-info" id="mini-notas"></span></h2>
         <div class="notas-lista" id="notas-hoy"></div>
+      </section>
+
+      <section class="card" id="card-agenda-hoy">
+        <h2>📅 Agenda de hoy<span class="mini-info" id="mini-agenda-hoy"></span></h2>
+        <div class="notas-lista" id="agenda-hoy"></div>
+      </section>
+
+      <section class="card" id="card-tiempo">
+        <div id="timer-activo" class="oculto"></div>
+        <div class="card-cab">
+          <h2>⏱ Registrar otro tiempo<span class="mini-info" id="mini-tiempo"></span></h2>
+          <button class="abrir" data-plegable="form-tiempo" aria-expanded="false" aria-label="Registrar tiempo de una actividad suelta">＋</button>
+        </div>
+        <div class="plegable oculto" id="form-tiempo">
+          <input class="nota-input" id="tiempo-actividad" type="text" placeholder="¿En qué? (ej. Lectura, Estudiar CCNA)" maxlength="40" list="lista-actividades" autocomplete="off">
+          <datalist id="lista-actividades"></datalist>
+          <div class="tipos" id="tiempo-chips" style="margin-top:10px;">
+            <button class="tipo" data-min="15">15 min</button>
+            <button class="tipo" data-min="30">30 min</button>
+            <button class="tipo" data-min="45">45 min</button>
+            <button class="tipo" data-min="60">1 h</button>
+          </div>
+          <input class="nota-input" id="tiempo-min" type="number" inputmode="numeric" placeholder="o escribe los minutos" style="margin-top:8px;">
+          <input class="nota-input" id="tiempo-detalle" type="text" placeholder="Detalle (libro, tema…) — opcional" maxlength="60" style="margin-top:8px;">
+          <div class="gr-fila" style="margin-top:10px;">
+            <button class="btn-secundario" id="tiempo-cronometro" style="flex:1;">▶ Cronómetro</button>
+            <button class="btn-primario" id="tiempo-guardar" style="flex:1;" disabled>Guardar</button>
+          </div>
+        </div>
+        <div class="notas-lista" id="tiempos-hoy"></div>
+      </section>
+
+      <section class="card oculto" id="card-retos-hoy">
+        <h2>🎯 Retos de hoy</h2>
+        <div id="retos-hoy"></div>
+      </section>
+
+      <section class="card oculto" id="card-metas-hoy">
+        <h2>🏁 Mis metas</h2>
+        <div id="metas-hoy"></div>
       </section>
     </div>
 
@@ -1210,6 +1225,15 @@
       </section>
     </div>
 
+    <!-- ============ BUSCAR ============ -->
+    <div id="vista-buscar" class="vista oculto" style="flex-direction:column; gap:14px;">
+      <section class="card">
+        <input class="buscar-nota" id="buscar-global" type="search" placeholder="Buscar en todo: notas, gastos, tareas…" autocomplete="off">
+        <p class="ayuda" style="margin-top:8px;">Busca a la vez en notas, tareas, gastos, ingresos, eventos, lecturas y tiempos. Toca un resultado para editarlo.</p>
+      </section>
+      <div id="buscar-resultados" style="display:flex; flex-direction:column; gap:14px;"></div>
+    </div>
+
     <!-- ============ AJUSTES ============ -->
     <div id="vista-ajustes" class="vista oculto" style="flex-direction:column; gap:14px;">
       <section class="card">
@@ -1288,6 +1312,7 @@
   <div class="modal-fondo oculto" id="mas-fondo">
     <div class="modal" id="mas-modal">
       <h3>Más</h3>
+      <button class="mas-item" data-vista="buscar"><span>🔍</span> Buscar</button>
       <button class="mas-item" data-vista="retos"><span>🎯</span> Objetivos</button>
       <button class="mas-item" data-vista="resumen"><span>📈</span> Resumen</button>
       <button class="mas-item" data-vista="graficas"><span>📊</span> Gráficas</button>
@@ -2177,7 +2202,7 @@
     const h = new Date().getHours();
     return h < 12 ? 'Buenos días' : h < 19 ? 'Buenas tardes' : 'Buenas noches';
   }
-  const TITULOS = { hoy: saludo(), gastos: 'Gastos', agenda: 'Agenda', notas: 'Notas', resumen: 'Resumen', graficas: '📊 Gráficas', retos: '🎯 Objetivos', ajustes: 'Ajustes' };
+  const TITULOS = { hoy: saludo(), gastos: 'Gastos', agenda: 'Agenda', notas: 'Notas', resumen: 'Resumen', graficas: '📊 Gráficas', retos: '🎯 Objetivos', buscar: '🔍 Buscar', ajustes: 'Ajustes' };
   document.getElementById('titulo').textContent = TITULOS.hoy;
   let vistaActiva = 'hoy';
   function navegarA(v) {
@@ -2198,6 +2223,11 @@
     if (v === 'gastos') { pintarHistorialGastos(); pintarIngresos(); }
     if (v === 'retos') { pintarRetos(); pintarMetas(); pintarMalos(); }
     if (v === 'graficas') pintarGraficas();
+    if (v === 'buscar') {
+      pintarBusqueda();
+      const cb = document.getElementById('buscar-global');
+      if (cb) setTimeout(function () { try { cb.focus(); } catch (e) {} }, 80);
+    }
   }
   document.querySelectorAll('.tab[data-vista]').forEach(function (tab) {
     tab.addEventListener('click', function () { navegarA(tab.dataset.vista); });
@@ -3634,7 +3664,49 @@
     pintarMalos();
   }
 
+  // Vista compacta en la pantalla Hoy: lo que no se ve, no se cuida.
+  // Solo acciones seguras aquí: "+1" para los de reducir (uso frecuente) y tocar
+  // la fila para ir al detalle. "Recaí" vive en Objetivos, para no tocarlo sin querer.
+  function pintarMalosHoy() {
+    const card = document.getElementById('card-malos-hoy');
+    const cont = document.getElementById('malos-hoy');
+    if (!cont || !card) return;
+    cont.innerHTML = '';
+    card.classList.toggle('oculto', estado.malos.length === 0);
+    if (estado.malos.length === 0) return;
+    estado.malos.forEach(function (m) {
+      const fila = document.createElement('div');
+      fila.className = 'malo-hoy-fila';
+      const tocar = document.createElement('button');
+      tocar.className = 'malo-hoy-tocar';
+      const em = document.createElement('span'); em.className = 'malo-hoy-emoji'; em.textContent = m.emoji || '🚭';
+      const nom = document.createElement('span'); nom.className = 'malo-hoy-nom'; nom.textContent = m.nombre;
+      const val = document.createElement('span'); val.className = 'malo-hoy-val';
+      if (m.modo === 'dejar') {
+        val.dataset.ultima = m.ultima;
+        val.textContent = fmtCronoLargo(maloMsLimpio(m));
+        val.style.color = VERDE;
+      } else {
+        const hoyN = maloConsumo(m, HOY), lim = maloLimite(m);
+        val.textContent = hoyN + ' / ' + lim;
+        val.style.color = hoyN > lim ? 'var(--danger)' : VERDE;
+      }
+      tocar.appendChild(em); tocar.appendChild(nom); tocar.appendChild(val);
+      tocar.addEventListener('click', function () { navegarA('retos'); });
+      fila.appendChild(tocar);
+      if (m.modo === 'reducir') {
+        const mas = document.createElement('button');
+        mas.className = 'malo-hoy-mas'; mas.textContent = '+1';
+        mas.setAttribute('aria-label', 'Registrar una vez más de ' + m.nombre);
+        mas.addEventListener('click', function () { maloRegistrar(m, ''); });
+        fila.appendChild(mas);
+      }
+      cont.appendChild(fila);
+    });
+  }
+
   function pintarMalos() {
+    pintarMalosHoy();
     const cont = document.getElementById('malos-lista');
     if (!cont) return;
     cont.innerHTML = '';
@@ -4875,6 +4947,64 @@
     location.reload();
   });
 
+  // ---------- Búsqueda global ----------
+  // Un solo campo que mira en todo lo que registras. Sin acentos ni mayúsculas,
+  // para que "cafe" encuentre "Café".
+  const ACENTOS = new RegExp('[̀-ͯ]', 'g'); // marcas de acento (á → a)
+  function normalizar(t) {
+    return (t || '').toString().toLowerCase().normalize('NFD').replace(ACENTOS, '');
+  }
+  function pintarBusqueda() {
+    const cont = document.getElementById('buscar-resultados');
+    const campo = document.getElementById('buscar-global');
+    if (!cont || !campo) return;
+    cont.innerHTML = '';
+    const q = normalizar(campo.value.trim());
+    if (q.length < 2) {
+      cont.innerHTML = '<section class="card"><p class="vacio">Escribe al menos 2 letras para buscar.</p></section>';
+      return;
+    }
+    const grupos = [
+      { titulo: '📝 Notas', tipo: 'nota', lista: estado.notas, texto: function (o) { return [o.texto, o.etiqueta]; }, linea: function (o) { return o.texto; }, sub: function (o) { return fechaCorta(o.fecha) + (o.hora ? ' · ' + o.hora : ''); } },
+      { titulo: '☑️ Tareas', tipo: 'tarea', lista: estado.tareas, texto: function (o) { return [o.texto]; }, linea: function (o) { return (o.hecha ? '✓ ' : '') + o.texto; }, sub: function (o) { return o.limite ? 'Para el ' + fechaCorta(o.limite) : fechaCorta(o.fecha); } },
+      { titulo: '💸 Gastos', tipo: 'gasto', lista: estado.gastos, texto: function (o) { return [o.nota, o.cat]; }, linea: function (o) { return (o.nota || o.cat) + ' — $ ' + fmtMoneda.format(o.monto); }, sub: function (o) { return o.cat + ' · ' + fechaCorta(o.fecha); } },
+      { titulo: '💵 Ingresos', tipo: 'ingreso', lista: estado.ingresos, texto: function (o) { return [o.nota, o.cat]; }, linea: function (o) { return (o.nota || o.cat) + ' — $ ' + fmtMoneda.format(o.monto); }, sub: function (o) { return o.cat + ' · ' + fechaCorta(o.fecha); } },
+      { titulo: '📅 Eventos', tipo: 'evento', lista: estado.eventos, texto: function (o) { return [o.titulo]; }, linea: function (o) { return o.titulo; }, sub: function (o) { return fechaCorta(o.fecha) + (o.hora ? ' · ' + o.hora : ''); } },
+      { titulo: '📖 Lecturas', tipo: 'lectura', lista: estado.lecturas, texto: function (o) { return [o.texto, o.libro, o.autor]; }, linea: function (o) { return o.texto; }, sub: function (o) { return o.libro + (o.autor ? ' · ' + o.autor : ''); } },
+      { titulo: '⏱ Tiempos', tipo: 'tiempo', lista: estado.tiempos, texto: function (o) { return [o.actividad, o.detalle]; }, linea: function (o) { return o.actividad + ' — ' + fmtDur(o.minutos); }, sub: function (o) { return (o.detalle ? o.detalle + ' · ' : '') + fechaCorta(o.fecha); } }
+    ];
+    let total = 0;
+    grupos.forEach(function (g) {
+      const hits = (g.lista || []).filter(function (o) {
+        return g.texto(o).some(function (t) { return normalizar(t).indexOf(q) !== -1; });
+      }).slice(0, 25);
+      if (!hits.length) return;
+      total += hits.length;
+      const card = document.createElement('section');
+      card.className = 'card';
+      const h = document.createElement('h2');
+      h.textContent = g.titulo;
+      const mi = document.createElement('span'); mi.className = 'mini-info'; mi.textContent = ' · ' + hits.length;
+      h.appendChild(mi);
+      card.appendChild(h);
+      const lista = document.createElement('div'); lista.className = 'notas-lista';
+      hits.forEach(function (o) {
+        const fila = document.createElement('div');
+        fila.className = 'nota-item';
+        fila.innerHTML = '<div style="flex:1"><div class="nota-texto"></div><div class="nota-hora"></div></div>' + botonEditar();
+        fila.querySelector('.nota-texto').textContent = g.linea(o);
+        fila.querySelector('.nota-hora').textContent = g.sub(o);
+        fila.querySelector('.g-editar').addEventListener('click', function () { abrirEditor(g.tipo, o.id); });
+        lista.appendChild(fila);
+      });
+      card.appendChild(lista);
+      cont.appendChild(card);
+    });
+    if (total === 0) {
+      cont.innerHTML = '<section class="card"><p class="vacio">Nada coincide con “' + campo.value.trim().replace(/[<>&]/g, '') + '”.</p></section>';
+    }
+  }
+
   // ---------- Gráficas ----------
   function pintarGraficas() {
     const TXT = '#8A8A8A', ROJO = '#E5705E', AZUL = '#5AA9E6';
@@ -4998,9 +5128,10 @@
     document.getElementById('reloj').textContent = '· ' + ahora.toTimeString().slice(0, 5);
     TITULOS.hoy = saludo();
     if (vistaActiva === 'hoy') document.getElementById('titulo').textContent = TITULOS.hoy;
-    // Contadores en vivo de los hábitos que estás dejando (solo si la vista está abierta)
-    if (vistaActiva === 'retos') {
-      const cronos = document.querySelectorAll('.malo-crono[data-ultima]');
+    // Contadores en vivo de los hábitos que estás dejando (solo en la vista abierta)
+    if (vistaActiva === 'retos' || vistaActiva === 'hoy') {
+      const sel = vistaActiva === 'retos' ? '.malo-crono[data-ultima]' : '.malo-hoy-val[data-ultima]';
+      const cronos = document.querySelectorAll(sel);
       for (let i = 0; i < cronos.length; i++) {
         const t = new Date(cronos[i].dataset.ultima).getTime();
         if (!isNaN(t)) cronos[i].textContent = fmtCronoLargo(Math.max(0, Date.now() - t));
@@ -5023,6 +5154,7 @@
       pintarEventos();
       pintarTiempo();
       pintarRetos();
+      pintarMalos();
       if (vistaActiva === 'resumen') pintarResumen();
     }
   }
@@ -5043,7 +5175,37 @@
   pintarTiempo();
   pintarRetos();
   pintarMalos();
+  (function () {
+    const cb = document.getElementById('buscar-global');
+    if (cb) cb.addEventListener('input', pintarBusqueda);
+  })();
   tick();
+
+  // Accesos directos del ícono (manifest → shortcuts): abren la app lista para
+  // capturar en un toque, sin tener que navegar. Ej. ./?ir=gasto
+  (function () {
+    let destino = '';
+    try { destino = new URLSearchParams(location.search).get('ir') || ''; } catch (e) { return; }
+    if (!destino) return;
+    // Limpiamos la URL para que al recargar no vuelva a abrirse el formulario
+    try { history.replaceState(null, '', location.pathname); } catch (e) {}
+    function abrirPanel(id) {
+      const panel = document.getElementById(id);
+      const btn = document.querySelector('[data-plegable="' + id + '"]');
+      if (!panel || !btn) return;
+      if (panel.classList.contains('oculto')) {
+        panel.classList.remove('oculto');
+        btn.textContent = '−';
+        btn.setAttribute('aria-expanded', 'true');
+      }
+      const campo = panel.querySelector('input, textarea');
+      if (campo) { try { campo.focus(); } catch (e) {} }
+      panel.scrollIntoView({ block: 'center' });
+    }
+    if (destino === 'gasto') { navegarA('hoy'); setTimeout(function () { abrirPanel('form-gr'); }, 120); }
+    else if (destino === 'nota') { navegarA('hoy'); setTimeout(function () { abrirPanel('form-nota'); }, 120); }
+    else if (destino === 'malos') { navegarA('retos'); }
+  })();
 
   // Nube: dibujar panel y, si hay sesión, refrescarla + traer fecha de la última copia
   pintarNube();
