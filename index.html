@@ -5562,9 +5562,16 @@
 
   // Accesos directos del ícono (manifest → shortcuts): abren la app lista para
   // capturar en un toque, sin tener que navegar. Ej. ./?ir=gasto
+  // También aceptan monto y nota para dejar el formulario listo desde una
+  // automatización del teléfono. Ej. ./?ir=gasto&monto=12500&nota=Panaderia
   (function () {
-    let destino = '';
-    try { destino = new URLSearchParams(location.search).get('ir') || ''; } catch (e) { return; }
+    let destino = '', pMonto = '', pNota = '';
+    try {
+      const q = new URLSearchParams(location.search);
+      destino = q.get('ir') || '';
+      pMonto = q.get('monto') || '';
+      pNota = q.get('nota') || '';
+    } catch (e) { return; }
     if (!destino) return;
     // Limpiamos la URL para que al recargar no vuelva a abrirse el formulario
     try { history.replaceState(null, '', location.pathname); } catch (e) {}
@@ -5580,7 +5587,22 @@
       if (campo) { try { campo.focus(); } catch (e) {} }
       panel.scrollIntoView({ block: 'center' });
     }
-    if (destino === 'gasto') { navegarA('hoy'); setTimeout(function () { abrirPanel('form-gr'); }, 120); }
+    // Deja el formulario listo con lo que venga en la dirección. El monto se
+    // limpia a solo dígitos ($ 12.500 → 12500, pesos sin decimales) y se avisa
+    // con un evento 'input' para que el botón de guardar se habilite solo.
+    function prellenar(idMonto, idNota) {
+      const limpio = String(pMonto).replace(/[^\d]/g, '');
+      if (limpio) {
+        const cm = document.getElementById(idMonto);
+        if (cm) { cm.value = limpio; cm.dispatchEvent(new Event('input', { bubbles: true })); }
+      }
+      if (pNota) {
+        const cn = document.getElementById(idNota);
+        if (cn) { cn.value = pNota.slice(0, 60); cn.dispatchEvent(new Event('input', { bubbles: true })); }
+      }
+    }
+    if (destino === 'gasto') { navegarA('hoy'); setTimeout(function () { abrirPanel('form-gr'); prellenar('gr-monto', 'gr-nota'); }, 120); }
+    else if (destino === 'ingreso') { navegarA('gastos'); setTimeout(function () { abrirPanel('form-ni'); prellenar('ing-monto', 'ing-nota'); }, 120); }
     else if (destino === 'nota') { navegarA('hoy'); setTimeout(function () { abrirPanel('form-nota'); }, 120); }
     else if (destino === 'malos') { navegarA('retos'); }
   })();
