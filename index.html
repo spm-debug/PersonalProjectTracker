@@ -1328,6 +1328,9 @@
               <button class="btn-secundario" id="dictado-btn" aria-label="Dictar la frase con la voz">🎤 Dictar la frase</button>
               <p class="ayuda" id="dictado-estado" aria-live="polite" style="margin-top:6px;"></p>
             </div>
+            <button class="btn-secundario" id="foto-btn" style="margin-top:8px;">📷 Foto para transcribir</button>
+            <input type="file" id="foto-input" accept="image/*" capture="environment" class="oculto">
+            <p class="ayuda" id="foto-estado" aria-live="polite" style="margin-top:6px;"></p>
             <input id="lec-libro" type="text" maxlength="80" placeholder="Libro (ej. El principito)">
             <input id="lec-autor" type="text" maxlength="60" placeholder="Autor (opcional)">
             <button class="btn-primario btn-nota" id="guardar-lectura" disabled>Guardar frase</button>
@@ -3267,6 +3270,9 @@
     zona.classList.remove('oculto');
 
     let rec = null, escuchando = false, textoBase = '', finalAcumulado = '';
+    let reinicios = 0, cortadoPorUsuario = false;
+    // Quita espacios dobles y el espacio antes de un signo de puntuación
+    function limpiar(t) { return (t || '').replace(/\s+/g, ' ').replace(/\s+([,.;:!?…])/g, '$1').trim(); }
 
     function decir(msg, err) {
       estadoTxt.textContent = msg || '';
@@ -3277,6 +3283,7 @@
       btn.textContent = escuchando ? '⏹ Detener' : '🎤 Dictar la frase';
     }
     function detener() {
+      cortadoPorUsuario = true; // evita que el reinicio automático lo vuelva a abrir
       if (rec) { try { rec.stop(); } catch (e) {} }
       escuchando = false;
       pintarBoton();
@@ -3301,23 +3308,42 @@
 
       textoBase = lecTexto.value ? lecTexto.value.replace(/\s+$/, '') + ' ' : '';
       finalAcumulado = '';
+      reinicios = 0;
+      cortadoPorUsuario = false;
 
       rec.onstart = function () { escuchando = true; pintarBoton(); decir('Escuchando… lee la frase con calma.'); };
+
+      // CLAVE: reconstruimos SIEMPRE el texto entero desde el principio en vez de
+      // ir sumando. El navegador reemite resultados ya entregados, así que sumar
+      // duplicaba palabras. Reconstruir es idempotente: repetir no cambia nada.
       rec.onresult = function (ev) {
-        let interino = '';
-        for (let i = ev.resultIndex; i < ev.results.length; i++) {
+        let final = '', interino = '';
+        for (let i = 0; i < ev.results.length; i++) {
           const t = ev.results[i][0].transcript;
-          if (ev.results[i].isFinal) finalAcumulado += t; else interino += t;
+          if (ev.results[i].isFinal) final += t; else interino += t;
         }
-        lecTexto.value = (textoBase + finalAcumulado + interino).slice(0, 600);
+        finalAcumulado = final;
+        lecTexto.value = limpiar(textoBase + final + interino).slice(0, 600);
         validarLectura();
       };
       rec.onerror = function (ev) {
         if (ev.error === 'aborted') return;
+        if (ev.error === 'no-speech') return; // el silencio no es un fallo: dejamos que onend reinicie
+        cortadoPorUsuario = true; // error real: no reintentar
         decir(mensajeError(ev.error), true);
         escuchando = false; pintarBoton();
       };
       rec.onend = function () {
+        // Consolidamos lo dictado: la siguiente sesión empieza con results vacío
+        textoBase = limpiar(textoBase + finalAcumulado);
+        if (textoBase) textoBase += ' ';
+        finalAcumulado = '';
+        // Android corta tras unos segundos de silencio. Si tú no lo detuviste,
+        // reanudamos solo para que puedas leer frases largas sin pelear con el botón.
+        if (escuchando && !cortadoPorUsuario && reinicios < 12) {
+          reinicios++;
+          try { rec.start(); return; } catch (e) {}
+        }
         if (escuchando) { escuchando = false; pintarBoton(); decir('Dictado terminado. Revisa el texto antes de guardar.'); }
         validarLectura();
       };
@@ -3327,6 +3353,56 @@
     // Si se cierra el formulario mientras dicta, cortamos para no dejar el micro abierto
     const abrirLectura = document.querySelector('[data-plegable="form-lectura"]');
     if (abrirLectura) abrirLectura.addEventListener('click', function () { if (escuchando) { detener(); decir(''); } });
+  })();
+
+  // ---------- Foto de una página para transcribir ----------
+  // La app no puede subir nada a Claude por su cuenta, así que hace lo mejor
+  // posible: abre la cámara y entrega la foto al menú de compartir del teléfono
+  // (donde eliges Claude) con la instrucción ya escrita. Si el teléfono no sabe
+  // compartir archivos, guarda la foto y te deja el enlace para adjuntarla.
+  (function () {
+    const btn = document.getElementById('foto-btn');
+    const input = document.getElementById('foto-input');
+    const estado = document.getElementById('foto-estado');
+    if (!btn || !input || !estado) return;
+    const PEDIDO = 'Transcribe exactamente la frase de esta página de libro. Devuélveme solo el texto, sin comentarios, y dime el libro y el autor si aparecen.';
+
+    function decirFoto(html) { estado.innerHTML = html || ''; }
+
+    btn.addEventListener('click', function () { input.click(); });
+
+    input.addEventListener('change', async function () {
+      const archivo = input.files && input.files[0];
+      input.value = '';
+      if (!archivo) return;
+      decirFoto('Preparando la foto…');
+
+      // 1) Camino bueno: menú de compartir del teléfono, con la foto adjunta
+      try {
+        if (navigator.canShare && navigator.canShare({ files: [archivo] })) {
+          await navigator.share({ files: [archivo], text: PEDIDO, title: 'Transcribir frase de libro' });
+          decirFoto('Foto enviada. Cuando tengas el texto, pégalo arriba y guarda la frase.');
+          return;
+        }
+      } catch (e) {
+        if (e && e.name === 'AbortError') { decirFoto(''); return; } // cancelaste el menú
+      }
+
+      // 2) Respaldo: guardamos la foto y te dejamos el enlace para adjuntarla
+      try {
+        const url = URL.createObjectURL(archivo);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'pagina-' + HOY + '.jpg';
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        setTimeout(function () { try { URL.revokeObjectURL(url); } catch (e) {} }, 4000);
+        decirFoto('Guardé la foto en tus Descargas. Ábrela en <a href="https://claude.ai/new" target="_blank" rel="noopener">claude.ai</a>, adjúntala y pide la transcripción. Luego pega el texto arriba.');
+      } catch (e) {
+        decirFoto('No se pudo preparar la foto. Tómala con la cámara del teléfono y mándamela por el chat.');
+      }
+    });
   })();
 
   function pintarLecturas() {
