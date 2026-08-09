@@ -1,7 +1,7 @@
 // Service worker: permite que la app funcione sin internet.
 // La app se busca primero en la red para recibir actualizaciones;
 // si no hay conexion, se sirve la copia guardada.
-const CACHE = 'vida-tracker-cache-v35';
+const CACHE = 'vida-tracker-cache-v37';
 
 // Clave canonica de la pagina. Es el start_url del manifest y lo que pide
 // realmente el navegador al abrir la app, asi que guardamos y leemos SIEMPRE aqui.

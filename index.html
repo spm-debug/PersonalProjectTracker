@@ -264,6 +264,27 @@
   .hab-c-nombre { display: block; width: 66px; font-size: 0.75rem; color: var(--ink-soft); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; text-align: center; }
   .hab-circulo.hecho .hab-c-nombre { color: var(--ink); }
   .hab-c-racha { font-size: 0.75rem; color: var(--accent); min-height: 0.8em; }
+  /* --- Biblioteca de libros --- */
+  .libro { border: 1px solid var(--line); border-radius: 12px; padding: 12px; margin-bottom: 10px; }
+  .libro-cab { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; }
+  .libro-tit { font-weight: 600; font-size: 0.98rem; }
+  .libro-aut { font-size: 0.8rem; color: var(--ink-soft); margin-top: 1px; }
+  .libro-meta { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-top: 8px; font-size: 0.78rem; color: var(--ink-soft); }
+  .libro-chip { font-size: 0.72rem; padding: 3px 9px; border-radius: 999px; border: 1px solid var(--line); }
+  .libro-chip.leyendo { background: var(--accent-soft); color: var(--accent); border-color: transparent; font-weight: 600; }
+  .libro-chip.leido { background: var(--surface-2); }
+  .libro-estrellas { letter-spacing: 1px; }
+  .libro-estrella { background: none; font-size: 1.15rem; line-height: 1; padding: 0 1px; color: var(--ink-soft); }
+  .libro-estrella.on { color: #E8B93C; }
+  .libro-resena { margin-top: 8px; font-size: 0.85rem; color: var(--ink); background: var(--surface-2); padding: 9px 11px; border-radius: 9px; white-space: pre-wrap; }
+  .libro-acc { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 10px; }
+  .hab-c-ring { position: relative; }
+  .hab-c-veces {
+    position: absolute; top: -3px; right: -3px; min-width: 19px; height: 19px;
+    padding: 0 4px; border-radius: 999px; background: var(--ink); color: var(--bg);
+    font-size: 0.68rem; font-weight: 700; line-height: 19px; text-align: center;
+    border: 2px solid var(--bg); box-sizing: content-box;
+  }
   .emoji-picker { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; }
   .emoji-op { width: 40px; height: 40px; border-radius: 10px; border: 1px solid var(--line); background: var(--surface-2); font-size: 1.125rem; }
   .emoji-op.activo { border-color: var(--accent); background: var(--accent-soft); }
@@ -1283,6 +1304,7 @@
       <div class="tipos" id="notas-modo">
         <button class="tipo activo" data-modo="notas">📝 Mis notas</button>
         <button class="tipo" data-modo="lecturas">📖 Mis lecturas</button>
+        <button class="tipo" data-modo="libros">📚 Mis libros</button>
       </div>
 
       <div id="sub-notas" style="display:flex; flex-direction:column; gap:12px;">
@@ -1331,7 +1353,8 @@
             <button class="btn-secundario" id="foto-btn" style="margin-top:8px;">📷 Foto para transcribir</button>
             <input type="file" id="foto-input" accept="image/*" capture="environment" class="oculto">
             <p class="ayuda" id="foto-estado" aria-live="polite" style="margin-top:6px;"></p>
-            <input id="lec-libro" type="text" maxlength="80" placeholder="Libro (ej. El principito)">
+            <input id="lec-libro" type="text" maxlength="80" placeholder="Libro (ej. El principito)" list="lista-libros" autocomplete="off">
+            <datalist id="lista-libros"></datalist>
             <input id="lec-autor" type="text" maxlength="60" placeholder="Autor (opcional)">
             <button class="btn-primario btn-nota" id="guardar-lectura" disabled>Guardar frase</button>
             <p class="ayuda">Tus frases se guardan aquí y rotan como frase del día en la pantalla principal. ¿Tienes una foto de la página? Mándamela por el chat y te la transcribo lista para pegar.</p>
@@ -1340,6 +1363,36 @@
         <section class="card">
           <h2>Mis frases guardadas<span class="mini-info" id="mini-lecturas"></span></h2>
           <div class="notas-lista" id="lecturas-lista"></div>
+        </section>
+      </div>
+
+      <div id="sub-libros" class="oculto" style="flex-direction:column; gap:12px;">
+        <section class="card">
+          <div class="card-cab">
+            <h2>Añadir libro</h2>
+            <button class="abrir" data-plegable="form-libro" aria-expanded="false" aria-label="Añadir un libro">＋</button>
+          </div>
+          <div class="plegable oculto" id="form-libro">
+            <input class="nota-input" id="lib-titulo" type="text" maxlength="90" placeholder="Título del libro">
+            <input class="nota-input" id="lib-autor" type="text" maxlength="60" placeholder="Autor (opcional)" style="margin-top:8px;">
+            <div class="tipos" id="lib-estado" style="margin-top:10px;">
+              <button class="tipo" data-lestado="porleer">📚 Por leer</button>
+              <button class="tipo activo" data-lestado="leyendo">📖 Leyendo</button>
+              <button class="tipo" data-lestado="leido">✅ Leído</button>
+            </div>
+            <button class="btn-primario btn-nota" id="guardar-libro" disabled>Añadir a mi biblioteca</button>
+            <p class="ayuda">Las fechas se ponen solas: al marcarlo “Leyendo” guarda cuándo empezaste, y al marcarlo “Leído” cuándo lo terminaste. La valoración y tu reseña se añaden al terminarlo.</p>
+          </div>
+        </section>
+        <div class="tipos" id="filtro-libros" style="flex-wrap: wrap;">
+          <button class="tipo activo" data-flib="todos">Todos</button>
+          <button class="tipo" data-flib="leyendo">📖 Leyendo</button>
+          <button class="tipo" data-flib="porleer">📚 Por leer</button>
+          <button class="tipo" data-flib="leido">✅ Leídos</button>
+        </div>
+        <section class="card">
+          <h2>Mi biblioteca<span class="mini-info" id="mini-libros"></span></h2>
+          <div id="libros-lista"></div>
         </section>
       </div>
     </div>
@@ -1615,6 +1668,7 @@
       timer: null,   // { actividad, detalle, inicio } — cronómetro en marcha
       retos: [],     // { id, nombre, tipo, inicio, metaDias|metaMinutos, dias|acumulado, completado }
       metas: [],     // { id, tipo:'habito'|'tiempo', habitoId|actividad, objetivo, periodo:'semana'|'mes' }
+      libros: [],    // biblioteca: { id, titulo, autor, estado:'porleer'|'leyendo'|'leido', valoracion, inicio, fin, resena }
       malos: [],     // hábitos a dejar/reducir: { id, nombre, emoji, modo:'dejar'|'reducir', inicio,
                      //   ultima (ISO, modo dejar), limite, base, costo, min, razones:[], registros:[{f,h,n,c}], recordMs }
     };
@@ -1669,6 +1723,7 @@
   if (typeof estado.timer === 'undefined') estado.timer = null;
   if (!estado.retos) estado.retos = [];
   if (!estado.metas) estado.metas = [];
+  if (!estado.libros) estado.libros = [];
   if (!estado.malos) estado.malos = [];
   // Migración defensiva: cada mal hábito debe tener sus listas y su marca de inicio
   estado.malos.forEach(function (m) {
@@ -2281,6 +2336,13 @@
       html = '<h3>Editar reto</h3><label>Nombre</label><input id="ed-texto" type="text" maxlength="50">' +
         '<label>' + (o.tipo === 'abstinencia' ? 'Meta (días seguidos)' : 'Meta (horas)') + '</label><input id="ed-meta" type="number" inputmode="numeric">' +
         '<label>Fecha de inicio</label><input id="ed-fecha" type="date">';
+    } else if (tipo === 'libro') {
+      o = buscarPorId(estado.libros, id); if (!o) return;
+      html = '<h3>Editar libro</h3><label>Título</label><input id="ed-texto" type="text" maxlength="90">' +
+        '<label>Autor</label><input id="ed-autor" type="text" maxlength="60">' +
+        '<label>Mi reseña / ideas</label><textarea id="ed-resena" rows="4"></textarea>' +
+        '<label>Empecé el</label><input id="ed-fecha" type="date">' +
+        '<label>Terminé el</label><input id="ed-fin" type="date">';
     } else if (tipo === 'malo') {
       o = buscarPorId(estado.malos, id); if (!o) return;
       html = '<h3>Editar hábito</h3><label>Nombre</label><input id="ed-texto" type="text" maxlength="40">' +
@@ -2309,6 +2371,7 @@
     else if (tipo === 'habito') { set('ed-texto', o.nombre); editando.emoji = o.emoji || ''; construirEmojiPicker(document.getElementById('ed-emoji'), o.emoji || '', function (e) { editando.emoji = e; }); }
     else if (tipo === 'tiempo') { set('ed-texto', o.actividad); set('ed-min', o.minutos); set('ed-detalle', o.detalle); set('ed-fecha', o.fecha); }
     else if (tipo === 'reto') { set('ed-texto', o.nombre); set('ed-meta', o.tipo === 'abstinencia' ? o.metaDias : Math.round(o.metaMinutos / 60)); set('ed-fecha', o.inicio); }
+    else if (tipo === 'libro') { set('ed-texto', o.titulo); set('ed-autor', o.autor); set('ed-resena', o.resena); set('ed-fecha', o.inicio); set('ed-fin', o.fin); }
     else if (tipo === 'malo') { set('ed-texto', o.nombre); set('ed-limite-n', o.limite); set('ed-base', o.base); set('ed-costo', o.costo); set('ed-min2', o.min); set('ed-razones', (o.razones || []).join('\n')); }
     else if (tipo === 'meta') { document.getElementById('ed-meta-nom').textContent = nombreMeta(o); set('ed-meta', o.tipo === 'habito' ? o.objetivo : Math.round(o.objetivo / 60)); document.getElementById('ed-periodo').value = o.periodo; }
 
@@ -2324,7 +2387,7 @@
 
   function refrescarTodo() {
     pintarNotasHoy(); pintarHistorial(); pintarGastos(); pintarHistorialGastos();
-    pintarTareas(); pintarEventos(); pintarCalendario(); pintarLecturas(); pintarHabitos(); pintarAjustes(); pintarTiempo(); pintarRetos(); pintarMetas(); pintarMalos();
+    pintarTareas(); pintarEventos(); pintarCalendario(); pintarLecturas(); pintarHabitos(); pintarAjustes(); pintarTiempo(); pintarRetos(); pintarMetas(); pintarMalos(); pintarLibros(); llenarDatalistLibros();
   }
 
   function guardarEdicion() {
@@ -2371,6 +2434,15 @@
       if (!t || !(meta > 0)) return;
       o.nombre = t; o.inicio = val('ed-fecha') || o.inicio;
       if (o.tipo === 'abstinencia') o.metaDias = meta; else o.metaMinutos = meta * 60;
+    } else if (tipo === 'libro') {
+      const o = buscarPorId(estado.libros, id); if (!o) return;
+      const t = val('ed-texto').trim(); if (!t) return;
+      o.titulo = t;
+      o.autor = val('ed-autor').trim();
+      o.resena = val('ed-resena').trim();
+      o.inicio = val('ed-fecha') || null;
+      o.fin = val('ed-fin') || null;
+      llenarDatalistLibros();
     } else if (tipo === 'malo') {
       const o = buscarPorId(estado.malos, id); if (!o) return;
       const t = val('ed-texto').trim(); if (!t) return;
@@ -2445,6 +2517,13 @@
   });
 
   // ---------- Hábitos (Hoy) ----------
+  // Contador para que dos registros hechos en el mismo milisegundo no compartan id
+  let contadorId = 0;
+  function nuevoId(prefijo) { contadorId++; return prefijo + Date.now() + '-' + contadorId; }
+  // Todas las veces que hiciste un hábito hoy (un hábito puede repetirse en el día)
+  function sesionesHoy(h) {
+    return estado.tiempos.filter(function (t) { return t.habitoId === h.id && t.fecha === HOY; });
+  }
   function racha(habitoId) {
     let n = 0;
     const d = new Date();
@@ -2465,14 +2544,18 @@
     cont.innerHTML = '';
     const dia = diaDe(HOY);
 
-    function marcarCon(h, variante, minutos) {
+    function marcarCon(h, variante, minutos, libro) {
       dia.habitos[h.id] = true;
       if (variante) {
         dia.variantes = dia.variantes || {};
         dia.variantes[h.id] = variante;
       }
       if (minutos > 0) {
-        estado.tiempos.push({ id: 'ti' + Date.now(), fecha: HOY, actividad: nombreHabito(h), minutos: minutos, detalle: variante || '', habitoId: h.id });
+        estado.tiempos.push({
+          id: nuevoId('ti'), fecha: HOY, actividad: nombreHabito(h), minutos: minutos,
+          detalle: libro ? libro.titulo : (variante || ''), habitoId: h.id,
+          libroId: libro ? libro.id : null
+        });
       }
       habitoAbierto = null;
       guardar();
@@ -2494,17 +2577,20 @@
         '<span class="hab-c-racha">' + (r > 0 ? '🔥 ' + r : ' ') + '</span>';
       if (!hecho) c.querySelector('.hab-c-ring').textContent = inicialHabito(h);
       c.querySelector('.hab-c-nombre').textContent = h.nombre + (variante ? ' · ' + variante : '');
+      // Si lo hiciste varias veces hoy, se ve el número sobre el círculo
+      const ses = sesionesHoy(h);
+      if (ses.length > 1) {
+        const badge = document.createElement('span');
+        badge.className = 'hab-c-veces';
+        badge.textContent = ses.length;
+        c.querySelector('.hab-c-ring').appendChild(badge);
+      }
+      c.setAttribute('aria-label', nombreHabito(h) + (hecho
+        ? ' · hecho ' + ses.length + (ses.length === 1 ? ' vez' : ' veces') + ' hoy'
+        : ' · pendiente'));
+      // Tocar SIEMPRE abre el panel. Antes, si ya estaba hecho, lo desmarcaba y
+      // borraba el tiempo registrado: era imposible sumar una segunda sesión.
       c.addEventListener('click', function () {
-        if (hecho) {
-          delete dia.habitos[h.id];
-          if (dia.variantes) delete dia.variantes[h.id];
-          estado.tiempos = estado.tiempos.filter(function (t) { return !(t.habitoId === h.id && t.fecha === HOY); });
-          habitoAbierto = null;
-          guardar();
-          pintarHabitos();
-          pintarTiempo();
-          return;
-        }
         habitoAbierto = (habitoAbierto === h.id ? null : h.id);
         pintarHabitos();
       });
@@ -2512,9 +2598,44 @@
     }
 
     function panelTiempo(h) {
-      let selVar = null, selMin = 0;
+      let selVar = null, selMin = 0, selLibro = null;
       const wrap = document.createElement('div');
       wrap.className = 'habito-panel';
+      const yaHecho = !!dia.habitos[h.id];
+      const sesPrev = sesionesHoy(h);
+
+      // Resumen de lo que ya llevas hoy (para que sepas sobre qué estás sumando)
+      if (sesPrev.length) {
+        let minHoy = 0;
+        sesPrev.forEach(function (t) { minHoy += t.minutos || 0; });
+        const res = document.createElement('div');
+        res.className = 'panel-label';
+        res.style.color = 'var(--ink)';
+        res.textContent = 'Hoy llevas ' + sesPrev.length + (sesPrev.length === 1 ? ' vez' : ' veces') + ' · ' + fmtDur(minHoy);
+        wrap.appendChild(res);
+      }
+
+      // Si es un hábito de lectura y tienes libros, puedes decir cuál leíste
+      const esLectura = /leer|lectura|libro/i.test(h.nombre);
+      if (esLectura && estado.libros.length) {
+        const ll = document.createElement('div'); ll.className = 'panel-label'; ll.textContent = '¿Qué libro? (opcional)';
+        wrap.appendChild(ll);
+        const lch = document.createElement('div'); lch.className = 'tipos';
+        const ordenados = estado.libros.slice().sort(function (a, b) {
+          const p = { leyendo: 0, porleer: 1, leido: 2 };
+          return (p[a.estado] || 3) - (p[b.estado] || 3);
+        }).slice(0, 8);
+        ordenados.forEach(function (lb) {
+          const b = document.createElement('button'); b.className = 'tipo'; b.textContent = lb.titulo;
+          b.addEventListener('click', function () {
+            selLibro = (selLibro && selLibro.id === lb.id) ? null : lb;
+            Array.prototype.forEach.call(lch.querySelectorAll('.tipo'), function (x) { x.classList.remove('activo'); });
+            if (selLibro) b.classList.add('activo');
+          });
+          lch.appendChild(b);
+        });
+        wrap.appendChild(lch);
+      }
       if (h.variantes && h.variantes.length) {
         const vl = document.createElement('div'); vl.className = 'panel-label'; vl.textContent = '¿Cuál?';
         wrap.appendChild(vl);
@@ -2557,13 +2678,50 @@
       const fila = document.createElement('div'); fila.className = 'gr-fila'; fila.style.marginTop = '10px';
       const btnCr = document.createElement('button'); btnCr.className = 'btn-secundario'; btnCr.style.flex = '1'; btnCr.textContent = '▶ Cronómetro';
       btnCr.addEventListener('click', function () {
-        estado.timer = { actividad: nombreHabito(h), detalle: selVar || '', inicio: Date.now(), habitoId: h.id };
+        estado.timer = { actividad: nombreHabito(h), detalle: (selLibro ? selLibro.titulo : (selVar || '')), inicio: Date.now(), habitoId: h.id, libroId: selLibro ? selLibro.id : null };
         habitoAbierto = null; guardar(); pintarHabitos(); pintarTiempo();
       });
-      btnOk.className = 'btn-primario'; btnOk.style.flex = '1'; btnOk.textContent = 'Marcar hecho'; btnOk.disabled = true;
-      btnOk.addEventListener('click', function () { if (selMin > 0) marcarCon(h, selVar, selMin); });
+      btnOk.className = 'btn-primario'; btnOk.style.flex = '1';
+      btnOk.textContent = yaHecho ? '➕ Añadir otra vez' : 'Marcar hecho';
+      btnOk.disabled = true;
+      btnOk.addEventListener('click', function () { if (selMin > 0) marcarCon(h, selVar, selMin, selLibro); });
       fila.appendChild(btnCr); fila.appendChild(btnOk);
       wrap.appendChild(fila);
+
+      // Deshacer el día completo: solo aparece si ya hay algo marcado, y avisa
+      // cuántas sesiones se van a borrar para que nadie lo toque por accidente.
+      if (yaHecho) {
+        const btnQuitar = document.createElement('button');
+        btnQuitar.className = 'btn-secundario btn-peligro';
+        btnQuitar.style.marginTop = '8px';
+        btnQuitar.style.width = '100%';
+        btnQuitar.textContent = 'Desmarcar el día';
+        btnQuitar.addEventListener('click', function () {
+          if (btnQuitar.dataset.confirmar !== '1') {
+            btnQuitar.dataset.confirmar = '1';
+            btnQuitar.textContent = sesPrev.length > 1
+              ? '¿Borrar las ' + sesPrev.length + ' veces de hoy? Toca otra vez'
+              : '¿Seguro? Toca otra vez';
+            setTimeout(function () {
+              btnQuitar.dataset.confirmar = '';
+              btnQuitar.textContent = 'Desmarcar el día';
+            }, 4000);
+            return;
+          }
+          const respaldo = sesionesHoy(h);
+          delete dia.habitos[h.id];
+          if (dia.variantes) delete dia.variantes[h.id];
+          estado.tiempos = estado.tiempos.filter(function (t) { return !(t.habitoId === h.id && t.fecha === HOY); });
+          habitoAbierto = null;
+          guardar(); pintarHabitos(); pintarTiempo();
+          ofrecerDeshacer('Hábito desmarcado', function () {
+            diaDe(HOY).habitos[h.id] = true;
+            respaldo.forEach(function (t) { estado.tiempos.push(t); });
+            guardar(); pintarHabitos(); pintarTiempo();
+          });
+        });
+        wrap.appendChild(btnQuitar);
+      }
       return wrap;
     }
 
@@ -2579,7 +2737,9 @@
     cont.appendChild(row);
     if (habitoAbierto) {
       const ha = buscarPorId(estado.habitos, habitoAbierto);
-      if (ha && !dia.habitos[ha.id]) cont.appendChild(panelTiempo(ha));
+      // El panel se abre siempre, esté hecho o no: estando hecho sirve para
+      // añadir otra sesión del día (antes solo aparecía si estaba pendiente).
+      if (ha) cont.appendChild(panelTiempo(ha));
     }
 
     const todos = estado.habitos.every(function (h) { return dia.habitos[h.id]; });
@@ -3220,6 +3380,184 @@
     pintarNotasHoy();
   });
 
+  // ---------- Mi biblioteca de libros ----------
+  const ESTADOS_LIBRO = { porleer: '📚 Por leer', leyendo: '📖 Leyendo', leido: '✅ Leído' };
+  let libroEstadoNuevo = 'leyendo';
+  let filtroLibros = 'todos';
+
+  // Minutos totales que le has dedicado a un libro (viene de los tiempos de lectura)
+  function minutosLibro(id) {
+    let t = 0;
+    estado.tiempos.forEach(function (x) { if (x.libroId === id) t += x.minutos || 0; });
+    return t;
+  }
+  function frasesDeLibro(lb) {
+    return estado.lecturas.filter(function (f) {
+      return f.libroId === lb.id || (f.libro || '').toLowerCase() === (lb.titulo || '').toLowerCase();
+    }).length;
+  }
+  function cambiarEstadoLibro(lb, nuevo) {
+    lb.estado = nuevo;
+    if (nuevo === 'leyendo' && !lb.inicio) lb.inicio = HOY;
+    if (nuevo === 'leido' && !lb.fin) lb.fin = HOY;
+    if (nuevo !== 'leido') lb.fin = null;
+    guardar();
+    pintarLibros();
+    llenarDatalistLibros();
+  }
+
+  function pintarLibros() {
+    const cont = document.getElementById('libros-lista');
+    if (!cont) return;
+    cont.innerHTML = '';
+    const mini = document.getElementById('mini-libros');
+    if (mini) mini.textContent = estado.libros.length ? ' · ' + estado.libros.length : '';
+    const lista = estado.libros.filter(function (lb) {
+      return filtroLibros === 'todos' || lb.estado === filtroLibros;
+    });
+    if (!lista.length) {
+      cont.innerHTML = '<p class="vacio">' + (estado.libros.length
+        ? 'Ningún libro en este filtro.'
+        : 'Tu biblioteca está vacía. Toca ＋ para añadir el primero.') + '</p>';
+      return;
+    }
+    const orden = { leyendo: 0, porleer: 1, leido: 2 };
+    lista.slice().sort(function (a, b) {
+      const d = (orden[a.estado] || 3) - (orden[b.estado] || 3);
+      return d !== 0 ? d : (a.titulo || '').localeCompare(b.titulo || '');
+    }).forEach(function (lb) {
+      const card = document.createElement('div');
+      card.className = 'libro';
+
+      const cab = document.createElement('div');
+      cab.className = 'libro-cab';
+      const izq = document.createElement('div');
+      const t = document.createElement('div'); t.className = 'libro-tit'; t.textContent = lb.titulo;
+      izq.appendChild(t);
+      if (lb.autor) { const a = document.createElement('div'); a.className = 'libro-aut'; a.textContent = lb.autor; izq.appendChild(a); }
+      const acc = document.createElement('div');
+      acc.innerHTML = botonEditar() + '<button class="g-borrar" aria-label="Borrar libro">✕</button>';
+      cab.appendChild(izq); cab.appendChild(acc);
+      card.appendChild(cab);
+
+      // Estado, fechas, tiempo dedicado y frases guardadas
+      const meta = document.createElement('div'); meta.className = 'libro-meta';
+      const chip = document.createElement('span');
+      chip.className = 'libro-chip' + (lb.estado === 'leyendo' ? ' leyendo' : lb.estado === 'leido' ? ' leido' : '');
+      chip.textContent = ESTADOS_LIBRO[lb.estado] || '';
+      meta.appendChild(chip);
+      if (lb.inicio) {
+        const f = document.createElement('span');
+        f.textContent = lb.estado === 'leido' && lb.fin
+          ? fechaCorta(lb.inicio) + ' → ' + fechaCorta(lb.fin)
+          : 'desde ' + fechaCorta(lb.inicio);
+        meta.appendChild(f);
+      }
+      const min = minutosLibro(lb.id);
+      if (min > 0) { const m = document.createElement('span'); m.textContent = '⏱ ' + fmtDur(min); meta.appendChild(m); }
+      const nf = frasesDeLibro(lb);
+      if (nf > 0) { const s = document.createElement('span'); s.textContent = '📖 ' + nf + (nf === 1 ? ' frase' : ' frases'); meta.appendChild(s); }
+      card.appendChild(meta);
+
+      // Valoración: solo tiene sentido cuando ya lo leíste
+      if (lb.estado === 'leido') {
+        const est = document.createElement('div');
+        est.className = 'libro-estrellas';
+        est.style.marginTop = '8px';
+        for (let i = 1; i <= 5; i++) {
+          const b = document.createElement('button');
+          b.className = 'libro-estrella' + (i <= (lb.valoracion || 0) ? ' on' : '');
+          b.textContent = i <= (lb.valoracion || 0) ? '★' : '☆';
+          b.setAttribute('aria-label', 'Valorar con ' + i + (i === 1 ? ' estrella' : ' estrellas'));
+          b.addEventListener('click', function () {
+            lb.valoracion = (lb.valoracion === i ? 0 : i);
+            guardar(); pintarLibros();
+          });
+          est.appendChild(b);
+        }
+        card.appendChild(est);
+      }
+
+      if (lb.resena) {
+        const r = document.createElement('div'); r.className = 'libro-resena'; r.textContent = lb.resena;
+        card.appendChild(r);
+      }
+
+      // Cambiar de estado con un toque
+      const accs = document.createElement('div'); accs.className = 'libro-acc';
+      Object.keys(ESTADOS_LIBRO).forEach(function (e) {
+        if (e === lb.estado) return;
+        const b = document.createElement('button');
+        b.className = 'tipo';
+        b.textContent = ESTADOS_LIBRO[e];
+        b.addEventListener('click', function () { cambiarEstadoLibro(lb, e); });
+        accs.appendChild(b);
+      });
+      card.appendChild(accs);
+
+      cab.querySelector('.g-editar').addEventListener('click', function () { abrirEditor('libro', lb.id); });
+      cab.querySelector('.g-borrar').addEventListener('click', function () {
+        estado.libros = estado.libros.filter(function (x) { return x.id !== lb.id; });
+        guardar(); pintarLibros(); llenarDatalistLibros();
+        ofrecerDeshacer('Libro eliminado', function () {
+          estado.libros.push(lb); guardar(); pintarLibros(); llenarDatalistLibros();
+        });
+      });
+      cont.appendChild(card);
+    });
+  }
+
+  // Sugerencias de títulos al guardar una frase, para no escribirlos a mano
+  function llenarDatalistLibros() {
+    const dl = document.getElementById('lista-libros');
+    if (!dl) return;
+    dl.innerHTML = estado.libros.map(function (lb) {
+      return '<option value="' + (lb.titulo || '').replace(/"/g, '&quot;') + '"></option>';
+    }).join('');
+  }
+
+  (function () {
+    const titulo = document.getElementById('lib-titulo');
+    const btn = document.getElementById('guardar-libro');
+    if (!titulo || !btn) return;
+    function validar() { btn.disabled = !titulo.value.trim(); }
+    titulo.addEventListener('input', validar);
+    document.querySelectorAll('#lib-estado .tipo').forEach(function (chip) {
+      chip.addEventListener('click', function () {
+        libroEstadoNuevo = chip.dataset.lestado;
+        document.querySelectorAll('#lib-estado .tipo').forEach(function (c) { c.classList.toggle('activo', c === chip); });
+      });
+    });
+    document.querySelectorAll('#filtro-libros .tipo').forEach(function (chip) {
+      chip.addEventListener('click', function () {
+        filtroLibros = chip.dataset.flib;
+        document.querySelectorAll('#filtro-libros .tipo').forEach(function (c) { c.classList.toggle('activo', c === chip); });
+        pintarLibros();
+      });
+    });
+    btn.addEventListener('click', function () {
+      const t = titulo.value.trim();
+      if (!t) return;
+      const nuevo = {
+        id: nuevoId('lb'),
+        titulo: t,
+        autor: document.getElementById('lib-autor').value.trim(),
+        estado: libroEstadoNuevo,
+        valoracion: 0,
+        inicio: libroEstadoNuevo === 'porleer' ? null : HOY,
+        fin: libroEstadoNuevo === 'leido' ? HOY : null,
+        resena: ''
+      };
+      estado.libros.push(nuevo);
+      guardar();
+      titulo.value = ''; document.getElementById('lib-autor').value = '';
+      btn.disabled = true;
+      plegar('form-libro');
+      pintarLibros();
+      llenarDatalistLibros();
+    });
+  })();
+
   // ---------- Mis lecturas ----------
   document.querySelectorAll('#notas-modo .tipo').forEach(function (chip) {
     chip.addEventListener('click', function () {
@@ -3228,7 +3566,11 @@
       document.getElementById('sub-notas').classList.toggle('oculto', modo !== 'notas');
       document.getElementById('sub-lecturas').classList.toggle('oculto', modo !== 'lecturas');
       document.getElementById('sub-lecturas').style.display = modo === 'lecturas' ? 'flex' : '';
-      if (modo === 'lecturas') pintarLecturas(); else pintarHistorial();
+      document.getElementById('sub-libros').classList.toggle('oculto', modo !== 'libros');
+      document.getElementById('sub-libros').style.display = modo === 'libros' ? 'flex' : '';
+      if (modo === 'lecturas') pintarLecturas();
+      else if (modo === 'libros') pintarLibros();
+      else pintarHistorial();
     });
   });
 
@@ -3243,12 +3585,18 @@
   lecLibro.addEventListener('input', validarLectura);
   btnLectura.addEventListener('click', function () {
     if (!(lecTexto.value.trim() && lecLibro.value.trim())) return;
+    const tituloEscrito = lecLibro.value.trim();
+    // Si el título coincide con uno de tu biblioteca, queda enlazado a ese libro
+    const enBiblioteca = estado.libros.filter(function (lb) {
+      return (lb.titulo || '').toLowerCase() === tituloEscrito.toLowerCase();
+    })[0];
     estado.lecturas.push({
       id: 'L' + Date.now(),
       fecha: HOY,
       texto: lecTexto.value.trim(),
-      libro: lecLibro.value.trim(),
-      autor: lecAutor.value.trim(),
+      libro: tituloEscrito,
+      autor: lecAutor.value.trim() || (enBiblioteca ? enBiblioteca.autor : ''),
+      libroId: enBiblioteca ? enBiblioteca.id : null,
     });
     guardar();
     lecTexto.value = ''; lecLibro.value = ''; lecAutor.value = '';
@@ -3269,7 +3617,10 @@
     if (!Reconocimiento || !zona || !btn) return;
     zona.classList.remove('oculto');
 
-    let rec = null, escuchando = false, textoBase = '', finalAcumulado = '';
+    // `textoPrevio` es la base sobre la que se escribe. SIEMPRE se re-lee de lo que
+    // se ve en pantalla, así que el texto visible es la única fuente de verdad y no
+    // puede desincronizarse ni contarse dos veces.
+    let rec = null, escuchando = false, textoPrevio = '';
     let reinicios = 0, cortadoPorUsuario = false;
     // Quita espacios dobles y el espacio antes de un signo de puntuación
     function limpiar(t) { return (t || '').replace(/\s+/g, ' ').replace(/\s+([,.;:!?…])/g, '$1').trim(); }
@@ -3297,56 +3648,58 @@
       return 'No se pudo dictar. Intenta otra vez.';
     }
 
-    btn.addEventListener('click', function () {
-      if (escuchando) { detener(); decir('Listo. Revisa el texto antes de guardar.'); return; }
-      try {
-        rec = new Reconocimiento();
-      } catch (e) { decir('Este navegador no permite dictar.', true); return; }
-      rec.lang = 'es-CO';
-      rec.continuous = true;     // frases largas de un libro
-      rec.interimResults = true; // se va viendo mientras hablas
+    // Fábrica: cada sesión de escucha usa una instancia NUEVA. Reusar la misma
+    // (lo que hacíamos antes al reanudar) hacía que el navegador conservara los
+    // resultados de la sesión anterior y el texto se contara dos veces.
+    function crearRec() {
+      const r = new Reconocimiento();
+      r.lang = 'es-CO';
+      r.continuous = true;     // frases largas de un libro
+      r.interimResults = true; // se va viendo mientras hablas
 
-      textoBase = lecTexto.value ? lecTexto.value.replace(/\s+$/, '') + ' ' : '';
-      finalAcumulado = '';
-      reinicios = 0;
-      cortadoPorUsuario = false;
+      r.onstart = function () { escuchando = true; pintarBoton(); decir('Escuchando… lee la frase con calma.'); };
 
-      rec.onstart = function () { escuchando = true; pintarBoton(); decir('Escuchando… lee la frase con calma.'); };
-
-      // CLAVE: reconstruimos SIEMPRE el texto entero desde el principio en vez de
-      // ir sumando. El navegador reemite resultados ya entregados, así que sumar
-      // duplicaba palabras. Reconstruir es idempotente: repetir no cambia nada.
-      rec.onresult = function (ev) {
+      // Reconstruye el texto de ESTA sesión desde cero en cada evento (repetir un
+      // resultado no cambia nada) y lo escribe sobre la base visible.
+      r.onresult = function (ev) {
         let final = '', interino = '';
         for (let i = 0; i < ev.results.length; i++) {
           const t = ev.results[i][0].transcript;
           if (ev.results[i].isFinal) final += t; else interino += t;
         }
-        finalAcumulado = final;
-        lecTexto.value = limpiar(textoBase + final + interino).slice(0, 600);
+        lecTexto.value = limpiar(textoPrevio + ' ' + final + ' ' + interino).slice(0, 600);
         validarLectura();
       };
-      rec.onerror = function (ev) {
-        if (ev.error === 'aborted') return;
-        if (ev.error === 'no-speech') return; // el silencio no es un fallo: dejamos que onend reinicie
+      r.onerror = function (ev) {
+        if (ev.error === 'aborted' || ev.error === 'no-speech') return; // silencio: no es fallo
         cortadoPorUsuario = true; // error real: no reintentar
         decir(mensajeError(ev.error), true);
         escuchando = false; pintarBoton();
       };
-      rec.onend = function () {
-        // Consolidamos lo dictado: la siguiente sesión empieza con results vacío
-        textoBase = limpiar(textoBase + finalAcumulado);
-        if (textoBase) textoBase += ' ';
-        finalAcumulado = '';
+      r.onend = function () {
+        // Lo que se ve en pantalla pasa a ser la nueva base. Al releerlo del campo
+        // en vez de acumularlo aparte, es imposible que se sume dos veces.
+        textoPrevio = limpiar(lecTexto.value);
         // Android corta tras unos segundos de silencio. Si tú no lo detuviste,
-        // reanudamos solo para que puedas leer frases largas sin pelear con el botón.
+        // reanudamos con una instancia nueva para seguir leyendo frases largas.
         if (escuchando && !cortadoPorUsuario && reinicios < 12) {
           reinicios++;
-          try { rec.start(); return; } catch (e) {}
+          try { rec = crearRec(); rec.start(); return; } catch (e) {}
         }
         if (escuchando) { escuchando = false; pintarBoton(); decir('Dictado terminado. Revisa el texto antes de guardar.'); }
         validarLectura();
       };
+      return r;
+    }
+
+    btn.addEventListener('click', function () {
+      if (escuchando) { detener(); decir('Listo. Revisa el texto antes de guardar.'); return; }
+      textoPrevio = limpiar(lecTexto.value);
+      reinicios = 0;
+      cortadoPorUsuario = false;
+      try {
+        rec = crearRec();
+      } catch (e) { decir('Este navegador no permite dictar.', true); return; }
       try { rec.start(); } catch (e) { decir('No se pudo iniciar el micrófono.', true); }
     });
 
@@ -5554,6 +5907,8 @@
   pintarTiempo();
   pintarRetos();
   pintarMalos();
+  pintarLibros();
+  llenarDatalistLibros();
   (function () {
     const cb = document.getElementById('buscar-global');
     if (cb) cb.addEventListener('input', pintarBusqueda);
