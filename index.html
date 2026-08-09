@@ -33,7 +33,7 @@
       --surface-2: #202020;
       --ink: #ECECEC;
       --ink-soft: #8C8C8C;
-      --line: #262626;
+      --line: #333333;
       --accent: #E0909C;
       --accent-soft: #362227;
       --accent-ink: #17090C;
@@ -64,7 +64,7 @@
     --surface-2: #202020;
     --ink: #ECECEC;
     --ink-soft: #8C8C8C;
-    --line: #262626;
+    --line: #333333;
     --accent: #E0909C;
     --accent-soft: #362227;
     --accent-ink: #17090C;
@@ -100,8 +100,8 @@
     justify-content: space-between;
     gap: 12px;
   }
-  .top h1 { font-family: var(--font-display); font-size: 1.6rem; font-weight: 700; letter-spacing: -0.01em; }
-  .top .fecha { font-family: var(--font-display); font-style: italic; color: var(--ink-soft); font-size: 0.9rem; text-transform: capitalize; display: block; margin-top: 2px; }
+  .top h1 { font-family: var(--font-display); font-size: 1.375rem; font-weight: 700; letter-spacing: -0.01em; }
+  .top .fecha { font-family: var(--font-display); font-style: italic; color: var(--ink-soft); font-size: 0.875rem; text-transform: capitalize; display: block; margin-top: 2px; }
   .reloj {
     font-family: ui-rounded, "SF Pro Rounded", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
     font-style: normal;
@@ -115,14 +115,14 @@
   .anillo-num {
     position: absolute; inset: 0;
     display: grid; place-items: center;
-    font-size: 0.62rem; font-weight: 700;
+    font-size: 0.75rem; font-weight: 700;
     font-variant-numeric: tabular-nums;
   }
   .frase {
     font-family: var(--font-display);
     font-style: italic;
     color: var(--ink-soft);
-    font-size: 0.9rem;
+    font-size: 0.875rem;
     line-height: 1.5;
     padding: 0 6px;
   }
@@ -130,18 +130,20 @@
   .frase-mas { opacity: 0.7; }
   .lec-item { display: block; padding: 12px 2px; border-bottom: 1px solid var(--line); }
   .lec-item:last-child { border-bottom: none; }
-  .lec-texto { font-family: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif; font-style: italic; font-size: 0.95rem; line-height: 1.5; }
-  .lec-fuente { font-size: 0.78rem; color: var(--ink-soft); margin-top: 4px; display: flex; justify-content: space-between; gap: 8px; align-items: baseline; }
+  #dictado-btn.escuchando { background: var(--danger); color: #FFF6F2; animation: pulso-dictado 1.4s ease-in-out infinite; }
+  @keyframes pulso-dictado { 0%, 100% { opacity: 1; } 50% { opacity: 0.62; } }
+  .lec-texto { font-family: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif; font-style: italic; font-size: 1rem; line-height: 1.5; }
+  .lec-fuente { font-size: 0.875rem; color: var(--ink-soft); margin-top: 4px; display: flex; justify-content: space-between; gap: 8px; align-items: baseline; }
   .lec-form input, .lec-form textarea {
     width: 100%; margin-bottom: 8px;
     border: 1px solid var(--line); border-radius: 12px;
     background: var(--surface); color: var(--ink);
-    padding: 10px 12px; font-size: 0.95rem;
+    padding: 10px 12px; font-size: 1rem;
   }
   .lec-form textarea { font-family: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif; font-style: italic; resize: none; }
-  .presu-inp { width: 96px; height: 42px; padding: 0 8px; border-radius: 10px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); text-align: right; font-variant-numeric: tabular-nums; font-size: 0.9rem; }
+  .presu-inp { width: 96px; height: 42px; padding: 0 8px; border-radius: 10px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); text-align: right; font-variant-numeric: tabular-nums; font-size: 0.875rem; }
   #timer-activo { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 12px 14px; border-radius: 12px; background: var(--accent-soft); border: 1px solid var(--accent); margin-bottom: 10px; }
-  #timer-activo .t-info { font-size: 0.95rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  #timer-activo .t-info { font-size: 1rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   #timer-activo .t-crono { font-variant-numeric: tabular-nums; font-weight: 700; color: var(--accent); }
   #timer-activo .t-stop { background: var(--accent); color: var(--accent-ink); border-radius: 10px; padding: 8px 14px; font-weight: 700; flex-shrink: 0; }
   .tiempo-item .g-min { margin-left: auto; font-variant-numeric: tabular-nums; color: var(--accent); font-weight: 600; }
@@ -171,29 +173,29 @@
   .card h2 {
     font-family: var(--font-display);
     font-style: italic;
-    font-size: 1.05rem;
+    font-size: 1.125rem;
     font-weight: 600;
     color: var(--ink-soft);
     margin-bottom: 12px;
   }
-  .vacio { color: var(--ink-soft); font-size: 0.9rem; padding: 6px 0; }
+  .vacio { color: var(--ink-soft); font-size: 0.875rem; padding: 6px 0; }
   .aviso {
     padding: 14px 16px;
     background: var(--accent-soft);
     border: 1px solid var(--accent);
     border-radius: var(--radius);
-    font-size: 0.92rem;
+    font-size: 0.875rem;
     line-height: 1.5;
   }
   .aviso-botones { display: flex; gap: 8px; margin-top: 10px; }
-  .aviso-botones button { flex: 1; height: 44px; border-radius: 12px; font-size: 0.9rem; }
+  .aviso-botones button { flex: 1; height: 44px; border-radius: 12px; font-size: 0.875rem; }
   .card.compacta { padding: 13px 18px; }
   .card.compacta h2 { margin-bottom: 0; }
   .mini-info { font-weight: 400; }
   .dia-cab { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; }
   .dia-cab h2 { margin-bottom: 0; }
   .dia-cab + .gastos-lista { margin-top: 6px; }
-  .dia-total { font-weight: 700; color: var(--money); font-variant-numeric: tabular-nums; font-size: 0.95rem; }
+  .dia-total { font-weight: 700; color: var(--money); font-variant-numeric: tabular-nums; font-size: 1rem; }
   .card-cab { display: flex; align-items: center; justify-content: space-between; }
   .card-cab h2 { margin-bottom: 0; }
   .card-cab + * { margin-top: 12px; }
@@ -202,7 +204,7 @@
     border-radius: 12px;
     background: var(--accent-soft);
     color: var(--accent);
-    font-size: 1.25rem;
+    font-size: 1.125rem;
     font-weight: 700;
     display: grid; place-items: center;
     flex-shrink: 0;
@@ -229,7 +231,7 @@
     border-radius: 50%;
     border: 2px solid var(--line);
     display: grid; place-items: center;
-    font-size: 0.8rem;
+    font-size: 0.875rem;
     color: transparent;
     flex-shrink: 0;
     transition: background 0.15s, border-color 0.15s, color 0.15s;
@@ -237,11 +239,11 @@
   .habito.hecho { background: var(--accent-soft); border-color: var(--accent); }
   .habito.hecho .marca { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
   .habito.hecho .nombre { color: var(--accent); font-weight: 600; }
-  .habito .racha { margin-left: auto; font-size: 0.8rem; color: var(--ink-soft); font-variant-numeric: tabular-nums; }
+  .habito .racha { margin-left: auto; font-size: 0.875rem; color: var(--ink-soft); font-variant-numeric: tabular-nums; }
   .hechos-toggle {
     text-align: left;
     color: var(--ink-soft);
-    font-size: 0.85rem;
+    font-size: 0.875rem;
     padding: 10px 2px 2px;
   }
   .habito-panel { padding: 12px; border: 1px solid var(--accent); border-radius: 12px; margin: 4px 0 2px; background: var(--surface); }
@@ -253,28 +255,28 @@
   .hab-c-ring {
     width: 54px; height: 54px; border-radius: 50%;
     border: 2px solid var(--line); background: var(--surface);
-    display: grid; place-items: center; font-size: 1.4rem;
+    display: grid; place-items: center; font-size: 1.375rem;
     overflow: hidden; line-height: 1;
     transition: transform 0.12s;
   }
   .hab-circulo.hecho .hab-c-ring { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
   .hab-circulo.activo .hab-c-ring { border-color: var(--accent); transform: scale(1.06); }
-  .hab-c-nombre { display: block; width: 66px; font-size: 0.66rem; color: var(--ink-soft); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; text-align: center; }
+  .hab-c-nombre { display: block; width: 66px; font-size: 0.75rem; color: var(--ink-soft); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; text-align: center; }
   .hab-circulo.hecho .hab-c-nombre { color: var(--ink); }
-  .hab-c-racha { font-size: 0.6rem; color: var(--accent); min-height: 0.8em; }
+  .hab-c-racha { font-size: 0.75rem; color: var(--accent); min-height: 0.8em; }
   .emoji-picker { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; }
-  .emoji-op { width: 40px; height: 40px; border-radius: 10px; border: 1px solid var(--line); background: var(--surface-2); font-size: 1.2rem; }
+  .emoji-op { width: 40px; height: 40px; border-radius: 10px; border: 1px solid var(--line); background: var(--surface-2); font-size: 1.125rem; }
   .emoji-op.activo { border-color: var(--accent); background: var(--accent-soft); }
   /* Línea de tiempo de la agenda */
   .timeline { display: flex; flex-direction: column; }
   .tl-item { display: flex; align-items: flex-start; gap: 10px; padding: 5px 0; }
-  .tl-hora { min-width: 44px; text-align: right; font-variant-numeric: tabular-nums; font-size: 0.85rem; color: var(--accent); font-weight: 600; padding-top: 1px; }
+  .tl-hora { min-width: 44px; text-align: right; font-variant-numeric: tabular-nums; font-size: 0.875rem; color: var(--accent); font-weight: 600; padding-top: 1px; }
   .tl-punto { width: 10px; height: 10px; border-radius: 50%; background: var(--accent); margin-top: 5px; flex-shrink: 0; position: relative; }
   .tl-punto::before { content: ''; position: absolute; left: 4px; top: 12px; width: 2px; height: calc(100% + 10px); background: var(--line); }
   .tl-item:last-child .tl-punto::before { display: none; }
   .tl-cont { flex: 1; }
-  .tl-titulo { font-size: 0.95rem; }
-  .tl-meta { font-size: 0.72rem; color: var(--ink-soft); margin-top: 2px; }
+  .tl-titulo { font-size: 1rem; }
+  .tl-meta { font-size: 0.75rem; color: var(--ink-soft); margin-top: 2px; }
   .ev-dot { display: inline-block; width: 9px; height: 9px; border-radius: 50%; margin-right: 6px; vertical-align: 1px; }
   .dia-semana-sel { display: flex; gap: 6px; flex-wrap: wrap; }
   .dia-semana-sel .tipo { width: 40px; text-align: center; padding: 8px 0; }
@@ -283,9 +285,9 @@
   .reto.completado { border-color: var(--accent); background: var(--accent-soft); }
   .reto-cab { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; }
   .reto-nombre { font-weight: 600; font-size: 1rem; }
-  .reto-badge { font-size: 0.72rem; color: var(--ink-soft); white-space: nowrap; }
-  .reto-stats { display: flex; gap: 16px; margin: 10px 0 8px; font-size: 0.8rem; color: var(--ink-soft); }
-  .reto-stats b { color: var(--ink); font-variant-numeric: tabular-nums; font-size: 0.95rem; }
+  .reto-badge { font-size: 0.75rem; color: var(--ink-soft); white-space: nowrap; }
+  .reto-stats { display: flex; gap: 16px; margin: 10px 0 8px; font-size: 0.875rem; color: var(--ink-soft); }
+  .reto-stats b { color: var(--ink); font-variant-numeric: tabular-nums; font-size: 1rem; }
   .reto-barra { height: 10px; border-radius: 999px; background: var(--surface-2); overflow: hidden; }
   .reto-barra > div { height: 100%; background: var(--accent); border-radius: 999px; transition: width 0.3s; }
   .reto-acciones { display: flex; gap: 8px; margin-top: 12px; align-items: center; }
@@ -295,8 +297,8 @@
   .reto-hoy { padding: 10px 0; border-bottom: 1px solid var(--line); }
   .reto-hoy:last-child { border-bottom: none; }
   .reto-hoy-top { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
-  .reto-hoy-nombre { font-size: 0.95rem; font-weight: 500; }
-  .reto-hoy-prog { font-size: 0.78rem; color: var(--ink-soft); font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .reto-hoy-nombre { font-size: 1rem; font-weight: 500; }
+  .reto-hoy-prog { font-size: 0.875rem; color: var(--ink-soft); font-variant-numeric: tabular-nums; white-space: nowrap; }
   .reto-hoy-acc { margin-top: 8px; display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
   .reto-hoy-compacto { display: flex; width: 100%; align-items: center; justify-content: space-between; gap: 8px; padding: 9px 2px; border-bottom: 1px solid var(--line); background: transparent; text-align: left; }
   .reto-hoy-compacto:last-child { border-bottom: none; }
@@ -304,40 +306,40 @@
   .malo { border: 1px solid var(--line); border-radius: 14px; padding: 14px; margin-bottom: 10px; }
   .malo-cab { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; }
   .malo-nombre { font-weight: 600; font-size: 1rem; }
-  .malo-modo { font-size: 0.72rem; color: var(--ink-soft); white-space: nowrap; }
-  .malo-crono { font-variant-numeric: tabular-nums; font-size: 1.6rem; font-weight: 700; letter-spacing: -0.01em; margin: 10px 0 2px; }
+  .malo-modo { font-size: 0.75rem; color: var(--ink-soft); white-space: nowrap; }
+  .malo-crono { font-variant-numeric: tabular-nums; font-size: 1.375rem; font-weight: 700; letter-spacing: -0.01em; margin: 10px 0 2px; }
   .malo-crono-rot { font-size: 0.75rem; color: var(--ink-soft); }
   .malo-hoy { display: flex; align-items: baseline; gap: 8px; margin: 10px 0 4px; }
-  .malo-hoy b { font-size: 1.5rem; font-variant-numeric: tabular-nums; }
-  .malo-datos { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 10px; font-size: 0.78rem; color: var(--ink-soft); }
-  .malo-datos b { display: block; color: var(--ink); font-size: 0.95rem; font-variant-numeric: tabular-nums; }
+  .malo-hoy b { font-size: 1.375rem; font-variant-numeric: tabular-nums; }
+  .malo-datos { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 10px; font-size: 0.875rem; color: var(--ink-soft); }
+  .malo-datos b { display: block; color: var(--ink); font-size: 1rem; font-variant-numeric: tabular-nums; }
   .malo-acciones { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
   .malo-btn { flex: 1; min-width: 120px; height: 44px; border-radius: 12px; font-weight: 600; background: var(--surface-2); color: var(--ink); }
   .malo-btn.peligro { background: var(--danger); color: #FFF6F2; }
   .malo-medallas { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 10px; }
-  .malo-med { font-size: 0.7rem; padding: 3px 8px; border-radius: 999px; border: 1px solid var(--line); color: var(--ink-soft); }
+  .malo-med { font-size: 0.75rem; padding: 3px 8px; border-radius: 999px; border: 1px solid var(--line); color: var(--ink-soft); }
   .malo-med.ganada { background: var(--accent); color: var(--accent-ink); border-color: transparent; font-weight: 600; }
   .malo-tira { display: flex; gap: 2px; margin-top: 10px; }
   .malo-dia { flex: 1; height: 22px; border-radius: 3px; background: var(--surface-2); }
-  .malo-razones { margin-top: 10px; padding: 10px 12px; border-radius: 10px; background: var(--surface-2); font-size: 0.85rem; }
+  .malo-razones { margin-top: 10px; padding: 10px 12px; border-radius: 10px; background: var(--surface-2); font-size: 0.875rem; }
   .malo-razones ul { margin: 6px 0 0; padding-left: 18px; }
   .malo-razones li { margin: 3px 0; }
-  .malo-hist { margin-top: 10px; font-size: 0.8rem; color: var(--ink-soft); }
+  .malo-hist { margin-top: 10px; font-size: 0.875rem; color: var(--ink-soft); }
   .malo-hist-item { display: flex; justify-content: space-between; gap: 8px; padding: 6px 0; border-bottom: 1px solid var(--line); }
   .malo-hist-item:last-child { border-bottom: none; }
   /* Fila compacta en la pantalla Hoy */
   .malo-hoy-fila { display: flex; align-items: center; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--line); }
   .malo-hoy-fila:last-child { border-bottom: none; }
   .malo-hoy-tocar { flex: 1; display: flex; align-items: center; gap: 10px; background: transparent; text-align: left; color: var(--ink); min-width: 0; }
-  .malo-hoy-emoji { font-size: 1.25rem; flex: none; }
-  .malo-hoy-nom { flex: 1; font-size: 0.95rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  .malo-hoy-val { font-variant-numeric: tabular-nums; font-weight: 700; font-size: 0.95rem; white-space: nowrap; }
-  .malo-hoy-mas { flex: none; width: 46px; height: 38px; border-radius: 10px; background: var(--surface-2); color: var(--ink); font-weight: 700; font-size: 0.95rem; }
-  .rhc-nom { font-size: 0.9rem; color: var(--ink-soft); }
-  .rhc-racha { font-size: 0.8rem; color: var(--accent); font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .malo-hoy-emoji { font-size: 1.125rem; flex: none; }
+  .malo-hoy-nom { flex: 1; font-size: 1rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .malo-hoy-val { font-variant-numeric: tabular-nums; font-weight: 700; font-size: 1rem; white-space: nowrap; }
+  .malo-hoy-mas { flex: none; width: 46px; height: 38px; border-radius: 10px; background: var(--surface-2); color: var(--ink); font-weight: 700; font-size: 1rem; }
+  .rhc-nom { font-size: 0.875rem; color: var(--ink-soft); }
+  .rhc-racha { font-size: 0.875rem; color: var(--accent); font-variant-numeric: tabular-nums; white-space: nowrap; }
   .meta-fila { padding: 9px 0; border-bottom: 1px solid var(--line); }
   .meta-fila:last-child { border-bottom: none; }
-  .meta-fila-top { display: flex; justify-content: space-between; gap: 8px; font-size: 0.9rem; margin-bottom: 6px; }
+  .meta-fila-top { display: flex; justify-content: space-between; gap: 8px; font-size: 0.875rem; margin-bottom: 6px; }
   .meta-fila-top .m-prog { color: var(--ink-soft); font-variant-numeric: tabular-nums; white-space: nowrap; }
   .meta-fila.cumplida .m-prog { color: var(--accent); font-weight: 600; }
   .deshacer {
@@ -352,7 +354,7 @@
     display: flex;
     gap: 14px;
     align-items: center;
-    font-size: 0.9rem;
+    font-size: 0.875rem;
     z-index: 60;
     box-shadow: var(--shadow);
     white-space: nowrap;
@@ -368,7 +370,7 @@
     color: #fff;
     border-radius: 12px;
     padding: 12px 16px;
-    font-size: 0.85rem;
+    font-size: 0.875rem;
     line-height: 1.35;
     z-index: 70;
     box-shadow: var(--shadow);
@@ -379,16 +381,16 @@
     width: 42px; height: 42px;
     border-radius: 10px;
     background: var(--surface-2);
-    font-size: 1.1rem;
+    font-size: 1.125rem;
   }
   .paso-sem:disabled { opacity: 0.35; cursor: default; }
-  #sem-rotulo { font-family: var(--font-display); font-style: italic; color: var(--ink-soft); font-size: 0.95rem; }
+  #sem-rotulo { font-family: var(--font-display); font-style: italic; color: var(--ink-soft); font-size: 1rem; }
 
   /* ---- Gasto rápido (Hoy) ---- */
   .gr-fila { display: flex; gap: 8px; }
-  .gr-monto { flex: 1; height: 48px; font-size: 1.2rem; }
-  .gr-btn { width: 56px; height: 48px; flex-shrink: 0; font-size: 1.3rem; }
-  .gr-total { font-size: 0.85rem; color: var(--ink-soft); font-variant-numeric: tabular-nums; }
+  .gr-monto { flex: 1; height: 48px; font-size: 1.125rem; }
+  .gr-btn { width: 56px; height: 48px; flex-shrink: 0; font-size: 1.375rem; }
+  .gr-total { font-size: 0.875rem; color: var(--ink-soft); font-variant-numeric: tabular-nums; }
 
   /* ---- Nota del día ---- */
   .nota-dia {
@@ -406,13 +408,13 @@
   }
   .nota-dia::placeholder { color: var(--ink-soft); opacity: 0.8; }
   .nota-dia:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
-  .btn-nota { width: 100%; height: 46px; margin-top: 10px; font-size: 0.95rem; }
+  .btn-nota { width: 100%; height: 46px; margin-top: 10px; font-size: 1rem; }
   .tipos { display: flex; gap: 8px; margin-bottom: 10px; }
   .tipo {
     padding: 8px 14px;
     border-radius: 999px;
     background: var(--surface-2);
-    font-size: 0.9rem;
+    font-size: 0.875rem;
     border: 1px solid transparent;
   }
   .tipo.activo { background: var(--accent-soft); border-color: var(--accent); color: var(--accent); font-weight: 600; }
@@ -422,7 +424,7 @@
     border: 2px solid var(--line);
     color: transparent;
     display: grid; place-items: center;
-    font-size: 0.7rem;
+    font-size: 0.75rem;
     flex-shrink: 0;
     margin-top: 2px;
   }
@@ -437,8 +439,8 @@
     border-bottom: 1px solid var(--line);
   }
   .nota-item:last-child { border-bottom: none; }
-  .nota-texto { font-family: var(--font-display); font-style: italic; font-size: 0.95rem; line-height: 1.5; }
-  .nota-hora { font-size: 0.72rem; color: var(--ink-soft); font-variant-numeric: tabular-nums; margin-top: 2px; }
+  .nota-texto { font-family: var(--font-display); font-style: italic; font-size: 1rem; line-height: 1.5; }
+  .nota-hora { font-size: 0.75rem; color: var(--ink-soft); font-variant-numeric: tabular-nums; margin-top: 2px; }
 
   /* ---- Gastos ---- */
   .gasto-form { display: flex; flex-direction: column; gap: 12px; }
@@ -449,7 +451,7 @@
     border-radius: 14px;
     border: 1px solid var(--line);
     background: var(--surface);
-    font-size: 1.5rem;
+    font-size: 1.375rem;
     font-weight: 700;
     text-align: right;
     font-variant-numeric: tabular-nums;
@@ -459,7 +461,7 @@
     padding: 10px 14px;
     border-radius: 999px;
     background: var(--surface-2);
-    font-size: 0.9rem;
+    font-size: 0.875rem;
     border: 1px solid transparent;
   }
   .cat.activa { background: var(--money-soft); border-color: var(--money); color: var(--money); font-weight: 600; }
@@ -470,14 +472,14 @@
     border-radius: 12px;
     border: 1px solid var(--line);
     background: var(--surface);
-    font-size: 0.95rem;
+    font-size: 1rem;
   }
   .btn-primario {
     height: 52px;
     border-radius: 14px;
     background: var(--accent);
     color: var(--accent-ink);
-    font-size: 1.05rem;
+    font-size: 1.125rem;
     font-weight: 700;
   }
   .btn-primario:disabled { opacity: 0.4; cursor: default; }
@@ -490,10 +492,10 @@
     border-bottom: 1px solid var(--line);
   }
   .gasto-item:last-child { border-bottom: none; }
-  .gasto-item .g-cat { font-size: 0.85rem; color: var(--ink-soft); }
-  .gasto-item .g-nota { font-size: 0.95rem; }
+  .gasto-item .g-cat { font-size: 0.875rem; color: var(--ink-soft); }
+  .gasto-item .g-nota { font-size: 1rem; }
   .gasto-item .g-monto { margin-left: auto; font-weight: 700; font-variant-numeric: tabular-nums; color: var(--money); }
-  .g-borrar { color: var(--ink-soft); font-size: 1.1rem; padding: 8px; }
+  .g-borrar { color: var(--ink-soft); font-size: 1.125rem; padding: 8px; }
   .total-dia {
     display: flex;
     justify-content: space-between;
@@ -505,8 +507,8 @@
   /* ---- Resumen ---- */
   .semana-grid { display: flex; flex-direction: column; gap: 10px; overflow-x: auto; }
   .sg-fila { display: grid; grid-template-columns: 1fr repeat(7, 30px); align-items: center; gap: 6px; }
-  .sg-nombre { font-size: 0.9rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .sg-dia-label { font-size: 0.7rem; color: var(--ink-soft); text-align: center; text-transform: uppercase; }
+  .sg-nombre { font-size: 0.875rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .sg-dia-label { font-size: 0.75rem; color: var(--ink-soft); text-align: center; text-transform: uppercase; }
   .sg-celda {
     width: 30px; height: 30px;
     border-radius: 8px;
@@ -524,10 +526,10 @@
     padding: 12px;
     text-align: center;
   }
-  .stat .valor { font-family: var(--font-display); font-size: 1.35rem; font-weight: 700; font-variant-numeric: tabular-nums; }
+  .stat .valor { font-family: var(--font-display); font-size: 1.375rem; font-weight: 700; font-variant-numeric: tabular-nums; }
   .stat .desc { font-size: 0.75rem; color: var(--ink-soft); margin-top: 2px; }
   .cat-resumen { display: flex; flex-direction: column; gap: 8px; }
-  .cat-barra-fila { display: grid; grid-template-columns: 90px 1fr auto; gap: 10px; align-items: center; font-size: 0.85rem; }
+  .cat-barra-fila { display: grid; grid-template-columns: 90px 1fr auto; gap: 10px; align-items: center; font-size: 0.875rem; }
   .cat-barra { height: 10px; border-radius: 999px; background: var(--surface-2); overflow: hidden; }
   .cat-barra > div { height: 100%; background: var(--money); border-radius: 999px; }
   .cat-barra-fila .monto { font-variant-numeric: tabular-nums; color: var(--ink-soft); }
@@ -543,10 +545,10 @@
   }
   .aj-habito:last-child { border-bottom: none; }
   .aj-habito .nombre { flex: 1; }
-  .aj-racha { font-size: 0.8rem; color: var(--ink-soft); font-variant-numeric: tabular-nums; }
+  .aj-racha { font-size: 0.875rem; color: var(--ink-soft); font-variant-numeric: tabular-nums; }
   .aj-borrar { color: var(--ink-soft); font-size: 1rem; padding: 6px 10px; border-radius: 8px; }
-  .aj-var { color: var(--ink-soft); font-size: 0.95rem; padding: 6px 6px; }
-  .aj-borrar.confirmando { background: var(--danger); color: #FFF6F2; font-size: 0.8rem; font-weight: 600; }
+  .aj-var { color: var(--ink-soft); font-size: 1rem; padding: 6px 6px; }
+  .aj-borrar.confirmando { background: var(--danger); color: #FFF6F2; font-size: 0.875rem; font-weight: 600; }
   .nuevo-habito { display: flex; gap: 8px; }
   .nuevo-habito input {
     flex: 1;
@@ -572,7 +574,7 @@
     margin-top: 8px;
   }
   .btn-peligro { color: var(--danger); }
-  .ayuda { font-size: 0.82rem; color: var(--ink-soft); line-height: 1.5; margin-top: 10px; }
+  .ayuda { font-size: 0.875rem; color: var(--ink-soft); line-height: 1.5; margin-top: 10px; }
 
   /* ---- Tab bar ---- */
   nav.tabs {
@@ -594,25 +596,25 @@
     flex-direction: column;
     align-items: center;
     gap: 2px;
-    font-size: 0.68rem;
+    font-size: 0.75rem;
     color: var(--ink-soft);
   }
-  .tab .icono { font-size: 1.3rem; }
+  .tab .icono { font-size: 1.375rem; }
   .mas-item { display: flex; align-items: center; gap: 12px; width: 100%; padding: 15px 6px; border-bottom: 1px solid var(--line); font-size: 1rem; text-align: left; color: var(--ink); }
   .mas-item:last-child { border-bottom: none; }
-  .mas-item span { font-size: 1.35rem; }
+  .mas-item span { font-size: 1.375rem; }
   .tab.activa { color: var(--accent); font-weight: 700; }
 
   /* ---- Calendario mensual ---- */
   .cal-nav { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
-  .cal-mes { font-weight: 700; font-size: 0.95rem; text-transform: capitalize; }
+  .cal-mes { font-weight: 700; font-size: 1rem; text-transform: capitalize; }
   .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
-  .cal-dow { text-align: center; font-size: 0.62rem; color: var(--ink-soft); text-transform: uppercase; padding-bottom: 2px; }
+  .cal-dow { text-align: center; font-size: 0.75rem; color: var(--ink-soft); text-transform: uppercase; padding-bottom: 2px; }
   .cal-dia {
     aspect-ratio: 1;
     border-radius: 10px;
     display: flex; align-items: center; justify-content: center;
-    font-size: 0.85rem;
+    font-size: 0.875rem;
     background: var(--surface-2);
     position: relative;
     font-variant-numeric: tabular-nums;
@@ -622,16 +624,16 @@
   .cal-dia.sel { background: var(--accent); color: var(--accent-ink); }
   .cal-dia .punto { width: 5px; height: 5px; border-radius: 50%; background: var(--accent); position: absolute; bottom: 5px; }
   .cal-dia.sel .punto { background: var(--accent-ink); }
-  .cal-detalle-fecha { font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink-soft); margin: 16px 0 4px; }
+  .cal-detalle-fecha { font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink-soft); margin: 16px 0 4px; }
 
   /* ---- Historial de notas ---- */
   .buscar-nota {
     width: 100%; height: 46px; padding: 0 14px;
     border-radius: 12px; border: 1px solid var(--line);
-    background: var(--surface); color: var(--ink); font-size: 0.95rem;
+    background: var(--surface); color: var(--ink); font-size: 1rem;
   }
-  .nota-grupo { font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink-soft); margin: 16px 0 2px; }
-  .nota-etq { display: inline-block; font-size: 0.72rem; color: var(--accent); margin-left: 6px; }
+  .nota-grupo { font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink-soft); margin: 16px 0 2px; }
+  .nota-etq { display: inline-block; font-size: 0.75rem; color: var(--accent); margin-left: 6px; }
 
   /* ---- Botón editar (junto a borrar) ---- */
   .g-editar { color: var(--ink-soft); font-size: 1rem; padding: 8px 6px; flex-shrink: 0; }
@@ -645,11 +647,11 @@
     padding: 18px 18px calc(18px + env(safe-area-inset-bottom));
     max-height: 88vh; overflow-y: auto;
   }
-  .modal h3 { font-size: 1.05rem; font-weight: 700; margin-bottom: 8px; }
-  .modal label { display: block; font-size: 0.7rem; color: var(--ink-soft); text-transform: uppercase; letter-spacing: 0.05em; margin: 12px 0 4px; }
+  .modal h3 { font-size: 1.125rem; font-weight: 700; margin-bottom: 8px; }
+  .modal label { display: block; font-size: 0.75rem; color: var(--ink-soft); text-transform: uppercase; letter-spacing: 0.05em; margin: 12px 0 4px; }
   .modal input, .modal textarea, .modal select {
     width: 100%; border: 1px solid var(--line); border-radius: 12px;
-    background: var(--surface); color: var(--ink); padding: 10px 12px; font-size: 0.95rem;
+    background: var(--surface); color: var(--ink); padding: 10px 12px; font-size: 1rem;
   }
   .modal textarea { resize: none; font-family: inherit; }
   .modal .fila-check { display: flex; align-items: center; gap: 8px; margin-top: 12px; }
@@ -674,7 +676,7 @@
     border-radius: 12px;
     padding: 10px 12px;
     font-weight: 600;
-    font-size: 0.95rem;
+    font-size: 1rem;
     text-align: center;
     margin-top: 10px;
   }
@@ -695,14 +697,14 @@
   .card h2, .card-cab h2 {
     font-family: inherit;
     font-style: normal;
-    font-size: 0.72rem;
+    font-size: 0.75rem;
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.09em;
   }
   .card.compacta { padding: 8px 2px 10px; }
-  .top h1 { font-size: 1.35rem; font-weight: 700; letter-spacing: -0.01em; }
-  .top .fecha { font-style: normal; font-size: 0.8rem; font-variant-numeric: tabular-nums; }
+  .top h1 { font-size: 1.375rem; font-weight: 700; letter-spacing: -0.01em; }
+  .top .fecha { font-style: normal; font-size: 0.875rem; font-variant-numeric: tabular-nums; }
   .frase { font-family: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif; }
   .habito {
     border: none;
@@ -716,9 +718,9 @@
   .habito.hecho .nombre { color: var(--ink-soft); font-weight: 400; text-decoration: line-through; }
   .habito .racha, .aj-racha { color: var(--accent); font-weight: 600; }
   .nota-dia, .nota-texto { font-family: inherit; font-style: normal; }
-  .nota-texto { font-size: 0.92rem; }
+  .nota-texto { font-size: 0.875rem; }
   .stat .valor { font-family: inherit; }
-  #sem-rotulo { font-family: inherit; font-style: normal; font-size: 0.85rem; }
+  #sem-rotulo { font-family: inherit; font-style: normal; font-size: 0.875rem; }
   .cat.activa, .tipo.activo { background: transparent; border-color: var(--ink); color: var(--ink); }
   .cat-barra > div { background: var(--ink-soft); }
   .dia-completo { background: var(--surface-2); color: var(--ink); }
@@ -729,6 +731,181 @@
 
   @media (prefers-reduced-motion: reduce) {
     * { transition: none !important; animation: none !important; }
+  }
+
+  /* ============ v32 · Profundidad (dos niveles, sin tarjetas) ============
+     La app es plana a propósito y así se queda. El problema medido era que
+     estaba DEMASIADO plana: el contraste bloque/fondo era 1.09, así que no
+     se distinguía dónde acababa una sección y empezaba la siguiente.
+     Se resuelve en dos niveles, sin volver a las tarjetas:
+       1) cada sección se separa de la anterior con una línea fina;
+       2) solo lo ACCIONABLE (los formularios que se abren con ＋) recibe
+          superficie propia, para que se lea como "aquí puedes hacer algo".
+     Las listas y los historiales siguen planos. */
+
+  section.card + section.card {
+    border-top: 1px solid var(--line);
+    padding-top: 16px;
+  }
+
+  /* Defecto encontrado al medir: las casillas de cifras tenían `flex:1` pero
+     sin `min-width:0`, así que no podían encogerse (comportamiento por defecto
+     de flexbox). Con importes largos en pesos, la pantalla se desbordaba a lo
+     ancho. Ahora encogen y, si aún no caben, bajan de línea. */
+  .stats-fila { flex-wrap: wrap; }
+  .stat { min-width: 0; }
+  /* Balance: ingresos y gastos arriba, el balance ocupa la línea completa */
+  #balance-stats .stat { flex: 1 1 46%; }
+  #balance-stats .valor { font-size: 1.125rem; }
+
+  /* Formularios abiertos: bloque accionable con superficie */
+  [id^="form-"]:not(.oculto) {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 14px;
+  }
+  /* Dentro del formulario, los campos se distinguen del propio bloque */
+  [id^="form-"]:not(.oculto) .monto-input,
+  [id^="form-"]:not(.oculto) .nota-input,
+  [id^="form-"]:not(.oculto) .peso-input {
+    background: var(--surface-2);
+  }
+
+  /* ============ v32 · Áreas táctiles (mínimo 44×44) ============
+     Principio: el ícono NO cambia de tamaño. Lo que crece es el área que
+     responde al dedo. Dos técnicas según el botón:
+       a) Sin fondo visible (✎ ✕): se agranda la caja real; el glifo se centra
+          y se ve idéntico, pero ahora ocupa 44×44 reales.
+       b) Con fondo visible (círculo ✓, chip ＋, +1): se añade un área
+          transparente con ::after, para no deformar el diseño.
+     Además ✕ borrar se separa de ✎ editar: son acciones vecinas y una es
+     destructiva. */
+
+  .g-editar, .g-borrar {
+    min-width: 44px;
+    min-height: 44px;
+    padding: 0;
+    display: grid;
+    place-items: center;
+    flex-shrink: 0;
+  }
+  /* Separación extra entre editar y borrar (evita el toque accidental) */
+  .g-borrar { margin-left: 6px; }
+
+  /* Botones sin fondo propio: caja real de 44, el glifo no cambia */
+  .aj-var, .aj-borrar {
+    min-width: 44px;
+    min-height: 44px;
+    display: grid;
+    place-items: center;
+  }
+
+  /* La fila de "Dejando" en Hoy es un botón completo: alto cómodo */
+  .malo-hoy-fila { min-height: 44px; }
+  .malo-hoy-tocar { min-height: 44px; }
+
+  .tarea-check, .abrir, .malo-hoy-mas, .paso-sem { position: relative; }
+  .tarea-check::after,
+  .abrir::after,
+  .malo-hoy-mas::after,
+  .paso-sem::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 44px;
+    height: 44px;
+    transform: translate(-50%, -50%);
+  }
+
+  /* Chips (Semana/Mes, filtros de notas, minutos, categorías de gasto…):
+     son anchos pero bajos. Se amplía SOLO en vertical para que dos chips
+     vecinos nunca se solapen entre sí. */
+  .tipo, .cat { position: relative; }
+  .tipo::after, .cat::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    height: 44px;
+    transform: translateY(-50%);
+  }
+
+  /* ============ v32 · Color con significado ============
+     Antes el rosa de marca lo señalaba todo (rachas, cumplidos, progreso,
+     navegación) y un color que lo señala todo deja de señalar. Reparto:
+       verde = a favor  (cumplido, racha viva, progreso, medalla)
+       rojo  = riesgo   (vencido, sobre presupuesto, recaída)  → ya existía
+       rosa  = marca    (navegación, acción principal, selección)
+       gris  = neutro   (fechas, categorías, datos sin carga)
+     El verde y el rojo NO son el acento: son estado. */
+
+  :root { --ok: #2F7D5C; --ok-soft: #E9F4EF; --ok-ink: #FFFFFF; }
+  @media (prefers-color-scheme: dark) {
+    :root { --ok: #4CC38A; --ok-soft: #17281F; --ok-ink: #08160E; }
+  }
+  :root[data-theme="light"] { --ok: #2F7D5C; --ok-soft: #E9F4EF; --ok-ink: #FFFFFF; }
+  :root[data-theme="dark"]  { --ok: #4CC38A; --ok-soft: #17281F; --ok-ink: #08160E; }
+
+  /* Cumplido: lo que ya lograste hoy */
+  .hab-circulo.hecho .hab-c-ring { background: var(--ok); border-color: var(--ok); color: var(--ok-ink); }
+  .tarea-hecha .tarea-check { background: var(--ok); border-color: var(--ok); color: var(--ok-ink); }
+  .sg-celda.si { background: var(--ok); color: var(--ok-ink); }
+  .habito.hecho .marca { background: var(--ok); border-color: var(--ok); color: var(--ok-ink); }
+  .dia-completo { background: var(--ok-soft); color: var(--ok); }
+
+  /* Rachas y avance hacia una meta */
+  .hab-c-racha, .habito .racha, .aj-racha, .rhc-racha { color: var(--ok); }
+  .reto-barra > div { background: var(--ok); }
+  .reto.completado { border-color: var(--ok); background: var(--ok-soft); }
+  .reto-check.ok { background: var(--ok); color: var(--ok-ink); }
+  .meta-fila.cumplida .m-prog { color: var(--ok); }
+  .malo-med.ganada { background: var(--ok); color: var(--ok-ink); border-color: transparent; }
+
+  /* ============ v32 · Jerarquía en Hoy ============
+     Antes: 10 bloques con el mismo peso visual y casi dos pantallas de scroll,
+     sin nada que dijera qué mirar primero. Ahora: la cifra del día grande
+     arriba, las tres capturas rápidas en UNA sola fila (antes ocupaban tres
+     secciones enteras), y el resto agrupado en Seguimiento / Del día. */
+
+  .grupo-rotulo {
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+    margin: 4px 0 -8px;
+  }
+
+  /* La cifra del día es lo primero que se lee */
+  .panel-heroe .valor { font-size: 1.75rem; }
+
+  /* Capturas rápidas: Gasto · Nota · Tiempo en una fila */
+  .acciones-rapidas { display: flex; gap: 8px; }
+  .acc-rapida {
+    flex: 1 1 0;
+    min-width: 0;
+    width: auto;
+    height: 56px;
+    border-radius: 12px;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    color: var(--ink);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    font-size: 0.75rem;
+    font-weight: 600;
+  }
+  .acc-rapida .acc-emoji { font-size: 1.125rem; line-height: 1; }
+  .acc-rapida.activo {
+    background: var(--accent-soft);
+    border-color: var(--accent);
+    color: var(--accent);
   }
 </style>
 
@@ -761,7 +938,7 @@
       </div>
       <div class="aviso oculto" id="aviso-bienvenida">
         <p><strong>¿Traes tus datos de otro dispositivo?</strong> Pega aquí el link (o el respaldo) que copiaste y los cargamos aquí.</p>
-        <textarea class="nota-dia" id="texto-bienvenida" rows="3" placeholder="Pega aquí tu link con datos…" style="font-family: inherit; font-style: normal; font-size: 0.8rem; margin-top: 8px;"></textarea>
+        <textarea class="nota-dia" id="texto-bienvenida" rows="3" placeholder="Pega aquí tu link con datos…" style="font-family: inherit; font-style: normal; font-size: 0.875rem; margin-top: 8px;"></textarea>
         <div class="aviso-botones">
           <button class="btn-primario" id="bienvenida-importar" data-rotulo="Importar mis datos">Importar mis datos</button>
           <button class="btn-secundario" id="bienvenida-no">Empezar de cero</button>
@@ -774,24 +951,17 @@
           <button class="btn-secundario" id="respaldo-luego">Hoy no</button>
         </div>
       </div>
-      <div class="stats-fila" id="panel-dia" style="margin-bottom:2px;"></div>
-      <section class="card">
-        <h2>Hábitos</h2>
-        <div id="lista-habitos"></div>
-        <div class="dia-completo oculto" id="dia-completo">🎉 ¡Día completo!</div>
-      </section>
+      <div class="stats-fila panel-heroe" id="panel-dia" style="margin-bottom:2px;"></div>
 
-      <section class="card oculto" id="card-malos-hoy">
-        <h2>🚭 Dejando</h2>
-        <div id="malos-hoy"></div>
-      </section>
-
-      <section class="card">
-        <div class="card-cab">
-          <h2>Gasto rápido</h2>
-          <button class="abrir" data-plegable="form-gr" aria-expanded="false" aria-label="Registrar un gasto">＋</button>
+      <p class="grupo-rotulo">Registrar</p>
+      <section class="card" id="card-registrar">
+        <div class="acciones-rapidas">
+          <button class="abrir acc-rapida" data-plegable="form-gr" aria-expanded="false" aria-label="Registrar un gasto"><span class="acc-emoji">💸</span>Gasto</button>
+          <button class="abrir acc-rapida" data-plegable="form-nota" aria-expanded="false" aria-label="Escribir una nota o tarea"><span class="acc-emoji">📝</span>Nota</button>
+          <button class="abrir acc-rapida" data-plegable="form-tiempo" aria-expanded="false" aria-label="Registrar tiempo de una actividad"><span class="acc-emoji">⏱</span>Tiempo</button>
         </div>
         <div class="gr-total" id="gr-total">Hoy llevas $ 0</div>
+        <div id="timer-activo" class="oculto"></div>
         <div class="gasto-form plegable oculto" id="form-gr">
           <div class="gr-fila">
             <input class="monto-input gr-monto" id="gr-monto" type="number" inputmode="decimal" placeholder="$ 0">
@@ -800,13 +970,7 @@
           <div class="cats" id="gr-cats"></div>
           <input class="nota-input" id="gr-nota" type="text" placeholder="Comentario (opcional)" maxlength="60">
         </div>
-      </section>
 
-      <section class="card">
-        <div class="card-cab">
-          <h2>Nota o tarea</h2>
-          <button class="abrir" data-plegable="form-nota" aria-expanded="false" aria-label="Escribir una nota o tarea">＋</button>
-        </div>
         <div class="plegable oculto" id="form-nota">
           <div class="tipos">
             <button class="tipo activo" data-tipo="nota">📝 Nota</button>
@@ -827,29 +991,7 @@
           <input class="nota-input" id="nota-fecha" type="date">
           <button class="btn-primario btn-nota" id="guardar-nota" disabled style="margin-top:10px;">Guardar nota</button>
         </div>
-      </section>
 
-      <section class="card" id="card-tareas">
-        <h2>Pendientes<span class="mini-info" id="mini-tareas"></span></h2>
-        <div class="notas-lista" id="tareas-lista"></div>
-      </section>
-
-      <section class="card" id="card-notas">
-        <h2>Notas de hoy<span class="mini-info" id="mini-notas"></span></h2>
-        <div class="notas-lista" id="notas-hoy"></div>
-      </section>
-
-      <section class="card" id="card-agenda-hoy">
-        <h2>📅 Agenda de hoy<span class="mini-info" id="mini-agenda-hoy"></span></h2>
-        <div class="notas-lista" id="agenda-hoy"></div>
-      </section>
-
-      <section class="card" id="card-tiempo">
-        <div id="timer-activo" class="oculto"></div>
-        <div class="card-cab">
-          <h2>⏱ Registrar otro tiempo<span class="mini-info" id="mini-tiempo"></span></h2>
-          <button class="abrir" data-plegable="form-tiempo" aria-expanded="false" aria-label="Registrar tiempo de una actividad suelta">＋</button>
-        </div>
         <div class="plegable oculto" id="form-tiempo">
           <input class="nota-input" id="tiempo-actividad" type="text" placeholder="¿En qué? (ej. Lectura, Estudiar CCNA)" maxlength="40" list="lista-actividades" autocomplete="off">
           <datalist id="lista-actividades"></datalist>
@@ -866,7 +1008,18 @@
             <button class="btn-primario" id="tiempo-guardar" style="flex:1;" disabled>Guardar</button>
           </div>
         </div>
-        <div class="notas-lista" id="tiempos-hoy"></div>
+      </section>
+
+      <p class="grupo-rotulo">Seguimiento</p>
+      <section class="card">
+        <h2>Hábitos</h2>
+        <div id="lista-habitos"></div>
+        <div class="dia-completo oculto" id="dia-completo">🎉 ¡Día completo!</div>
+      </section>
+
+      <section class="card oculto" id="card-malos-hoy">
+        <h2>🚭 Dejando</h2>
+        <div id="malos-hoy"></div>
       </section>
 
       <section class="card oculto" id="card-retos-hoy">
@@ -877,6 +1030,27 @@
       <section class="card oculto" id="card-metas-hoy">
         <h2>🏁 Mis metas</h2>
         <div id="metas-hoy"></div>
+      </section>
+
+      <p class="grupo-rotulo">Del día</p>
+      <section class="card" id="card-tareas">
+        <h2>Pendientes<span class="mini-info" id="mini-tareas"></span></h2>
+        <div class="notas-lista" id="tareas-lista"></div>
+      </section>
+
+      <section class="card" id="card-notas">
+        <h2>Notas de hoy<span class="mini-info" id="mini-notas"></span></h2>
+        <div class="notas-lista" id="notas-hoy"></div>
+      </section>
+
+      <section class="card" id="card-agenda-hoy">
+        <h2>📅 Agenda de hoy<span class="mini-info" id="mini-agenda-hoy"></span></h2>
+        <div class="notas-lista" id="agenda-hoy"></div>
+      </section>
+
+      <section class="card" id="card-tiempo">
+        <h2>⏱ Tiempo de hoy<span class="mini-info" id="mini-tiempo"></span></h2>
+        <div class="notas-lista" id="tiempos-hoy"></div>
       </section>
     </div>
 
@@ -1013,7 +1187,7 @@
             </div>
           </div>
           <label class="ayuda" for="malo-razones" style="display:block; margin:10px 0 4px;">Mis razones (una por línea) — las verás cuando flaquees</label>
-          <textarea class="nota-dia" id="malo-razones" rows="3" placeholder="Quiero dormir mejor&#10;Recuperar mi concentración" style="font-family: inherit; font-style: normal; font-size: 0.85rem;"></textarea>
+          <textarea class="nota-dia" id="malo-razones" rows="3" placeholder="Quiero dormir mejor&#10;Recuperar mi concentración" style="font-family: inherit; font-style: normal; font-size: 0.875rem;"></textarea>
           <label class="ayuda" for="malo-inicio" style="display:block; margin:10px 0 4px;">Desde cuándo</label>
           <input class="nota-input" id="malo-inicio" type="date">
           <button class="btn-primario btn-nota" id="guardar-malo" disabled>Empezar</button>
@@ -1149,7 +1323,11 @@
             <button class="abrir" data-plegable="form-lectura" aria-expanded="false" aria-label="Añadir frase de libro">＋</button>
           </div>
           <div class="lec-form plegable oculto" id="form-lectura">
-            <textarea id="lec-texto" rows="3" maxlength="600" placeholder="Escribe o pega aquí la frase del libro…"></textarea>
+            <textarea id="lec-texto" rows="3" maxlength="600" placeholder="Escribe, pega o dicta aquí la frase del libro…"></textarea>
+            <div class="oculto" id="dictado-zona">
+              <button class="btn-secundario" id="dictado-btn" aria-label="Dictar la frase con la voz">🎤 Dictar la frase</button>
+              <p class="ayuda" id="dictado-estado" aria-live="polite" style="margin-top:6px;"></p>
+            </div>
             <input id="lec-libro" type="text" maxlength="80" placeholder="Libro (ej. El principito)">
             <input id="lec-autor" type="text" maxlength="60" placeholder="Autor (opcional)">
             <button class="btn-primario btn-nota" id="guardar-lectura" disabled>Guardar frase</button>
@@ -1267,7 +1445,7 @@
         <button class="btn-primario btn-nota" id="copiar-link" data-rotulo="📲 Copiar mis datos para otro dispositivo" style="margin-top: 0;">📲 Copiar mis datos para otro dispositivo</button>
         <p class="ayuda">Copia un link con todo lo tuyo: envíatelo por WhatsApp, ábrelo en el otro dispositivo y pégalo donde la app te lo pida. Borra el mensaje del chat después de importar.</p>
         <div class="oculto" id="zona-copiar">
-          <textarea class="nota-dia" id="texto-copiar" rows="3" readonly style="font-family: inherit; font-style: normal; font-size: 0.8rem; margin-top: 8px;"></textarea>
+          <textarea class="nota-dia" id="texto-copiar" rows="3" readonly style="font-family: inherit; font-style: normal; font-size: 0.875rem; margin-top: 8px;"></textarea>
         </div>
         <div class="card-cab" style="margin-top: 14px;">
           <h2>Más opciones</h2>
@@ -1280,7 +1458,7 @@
           <input type="file" id="archivo-respaldo" accept=".json,application/json" class="oculto">
           <button class="btn-secundario" id="abrir-pegar">Pegar un respaldo copiado</button>
           <div class="oculto" id="zona-pegar">
-            <textarea class="nota-dia" id="texto-respaldo" rows="3" placeholder="Pega aquí el respaldo o el link…" style="font-family: inherit; font-style: normal; font-size: 0.8rem; margin-top: 8px;"></textarea>
+            <textarea class="nota-dia" id="texto-respaldo" rows="3" placeholder="Pega aquí el respaldo o el link…" style="font-family: inherit; font-style: normal; font-size: 0.875rem; margin-top: 8px;"></textarea>
             <button class="btn-primario btn-nota" id="importar-pegado" data-rotulo="Importar (reemplaza los datos de este dispositivo)">Importar (reemplaza los datos de este dispositivo)</button>
           </div>
           <div id="zona-recuperar" style="display: flex; flex-direction: column;"></div>
@@ -1981,13 +2159,31 @@
   }
 
   // ---------- Bloques plegables ----------
+  // Los botones de "Registrar" (.acc-rapida) llevan su propia etiqueta
+  // ("Gasto", "Nota", "Tiempo"), así que NO se les reemplaza el texto por ＋/−:
+  // se marcan con la clase .activo. Los demás siguen igual que siempre.
+  function marcarPlegable(btn, abierto) {
+    if (btn.classList.contains('acc-rapida')) btn.classList.toggle('activo', abierto);
+    else btn.textContent = abierto ? '−' : '＋';
+    btn.setAttribute('aria-expanded', String(abierto));
+  }
   document.querySelectorAll('.abrir').forEach(function (btn) {
     btn.addEventListener('click', function () {
       const panel = document.getElementById(btn.dataset.plegable);
       const estabaAbierto = !panel.classList.contains('oculto');
+      // Solo un formulario rápido abierto a la vez (los tres comparten sección)
+      if (!estabaAbierto && btn.classList.contains('acc-rapida')) {
+        document.querySelectorAll('.acc-rapida').forEach(function (otro) {
+          if (otro === btn) return;
+          const p = document.getElementById(otro.dataset.plegable);
+          if (p && !p.classList.contains('oculto')) {
+            p.classList.add('oculto');
+            marcarPlegable(otro, false);
+          }
+        });
+      }
       panel.classList.toggle('oculto');
-      btn.textContent = estabaAbierto ? '＋' : '−';
-      btn.setAttribute('aria-expanded', String(!estabaAbierto));
+      marcarPlegable(btn, !estabaAbierto);
       if (!estabaAbierto) {
         const campo = panel.querySelector('input, textarea');
         if (campo) campo.focus();
@@ -1998,8 +2194,7 @@
     const panel = document.getElementById(id);
     panel.classList.add('oculto');
     const btn = document.querySelector('[data-plegable="' + id + '"]');
-    btn.textContent = '＋';
-    btn.setAttribute('aria-expanded', 'false');
+    if (btn) marcarPlegable(btn, false);
   }
 
   // ---------- Deshacer borrados ----------
@@ -2064,7 +2259,7 @@
       o = buscarPorId(estado.eventos, id); if (!o) return;
       html = '<h3>Editar evento</h3><label>Evento</label><input id="ed-texto" type="text" maxlength="60">' +
         '<label>Fecha</label><input id="ed-fecha" type="date"><label>Hora (opcional)</label><input id="ed-hora" type="time">' +
-        '<div class="fila-check"><input id="ed-anual" type="checkbox"><label style="margin:0; text-transform:none; letter-spacing:0; font-size:0.9rem; color:var(--ink);">Se repite cada año</label></div>';
+        '<div class="fila-check"><input id="ed-anual" type="checkbox"><label style="margin:0; text-transform:none; letter-spacing:0; font-size:0.875rem; color:var(--ink);">Se repite cada año</label></div>';
     } else if (tipo === 'lectura') {
       o = buscarPorId(estado.lecturas, id); if (!o) return;
       html = '<h3>Editar frase</h3><label>Frase</label><textarea id="ed-texto" rows="3" maxlength="600"></textarea>' +
@@ -2675,7 +2870,7 @@
     const panel = document.getElementById('form-evento');
     panel.classList.remove('oculto');
     const b = document.querySelector('[data-plegable="form-evento"]');
-    if (b) { b.textContent = '−'; b.setAttribute('aria-expanded', 'true'); }
+    if (b) marcarPlegable(b, true);
     btnEvento.textContent = 'Guardar cambios';
     btnEvento.disabled = false;
     panel.scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -3059,6 +3254,81 @@
     pintarLecturas();
   });
 
+  // ---------- Dictado por voz (frases de libros) ----------
+  // Usa el reconocimiento de voz que ya trae el navegador: sin librerías, sin
+  // costo y sin claves. Si el navegador no lo soporta, el botón ni siquiera
+  // aparece (así nadie toca algo que no va a funcionar).
+  (function () {
+    const Reconocimiento = window.SpeechRecognition || window.webkitSpeechRecognition;
+    const zona = document.getElementById('dictado-zona');
+    const btn = document.getElementById('dictado-btn');
+    const estadoTxt = document.getElementById('dictado-estado');
+    if (!Reconocimiento || !zona || !btn) return;
+    zona.classList.remove('oculto');
+
+    let rec = null, escuchando = false, textoBase = '', finalAcumulado = '';
+
+    function decir(msg, err) {
+      estadoTxt.textContent = msg || '';
+      estadoTxt.style.color = err ? 'var(--danger)' : '';
+    }
+    function pintarBoton() {
+      btn.classList.toggle('escuchando', escuchando);
+      btn.textContent = escuchando ? '⏹ Detener' : '🎤 Dictar la frase';
+    }
+    function detener() {
+      if (rec) { try { rec.stop(); } catch (e) {} }
+      escuchando = false;
+      pintarBoton();
+    }
+    function mensajeError(codigo) {
+      if (codigo === 'not-allowed' || codigo === 'service-not-allowed')
+        return 'No diste permiso al micrófono. Actívalo en los ajustes del navegador.';
+      if (codigo === 'no-speech') return 'No escuché nada. Intenta de nuevo, más cerca del micrófono.';
+      if (codigo === 'audio-capture') return 'No encuentro un micrófono en este dispositivo.';
+      if (codigo === 'network') return 'El dictado necesita internet y ahora no hay conexión.';
+      return 'No se pudo dictar. Intenta otra vez.';
+    }
+
+    btn.addEventListener('click', function () {
+      if (escuchando) { detener(); decir('Listo. Revisa el texto antes de guardar.'); return; }
+      try {
+        rec = new Reconocimiento();
+      } catch (e) { decir('Este navegador no permite dictar.', true); return; }
+      rec.lang = 'es-CO';
+      rec.continuous = true;     // frases largas de un libro
+      rec.interimResults = true; // se va viendo mientras hablas
+
+      textoBase = lecTexto.value ? lecTexto.value.replace(/\s+$/, '') + ' ' : '';
+      finalAcumulado = '';
+
+      rec.onstart = function () { escuchando = true; pintarBoton(); decir('Escuchando… lee la frase con calma.'); };
+      rec.onresult = function (ev) {
+        let interino = '';
+        for (let i = ev.resultIndex; i < ev.results.length; i++) {
+          const t = ev.results[i][0].transcript;
+          if (ev.results[i].isFinal) finalAcumulado += t; else interino += t;
+        }
+        lecTexto.value = (textoBase + finalAcumulado + interino).slice(0, 600);
+        validarLectura();
+      };
+      rec.onerror = function (ev) {
+        if (ev.error === 'aborted') return;
+        decir(mensajeError(ev.error), true);
+        escuchando = false; pintarBoton();
+      };
+      rec.onend = function () {
+        if (escuchando) { escuchando = false; pintarBoton(); decir('Dictado terminado. Revisa el texto antes de guardar.'); }
+        validarLectura();
+      };
+      try { rec.start(); } catch (e) { decir('No se pudo iniciar el micrófono.', true); }
+    });
+
+    // Si se cierra el formulario mientras dicta, cortamos para no dejar el micro abierto
+    const abrirLectura = document.querySelector('[data-plegable="form-lectura"]');
+    if (abrirLectura) abrirLectura.addEventListener('click', function () { if (escuchando) { detener(); decir(''); } });
+  })();
+
   function pintarLecturas() {
     const cont = document.getElementById('lecturas-lista');
     cont.innerHTML = '';
@@ -3164,10 +3434,10 @@
     const panel = document.getElementById('form-tiempo');
     panel.classList.remove('oculto');
     const b = document.querySelector('[data-plegable="form-tiempo"]');
-    if (b) { b.textContent = '−'; b.setAttribute('aria-expanded', 'true'); }
+    if (b) marcarPlegable(b, true);
     tiempoActividad.value = actividad;
     validarTiempo();
-    document.getElementById('card-tiempo').scrollIntoView({ behavior: 'smooth', block: 'center' });
+    document.getElementById('card-registrar').scrollIntoView({ behavior: 'smooth', block: 'center' });
     tiempoMin.focus();
   }
 
@@ -4654,7 +4924,7 @@
     const cont = document.getElementById('lista-presu');
     cont.innerHTML = '';
     const cab = document.createElement('div');
-    cab.style.cssText = 'display:flex; align-items:center; gap:8px; font-size:0.68rem; color:var(--ink-soft); text-transform:uppercase; letter-spacing:0.05em;';
+    cab.style.cssText = 'display:flex; align-items:center; gap:8px; font-size:0.75rem; color:var(--ink-soft); text-transform:uppercase; letter-spacing:0.05em;';
     cab.innerHTML = '<span style="flex:1"></span><span style="width:96px; text-align:center;">Semanal</span><span style="width:96px; text-align:center;">Mensual</span>';
     cont.appendChild(cab);
     CATEGORIAS.forEach(function (c) {
@@ -4662,7 +4932,7 @@
       const fila = document.createElement('div');
       fila.style.cssText = 'display:flex; align-items:center; gap:8px;';
       fila.innerHTML =
-        '<span style="flex:1; font-size:0.85rem;"></span>' +
+        '<span style="flex:1; font-size:0.875rem;"></span>' +
         '<input class="presu-inp" data-tipo="semanal" type="number" inputmode="decimal" placeholder="—">' +
         '<input class="presu-inp" data-tipo="mensual" type="number" inputmode="decimal" placeholder="—">';
       fila.querySelector('span').textContent = c;
@@ -5007,7 +5277,13 @@
 
   // ---------- Gráficas ----------
   function pintarGraficas() {
-    const TXT = '#8A8A8A', ROJO = '#E5705E', AZUL = '#5AA9E6';
+    const TXT = '#8A8A8A', ROJO = '#E5705E', AZUL = '#5AA9E6', GUIA = '#2E2E2E';
+    // Importes cortos para las guías: 1.800.000 → "1,8M"; 45.000 → "45k"
+    function montoCorto(n) {
+      if (n >= 1000000) return (n / 1000000).toFixed(n >= 10000000 ? 0 : 1).replace('.', ',') + 'M';
+      if (n >= 1000) return Math.round(n / 1000) + 'k';
+      return String(Math.round(n));
+    }
 
     // 1) Ingresos vs Gastos por mes (6 meses)
     function graficaBalance() {
@@ -5018,19 +5294,26 @@
         let ing = 0, gas = 0;
         estado.ingresos.forEach(function (x) { if ((x.fecha || '').indexOf(pre) === 0) ing += x.monto; });
         estado.gastos.forEach(function (x) { if ((x.fecha || '').indexOf(pre) === 0) gas += x.monto; });
-        meses.push({ label: d.toLocaleDateString('es', { month: 'short' }), ing: ing, gas: gas });
+        meses.push({ label: d.toLocaleDateString('es', { month: 'short' }).replace('.', ''), ing: ing, gas: gas });
       }
       if (meses.every(function (m) { return m.ing === 0 && m.gas === 0; }))
         return '<p class="vacio">Aún no hay datos financieros para graficar.</p>';
       const max = Math.max.apply(null, [1].concat(meses.map(function (m) { return Math.max(m.ing, m.gas); })));
-      const W = 320, H = 170, padB = 22, padT = 10, gw = W / 6, esc = H - padB - padT;
+      const W = 320, H = 182, padB = 26, padT = 10, padR = 40;
+      const anchoBarras = W - padR, gw = anchoBarras / 6, esc = H - padB - padT;
+      // Guías de referencia: sin ellas las barras flotan sin escala
       let s = '';
+      [1, 0.5].forEach(function (frac) {
+        const y = H - padB - esc * frac;
+        s += '<line x1="0" y1="' + y + '" x2="' + anchoBarras + '" y2="' + y + '" stroke="' + GUIA + '" stroke-width="1"/>';
+        s += '<text x="' + (anchoBarras + 6) + '" y="' + (y + 4) + '" style="fill:' + TXT + ';font-size:12px">' + montoCorto(max * frac) + '</text>';
+      });
       meses.forEach(function (m, i) {
         const x0 = i * gw, bw = gw * 0.3;
         const hI = (m.ing / max) * esc, hG = (m.gas / max) * esc;
         s += '<rect x="' + (x0 + gw * 0.16) + '" y="' + (H - padB - hI) + '" width="' + bw + '" height="' + hI + '" rx="2" style="fill:' + VERDE + '"/>';
         s += '<rect x="' + (x0 + gw * 0.52) + '" y="' + (H - padB - hG) + '" width="' + bw + '" height="' + hG + '" rx="2" style="fill:' + ROJO + '"/>';
-        s += '<text x="' + (x0 + gw / 2) + '" y="' + (H - 7) + '" text-anchor="middle" style="fill:' + TXT + ';font-size:10px">' + m.label + '</text>';
+        s += '<text x="' + (x0 + gw / 2) + '" y="' + (H - 8) + '" text-anchor="middle" style="fill:' + TXT + ';font-size:12px">' + m.label + '</text>';
       });
       return '<svg viewBox="0 0 ' + W + ' ' + H + '" width="100%">' + s + '</svg>' +
         '<div style="display:flex;gap:16px;justify-content:center;margin-top:4px;font-size:12px;color:' + TXT + '">' +
@@ -5048,19 +5331,19 @@
       if (total === 0) return '<p class="vacio">Sin gastos este mes.</p>';
       const ent = Object.keys(porCat).map(function (c) { return [c, porCat[c]]; }).sort(function (a, b) { return b[1] - a[1]; });
       const cols = ['#E5705E', '#E8A94C', '#5AA9E6', '#4CC38A', '#A78BDB', '#A34E5F', '#8A8A8A'];
-      const r = 52, cx = 70, cy = 70, circ = 2 * Math.PI * r;
+      const r = 56, cx = 75, cy = 75, circ = 2 * Math.PI * r;
       let off = 0, segs = '', leg = '';
       ent.forEach(function (e, i) {
         const len = (e[1] / total) * circ, col = cols[i % cols.length];
-        segs += '<circle cx="' + cx + '" cy="' + cy + '" r="' + r + '" fill="none" stroke="' + col + '" stroke-width="22" stroke-dasharray="' + len + ' ' + (circ - len) + '" stroke-dashoffset="' + (-off) + '" transform="rotate(-90 ' + cx + ' ' + cy + ')"/>';
+        segs += '<circle cx="' + cx + '" cy="' + cy + '" r="' + r + '" fill="none" stroke="' + col + '" stroke-width="24" stroke-dasharray="' + len + ' ' + (circ - len) + '" stroke-dashoffset="' + (-off) + '" transform="rotate(-90 ' + cx + ' ' + cy + ')"/>';
         off += len;
         const pct = Math.round(e[1] / total * 100);
-        leg += '<div style="display:flex;align-items:center;gap:6px;font-size:12px;margin:3px 0"><span style="color:' + col + '">■</span><span style="flex:1;color:var(--ink)">' + e[0] + '</span><span style="color:' + TXT + '">' + pct + '% · $' + fmtMoneda.format(e[1]) + '</span></div>';
+        leg += '<div style="display:flex;align-items:center;gap:6px;font-size:12px;margin:4px 0"><span style="color:' + col + '">■</span><span style="flex:1;color:var(--ink)">' + e[0] + '</span><span style="color:' + TXT + '">' + pct + '% · $' + fmtMoneda.format(e[1]) + '</span></div>';
       });
       return '<div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap">' +
-        '<svg viewBox="0 0 140 140" width="140" height="140" style="flex-shrink:0">' + segs +
-        '<text x="70" y="66" text-anchor="middle" style="fill:#E8E8E8;font-size:13px;font-weight:700">$' + fmtMoneda.format(total) + '</text>' +
-        '<text x="70" y="82" text-anchor="middle" style="fill:' + TXT + ';font-size:9px">total mes</text></svg>' +
+        '<svg viewBox="0 0 150 150" width="150" height="150" style="flex-shrink:0">' + segs +
+        '<text x="75" y="72" text-anchor="middle" style="fill:#E8E8E8;font-size:15px;font-weight:700">$' + montoCorto(total) + '</text>' +
+        '<text x="75" y="90" text-anchor="middle" style="fill:' + TXT + ';font-size:12px">total mes</text></svg>' +
         '<div style="flex:1;min-width:150px">' + leg + '</div></div>';
     }
 
@@ -5069,11 +5352,17 @@
       const totalHab = estado.habitos.length;
       if (totalHab === 0) return '<p class="vacio">Agrega hábitos para ver tu constancia.</p>';
       const hoyD = new Date(), lun = lunesDe(hoyD);
-      const cell = 14, gap = 3, cols = 12, rows = 7;
-      const W = cols * (cell + gap), H = rows * (cell + gap);
-      let s = '';
+      const cell = 14, gap = 3, cols = 12, rows = 7, altoMes = 15;
+      const W = cols * (cell + gap), H = rows * (cell + gap) + altoMes;
+      let s = '', mesPrevio = -1;
       for (let c = 0; c < cols; c++) {
         const lunSem = new Date(lun.getFullYear(), lun.getMonth(), lun.getDate() - (cols - 1 - c) * 7);
+        // Etiqueta de mes al empezar cada mes: antes no se sabía qué periodo se veía
+        if (lunSem.getMonth() !== mesPrevio) {
+          mesPrevio = lunSem.getMonth();
+          s += '<text x="' + (c * (cell + gap)) + '" y="10" style="fill:' + TXT + ';font-size:10px">' +
+            lunSem.toLocaleDateString('es', { month: 'short' }).replace('.', '') + '</text>';
+        }
         for (let rIdx = 0; rIdx < rows; rIdx++) {
           const d = new Date(lunSem.getFullYear(), lunSem.getMonth(), lunSem.getDate() + rIdx);
           const dia = estado.dias[claveDia(d)];
@@ -5081,13 +5370,13 @@
           const ratio = Math.min(1, hechos / totalHab);
           let col = '#1C1C1C';
           if (d <= hoyD && ratio > 0) col = ratio >= 1 ? '#4CC38A' : ratio >= 0.66 ? '#3E9E72' : ratio >= 0.33 ? '#2E6F52' : '#244F3D';
-          s += '<rect x="' + (c * (cell + gap)) + '" y="' + (rIdx * (cell + gap)) + '" width="' + cell + '" height="' + cell + '" rx="3" style="fill:' + col + '"/>';
+          s += '<rect x="' + (c * (cell + gap)) + '" y="' + (altoMes + rIdx * (cell + gap)) + '" width="' + cell + '" height="' + cell + '" rx="3" style="fill:' + col + '"/>';
         }
       }
       const leyenda = ['#1C1C1C', '#244F3D', '#2E6F52', '#3E9E72', '#4CC38A']
         .map(function (c) { return '<span style="width:11px;height:11px;background:' + c + ';border-radius:2px;display:inline-block"></span>'; }).join('');
       return '<svg viewBox="0 0 ' + W + ' ' + H + '" width="100%" style="max-width:280px">' + s + '</svg>' +
-        '<div style="display:flex;gap:5px;justify-content:flex-end;align-items:center;font-size:11px;color:' + TXT + ';margin-top:4px">menos ' + leyenda + ' más</div>';
+        '<div style="display:flex;gap:5px;justify-content:flex-end;align-items:center;font-size:12px;color:' + TXT + ';margin-top:4px">menos ' + leyenda + ' más</div>';
     }
 
     // 4) Tiempo por semana (8 semanas)
@@ -5105,13 +5394,27 @@
       }
       if (sem.every(function (x) { return x.min === 0; })) return '<p class="vacio">Aún no registras tiempo para graficar.</p>';
       const max = Math.max.apply(null, [1].concat(sem.map(function (x) { return x.min; })));
-      const W = 320, H = 160, padB = 20, padT = 16, gw = W / 8, esc = H - padB - padT;
+      const W = 320, H = 176, padB = 28, padT = 16, padR = 46;
+      const anchoBarras = W - padR, gw = anchoBarras / 8, esc = H - padB - padT;
       let s = '';
+      // Guías de referencia con su valor, para que las barras tengan escala
+      [1, 0.5].forEach(function (frac) {
+        const y = H - padB - esc * frac;
+        s += '<line x1="0" y1="' + y + '" x2="' + anchoBarras + '" y2="' + y + '" stroke="' + GUIA + '" stroke-width="1"/>';
+        s += '<text x="' + (anchoBarras + 6) + '" y="' + (y + 4) + '" style="fill:' + TXT + ';font-size:12px">' + fmtDur(Math.round(max * frac)) + '</text>';
+      });
+      const iPico = sem.reduce(function (mejor, x, i) { return x.min > sem[mejor].min ? i : mejor; }, 0);
       sem.forEach(function (x, i) {
         const x0 = i * gw, bw = gw * 0.55, h = (x.min / max) * esc;
         s += '<rect x="' + (x0 + gw * 0.22) + '" y="' + (H - padB - h) + '" width="' + bw + '" height="' + h + '" rx="2" style="fill:' + AZUL + '"/>';
-        if (x.min > 0) s += '<text x="' + (x0 + gw / 2) + '" y="' + (H - padB - h - 4) + '" text-anchor="middle" style="fill:' + TXT + ';font-size:9px">' + fmtDur(x.min) + '</text>';
-        s += '<text x="' + (x0 + gw / 2) + '" y="' + (H - 6) + '" text-anchor="middle" style="fill:' + TXT + ';font-size:9px">' + x.label + '</text>';
+        // Solo se rotula la semana más alta: rotularlas todas se pisaría
+        if (i === iPico && x.min > 0) {
+          s += '<text x="' + (x0 + gw / 2) + '" y="' + (H - padB - h - 5) + '" text-anchor="middle" style="fill:#E8E8E8;font-size:12px;font-weight:700">' + fmtDur(x.min) + '</text>';
+        }
+        // Una de cada dos semanas lleva fecha, para que quepan sin amontonarse
+        if (i % 2 === 1) {
+          s += '<text x="' + (x0 + gw / 2) + '" y="' + (H - 9) + '" text-anchor="middle" style="fill:' + TXT + ';font-size:12px">' + x.label + '</text>';
+        }
       });
       return '<svg viewBox="0 0 ' + W + ' ' + H + '" width="100%">' + s + '</svg>';
     }
@@ -5195,8 +5498,7 @@
       if (!panel || !btn) return;
       if (panel.classList.contains('oculto')) {
         panel.classList.remove('oculto');
-        btn.textContent = '−';
-        btn.setAttribute('aria-expanded', 'true');
+        marcarPlegable(btn, true);
       }
       const campo = panel.querySelector('input, textarea');
       if (campo) { try { campo.focus(); } catch (e) {} }
