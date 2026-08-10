@@ -264,19 +264,28 @@
   .hab-c-nombre { display: block; width: 66px; font-size: 0.75rem; color: var(--ink-soft); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; text-align: center; }
   .hab-circulo.hecho .hab-c-nombre { color: var(--ink); }
   .hab-c-racha { font-size: 0.75rem; color: var(--accent); min-height: 0.8em; }
+  /* Mientras un panel de hábito está abierto, damos aire abajo para que se pueda
+     desplazar y sus botones no queden atrapados detrás de la barra fija. */
+  body.panel-abierto main { padding-bottom: 470px; }
+  /* Texto que escribes tú (frases, notas, reseñas, títulos): si viene una palabra
+     larguísima o un enlace, se parte en vez de estirar la página a lo ancho. */
+  .lec-texto, .lec-fuente .fuente, .nota-texto, .libro-tit, .libro-aut, .libro-resena,
+  .malo-razones, .malo-hist, .reto-nombre, .malo-nombre, .g-nota, .m-nom, .tl-titulo {
+    overflow-wrap: anywhere; word-break: break-word; min-width: 0;
+  }
   /* --- Biblioteca de libros --- */
   .libro { border: 1px solid var(--line); border-radius: 12px; padding: 12px; margin-bottom: 10px; }
   .libro-cab { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; }
-  .libro-tit { font-weight: 600; font-size: 0.98rem; }
-  .libro-aut { font-size: 0.8rem; color: var(--ink-soft); margin-top: 1px; }
-  .libro-meta { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-top: 8px; font-size: 0.78rem; color: var(--ink-soft); }
-  .libro-chip { font-size: 0.72rem; padding: 3px 9px; border-radius: 999px; border: 1px solid var(--line); }
+  .libro-tit { font-weight: 600; font-size: 1rem; }
+  .libro-aut { font-size: 0.75rem; color: var(--ink-soft); margin-top: 1px; }
+  .libro-meta { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-top: 8px; font-size: 0.75rem; color: var(--ink-soft); }
+  .libro-chip { font-size: 0.75rem; padding: 3px 9px; border-radius: 999px; border: 1px solid var(--line); }
   .libro-chip.leyendo { background: var(--accent-soft); color: var(--accent); border-color: transparent; font-weight: 600; }
   .libro-chip.leido { background: var(--surface-2); }
   .libro-estrellas { letter-spacing: 1px; }
-  .libro-estrella { background: none; font-size: 1.15rem; line-height: 1; padding: 0 1px; color: var(--ink-soft); }
+  .libro-estrella { background: none; font-size: 1.125rem; line-height: 1; padding: 0 1px; color: var(--ink-soft); }
   .libro-estrella.on { color: #E8B93C; }
-  .libro-resena { margin-top: 8px; font-size: 0.85rem; color: var(--ink); background: var(--surface-2); padding: 9px 11px; border-radius: 9px; white-space: pre-wrap; }
+  .libro-resena { margin-top: 8px; font-size: 0.875rem; color: var(--ink); background: var(--surface-2); padding: 9px 11px; border-radius: 9px; white-space: pre-wrap; }
   .libro-acc { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 10px; }
   .hab-c-ring { position: relative; }
   .hab-c-veces {
@@ -321,7 +330,7 @@
   .reto-hoy-nombre { font-size: 1rem; font-weight: 500; }
   .reto-hoy-prog { font-size: 0.875rem; color: var(--ink-soft); font-variant-numeric: tabular-nums; white-space: nowrap; }
   .reto-hoy-acc { margin-top: 8px; display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
-  .reto-hoy-compacto { display: flex; width: 100%; align-items: center; justify-content: space-between; gap: 8px; padding: 9px 2px; border-bottom: 1px solid var(--line); background: transparent; text-align: left; }
+  .reto-hoy-compacto { display: flex; width: 100%; min-height: 44px; align-items: center; justify-content: space-between; gap: 8px; padding: 9px 2px; border-bottom: 1px solid var(--line); background: transparent; text-align: left; }
   .reto-hoy-compacto:last-child { border-bottom: none; }
   /* --- Malos hábitos (dejar / reducir) --- */
   .malo { border: 1px solid var(--line); border-radius: 14px; padding: 14px; margin-bottom: 10px; }
@@ -1539,6 +1548,11 @@
     ⚠️ No se pudo guardar: el almacenamiento del navegador está lleno o bloqueado. Descarga un respaldo (Ajustes → Descargar) para no perder cambios.
   </div>
 
+  <div class="aviso-guardar oculto" id="aviso-otra-ventana" style="background: var(--surface-2); color: var(--ink); border: 1px solid var(--line);">
+    <span>Cambiaste datos en otra ventana de la app.</span>
+    <button id="recargar-otra" style="margin-left:10px; padding:6px 12px; border-radius:8px; background:var(--accent); color:var(--accent-ink); font-weight:700;">Actualizar</button>
+  </div>
+
   <div class="modal-fondo oculto" id="editor-fondo">
     <div class="modal" id="editor-modal"></div>
   </div>
@@ -1797,6 +1811,21 @@
     var el = document.getElementById('aviso-guardar');
     if (el) el.classList.add('oculto');
   }
+
+  // Si tienes la app abierta en dos sitios a la vez (la app instalada y una
+  // pestaña, por ejemplo), cada una tiene su propia copia en memoria y la última
+  // en guardar pisaba a la otra EN SILENCIO. Ahora te avisamos y tú decides.
+  (function () {
+    let avisando = false;
+    window.addEventListener('storage', function (e) {
+      if (e.key !== CLAVE || !e.newValue || avisando) return;
+      avisando = true;
+      const el = document.getElementById('aviso-otra-ventana');
+      if (el) el.classList.remove('oculto');
+    });
+    const btn = document.getElementById('recargar-otra');
+    if (btn) btn.addEventListener('click', function () { location.reload(); });
+  })();
 
   // ---------- Respaldo en la nube (Supabase) ----------
   const NUBE_URL = 'https://gvbmxianvflxmbxnkpjq.supabase.co';
@@ -2524,6 +2553,25 @@
   function sesionesHoy(h) {
     return estado.tiempos.filter(function (t) { return t.habitoId === h.id && t.fecha === HOY; });
   }
+  // La MEJOR racha que has logrado nunca con ese hábito (no la actual).
+  // Antes el Resumen mostraba la racha actual bajo el rótulo "mejor racha", así
+  // que tras un día flojo aparecía "0" aunque hubieras encadenado semanas.
+  function mejorRachaHistorica(habitoId) {
+    const fechas = Object.keys(estado.dias)
+      .filter(function (f) { return estado.dias[f] && estado.dias[f].habitos && estado.dias[f].habitos[habitoId]; })
+      .sort();
+    let mejor = 0, seguidos = 0, anterior = null;
+    fechas.forEach(function (f) {
+      if (anterior) {
+        const a = anterior.split('-'), b = f.split('-');
+        const da = new Date(a[0], a[1] - 1, a[2]), db = new Date(b[0], b[1] - 1, b[2]);
+        seguidos = Math.round((db - da) / 86400000) === 1 ? seguidos + 1 : 1;
+      } else { seguidos = 1; }
+      if (seguidos > mejor) mejor = seguidos;
+      anterior = f;
+    });
+    return mejor;
+  }
   function racha(habitoId) {
     let n = 0;
     const d = new Date();
@@ -2593,6 +2641,21 @@
       c.addEventListener('click', function () {
         habitoAbierto = (habitoAbierto === h.id ? null : h.id);
         pintarHabitos();
+        // El panel es alto y la barra inferior es fija: sin esto, los botones
+        // ("Añadir otra vez" / "Desmarcar") quedaban fuera de pantalla.
+        if (habitoAbierto === h.id) {
+          // Pequeña espera para que el espacio extra de abajo ya esté aplicado,
+          // y llevamos a la vista el botón principal (no el panel entero).
+          setTimeout(function () {
+            const p = document.querySelector('.habito-panel');
+            if (!p) return;
+            const objetivo = p.querySelector('.btn-primario') || p;
+            // Sin 'smooth' a propósito: el desplazamiento suave no se aplica de
+            // forma fiable en todos los navegadores y dejaba el botón oculto.
+            try { objetivo.scrollIntoView({ block: 'center' }); }
+            catch (e) { objetivo.scrollIntoView(false); }
+          }, 70);
+        }
       });
       return c;
     }
@@ -2620,13 +2683,16 @@
       if (esLectura && estado.libros.length) {
         const ll = document.createElement('div'); ll.className = 'panel-label'; ll.textContent = '¿Qué libro? (opcional)';
         wrap.appendChild(ll);
+        // Una sola fila que se desliza: si hay varios libros, el panel no crece a lo alto
         const lch = document.createElement('div'); lch.className = 'tipos';
+        lch.style.cssText = 'flex-wrap:nowrap; overflow-x:auto; padding-bottom:2px;';
         const ordenados = estado.libros.slice().sort(function (a, b) {
           const p = { leyendo: 0, porleer: 1, leido: 2 };
           return (p[a.estado] || 3) - (p[b.estado] || 3);
         }).slice(0, 8);
         ordenados.forEach(function (lb) {
           const b = document.createElement('button'); b.className = 'tipo'; b.textContent = lb.titulo;
+          b.style.flexShrink = '0';
           b.addEventListener('click', function () {
             selLibro = (selLibro && selLibro.id === lb.id) ? null : lb;
             Array.prototype.forEach.call(lch.querySelectorAll('.tipo'), function (x) { x.classList.remove('activo'); });
@@ -2741,6 +2807,7 @@
       // añadir otra sesión del día (antes solo aparecía si estaba pendiente).
       if (ha) cont.appendChild(panelTiempo(ha));
     }
+    document.body.classList.toggle('panel-abierto', !!habitoAbierto);
 
     const todos = estado.habitos.every(function (h) { return dia.habitos[h.id]; });
     document.getElementById('dia-completo').classList.toggle('oculto', !todos);
@@ -5105,7 +5172,7 @@
     const pct = posibles ? Math.round((hechos / posibles) * 100) : 0;
     let mejorRacha = 0;
     estado.habitos.forEach(function (h) {
-      const r = racha(h.id);
+      const r = mejorRachaHistorica(h.id);
       if (r > mejorRacha) mejorRacha = r;
     });
     document.getElementById('stats-semana').innerHTML =
@@ -5670,6 +5737,8 @@
       { titulo: '💵 Ingresos', tipo: 'ingreso', lista: estado.ingresos, texto: function (o) { return [o.nota, o.cat]; }, linea: function (o) { return (o.nota || o.cat) + ' — $ ' + fmtMoneda.format(o.monto); }, sub: function (o) { return o.cat + ' · ' + fechaCorta(o.fecha); } },
       { titulo: '📅 Eventos', tipo: 'evento', lista: estado.eventos, texto: function (o) { return [o.titulo]; }, linea: function (o) { return o.titulo; }, sub: function (o) { return fechaCorta(o.fecha) + (o.hora ? ' · ' + o.hora : ''); } },
       { titulo: '📖 Lecturas', tipo: 'lectura', lista: estado.lecturas, texto: function (o) { return [o.texto, o.libro, o.autor]; }, linea: function (o) { return o.texto; }, sub: function (o) { return o.libro + (o.autor ? ' · ' + o.autor : ''); } },
+      { titulo: '📚 Libros', tipo: 'libro', lista: estado.libros, texto: function (o) { return [o.titulo, o.autor, o.resena]; }, linea: function (o) { return o.titulo; }, sub: function (o) { return (o.autor ? o.autor + ' · ' : '') + (ESTADOS_LIBRO[o.estado] || ''); } },
+      { titulo: '🚭 Dejar o reducir', tipo: 'malo', lista: estado.malos, texto: function (o) { return [o.nombre].concat(o.razones || []); }, linea: function (o) { return (o.emoji ? o.emoji + ' ' : '') + o.nombre; }, sub: function (o) { return o.modo === 'dejar' ? 'Dejarlo · desde ' + fechaCorta(o.inicio) : 'Máx ' + maloLimite(o) + '/día'; } },
       { titulo: '⏱ Tiempos', tipo: 'tiempo', lista: estado.tiempos, texto: function (o) { return [o.actividad, o.detalle]; }, linea: function (o) { return o.actividad + ' — ' + fmtDur(o.minutos); }, sub: function (o) { return (o.detalle ? o.detalle + ' · ' : '') + fechaCorta(o.fecha); } }
     ];
     let total = 0;
