@@ -273,6 +273,12 @@
   .malo-razones, .malo-hist, .reto-nombre, .malo-nombre, .g-nota, .m-nom, .tl-titulo {
     overflow-wrap: anywhere; word-break: break-word; min-width: 0;
   }
+  /* Cada vez que hiciste el hábito hoy, para corregir una sin borrar el día */
+  .ses-lista { margin: 2px 0 6px; }
+  .ses-item { display: flex; align-items: center; gap: 8px; padding: 4px 0; border-bottom: 1px solid var(--line); }
+  .ses-item:last-child { border-bottom: none; }
+  .ses-min { font-weight: 700; font-size: 0.875rem; font-variant-numeric: tabular-nums; min-width: 62px; }
+  .ses-det { flex: 1; font-size: 0.75rem; color: var(--ink-soft); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   /* --- Biblioteca de libros --- */
   .libro { border: 1px solid var(--line); border-radius: 12px; padding: 12px; margin-bottom: 10px; }
   .libro-cab { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; }
@@ -974,6 +980,13 @@
           <button class="btn-secundario" id="bienvenida-no">Empezar de cero</button>
         </div>
       </div>
+      <div class="aviso oculto" id="aviso-registrar">
+        <p id="registrar-texto">✍️ Aún no has registrado nada hoy.</p>
+        <div class="aviso-botones">
+          <button class="btn-primario" id="registrar-ir">Ponerme al día</button>
+          <button class="btn-secundario" id="registrar-luego">Hoy no</button>
+        </div>
+      </div>
       <div class="aviso oculto" id="aviso-respaldo">
         <p id="respaldo-texto">🛡️ Llevas días sin respaldar tus datos.</p>
         <div class="aviso-botones">
@@ -997,6 +1010,7 @@
             <input class="monto-input gr-monto" id="gr-monto" type="number" inputmode="decimal" placeholder="$ 0">
             <button class="btn-primario gr-btn" id="gr-agregar" disabled aria-label="Agregar gasto">✓</button>
           </div>
+          <div id="gr-frecuentes"></div>
           <div class="cats" id="gr-cats"></div>
           <input class="nota-input" id="gr-nota" type="text" placeholder="Comentario (opcional)" maxlength="60">
         </div>
@@ -1132,6 +1146,17 @@
           <span class="dia-total" id="total-ayer"></span>
         </div>
         <div class="gastos-lista" id="gastos-ayer"></div>
+      </section>
+
+      <section class="card" id="card-dia-elegido">
+        <div class="card-cab">
+          <h2>Ver otro día<span class="mini-info" id="mini-dia-elegido"></span></h2>
+          <button class="abrir" data-plegable="panel-dia-elegido" aria-expanded="false" aria-label="Ver los gastos de un día concreto">＋</button>
+        </div>
+        <div class="plegable oculto" id="panel-dia-elegido">
+          <input class="nota-input" id="fecha-elegida" type="date">
+          <div class="gastos-lista" id="gastos-dia-elegido" style="margin-top:10px;"></div>
+        </div>
       </section>
 
       <section class="card">
@@ -2676,6 +2701,27 @@
         res.style.color = 'var(--ink)';
         res.textContent = 'Hoy llevas ' + sesPrev.length + (sesPrev.length === 1 ? ' vez' : ' veces') + ' · ' + fmtDur(minHoy);
         wrap.appendChild(res);
+        // Cada sesión por separado, para poder corregir o borrar UNA sin perder el día
+        const listaSes = document.createElement('div');
+        listaSes.className = 'ses-lista';
+        sesPrev.forEach(function (t) {
+          const fila = document.createElement('div');
+          fila.className = 'ses-item';
+          fila.innerHTML = '<span class="ses-min"></span><span class="ses-det"></span>' +
+            botonEditar() + '<button class="g-borrar" aria-label="Borrar esta vez">✕</button>';
+          fila.querySelector('.ses-min').textContent = fmtDur(t.minutos || 0);
+          fila.querySelector('.ses-det').textContent = t.detalle || '';
+          fila.querySelector('.g-editar').addEventListener('click', function () { abrirEditor('tiempo', t.id); });
+          fila.querySelector('.g-borrar').addEventListener('click', function () {
+            estado.tiempos = estado.tiempos.filter(function (x) { return x.id !== t.id; });
+            guardar(); pintarHabitos(); pintarTiempo();
+            ofrecerDeshacer('Sesión eliminada', function () {
+              estado.tiempos.push(t); guardar(); pintarHabitos(); pintarTiempo();
+            });
+          });
+          listaSes.appendChild(fila);
+        });
+        wrap.appendChild(listaSes);
       }
 
       // Si es un hábito de lectura y tienes libros, puedes decir cuál leíste
@@ -4735,6 +4781,89 @@
     });
   }
 
+  // Gastos de un día cualquiera: antes solo se veían Hoy y Ayer, y para el resto
+  // había que rebuscar en el historial.
+  function pintarDiaElegido() {
+    const campo = document.getElementById('fecha-elegida');
+    const cont = document.getElementById('gastos-dia-elegido');
+    const mini = document.getElementById('mini-dia-elegido');
+    if (!campo || !cont) return;
+    const fecha = campo.value;
+    cont.innerHTML = '';
+    if (!fecha) { if (mini) mini.textContent = ' · elige una fecha'; return; }
+    const delDia = estado.gastos.filter(function (g) { return g.fecha === fecha; });
+    let total = 0;
+    delDia.forEach(function (g) { total += g.monto; });
+    if (mini) mini.textContent = ' · ' + fechaCorta(fecha) + ' · $ ' + fmtMoneda.format(total);
+    if (!delDia.length) {
+      cont.innerHTML = '<p class="vacio">Sin gastos el ' + fechaCorta(fecha) + '.</p>';
+      return;
+    }
+    delDia.slice().reverse().forEach(function (g) {
+      const fila = document.createElement('div');
+      fila.className = 'gasto-item';
+      fila.innerHTML =
+        '<div style="flex:1"><div class="g-nota"></div><div class="g-cat"></div></div>' +
+        '<span class="g-monto">$ ' + fmtMoneda.format(g.monto) + '</span>' +
+        botonEditar() + '<button class="g-borrar" aria-label="Borrar gasto">✕</button>';
+      fila.querySelector('.g-nota').textContent = g.nota || g.cat.replace(/^\S+\s/, '');
+      fila.querySelector('.g-cat').textContent = g.cat + (g.hora ? ' · ' + g.hora : '');
+      fila.querySelector('.g-editar').addEventListener('click', function () { abrirEditor('gasto', g.id); });
+      fila.querySelector('.g-borrar').addEventListener('click', function () {
+        estado.gastos = estado.gastos.filter(function (x) { return x.id !== g.id; });
+        guardar(); pintarGastos(); pintarHistorialGastos();
+        ofrecerDeshacer('Gasto eliminado', function () {
+          estado.gastos.push(g); guardar(); pintarGastos(); pintarHistorialGastos();
+        });
+      });
+      cont.appendChild(fila);
+    });
+  }
+
+  // Gastos que repites siempre (mismo monto, categoría y comentario): se ofrecen
+  // como atajo para no volver a escribirlos. Solo los que ya hiciste 2+ veces.
+  function gastosFrecuentes() {
+    const cuenta = {};
+    estado.gastos.forEach(function (g) {
+      const clave = g.monto + '|' + g.cat + '|' + (g.nota || '');
+      if (!cuenta[clave]) cuenta[clave] = { monto: g.monto, cat: g.cat, nota: g.nota || '', n: 0 };
+      cuenta[clave].n++;
+    });
+    return Object.keys(cuenta).map(function (k) { return cuenta[k]; })
+      .filter(function (x) { return x.n >= 2; })
+      .sort(function (a, b) { return b.n - a.n; })
+      .slice(0, 3);
+  }
+  function pintarFrecuentes() {
+    const cont = document.getElementById('gr-frecuentes');
+    if (!cont) return;
+    cont.innerHTML = '';
+    const lista = gastosFrecuentes();
+    if (!lista.length) return;
+    const rot = document.createElement('p');
+    rot.className = 'ayuda';
+    rot.style.margin = '0 0 6px';
+    rot.textContent = 'Repetir uno de siempre:';
+    cont.appendChild(rot);
+    const fila = document.createElement('div');
+    fila.className = 'tipos';
+    fila.style.cssText = 'flex-wrap:nowrap; overflow-x:auto; padding-bottom:2px; margin-bottom:10px;';
+    lista.forEach(function (g) {
+      const b = document.createElement('button');
+      b.className = 'tipo';
+      b.style.flexShrink = '0';
+      b.textContent = (g.nota || g.cat.replace(/^\S+\s/, '')) + ' · $' + fmtMoneda.format(g.monto);
+      b.addEventListener('click', function () {
+        catActiva = g.cat;
+        agregarGasto(g.monto, g.nota);
+        pintarCats();
+        plegar('form-gr');
+      });
+      fila.appendChild(b);
+    });
+    cont.appendChild(fila);
+  }
+
   function agregarGasto(monto, nota, fecha) {
     estado.gastos.push({
       id: 'g' + Date.now(),
@@ -4774,6 +4903,10 @@
   });
   const ngFecha = document.getElementById('ng-fecha');
   ngFecha.value = HOY;
+  (function () {
+    const campo = document.getElementById('fecha-elegida');
+    if (campo) campo.addEventListener('change', pintarDiaElegido);
+  })();
   btnAgregar.addEventListener('click', function () {
     const monto = parseFloat(montoInput.value);
     if (!(monto > 0)) return;
@@ -4906,6 +5039,8 @@
     const efAyer = document.getElementById('ayer-fecha');
     if (efAyer) efAyer.textContent = ' · ' + fechaCorta(claveAyerDe(HOY));
     document.getElementById('gr-total').textContent = 'Hoy llevas $ ' + fmtMoneda.format(totalHoy);
+    pintarFrecuentes();
+    pintarDiaElegido();
     pintarIngresos();
   }
 
@@ -5623,6 +5758,41 @@
       setTimeout(function () { try { URL.revokeObjectURL(a.href); } catch (e) {} }, 3000);
       localStorage.setItem(CLAVE + '-descarga-auto', claveDia());
       localStorage.setItem(CLAVE + '-ultimo-respaldo', claveDia());
+    } catch (e) {}
+  })();
+
+  // Recordatorio de registro: si al caer la tarde no has anotado nada del día,
+  // te lo recuerda al abrir la app. No usa notificaciones (una app web no puede
+  // avisarte con la app cerrada), así que aparece solo cuando entras.
+  (function () {
+    try {
+      const HORA_AVISO = 19;
+      if (new Date().getHours() < HORA_AVISO) return;
+      if (!estado.habitos.length) return; // sin hábitos configurados no molestamos
+      if (localStorage.getItem(CLAVE + '-recordatorio-visto') === claveDia()) return;
+      const dia = estado.dias[HOY];
+      const hizoAlgo =
+        (dia && Object.keys(dia.habitos || {}).length > 0) ||
+        estado.gastos.some(function (g) { return g.fecha === HOY; }) ||
+        estado.ingresos.some(function (g) { return g.fecha === HOY; }) ||
+        estado.notas.some(function (n) { return n.fecha === HOY; }) ||
+        estado.tareas.some(function (t) { return t.fecha === HOY || t.fechaHecha === HOY; }) ||
+        estado.tiempos.some(function (t) { return t.fecha === HOY; });
+      if (hizoAlgo) return;
+      const aviso = document.getElementById('aviso-registrar');
+      if (!aviso) return;
+      aviso.classList.remove('oculto');
+      document.getElementById('registrar-ir').addEventListener('click', function () {
+        aviso.classList.add('oculto');
+        localStorage.setItem(CLAVE + '-recordatorio-visto', claveDia());
+        navegarA('hoy');
+        const hab = document.getElementById('lista-habitos');
+        if (hab) hab.scrollIntoView({ block: 'center' });
+      });
+      document.getElementById('registrar-luego').addEventListener('click', function () {
+        localStorage.setItem(CLAVE + '-recordatorio-visto', claveDia());
+        aviso.classList.add('oculto');
+      });
     } catch (e) {}
   })();
 
