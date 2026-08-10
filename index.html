@@ -293,12 +293,14 @@
   .libro-estrella.on { color: #E8B93C; }
   .libro-resena { margin-top: 8px; font-size: 0.875rem; color: var(--ink); background: var(--surface-2); padding: 9px 11px; border-radius: 9px; white-space: pre-wrap; }
   .libro-acc { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 10px; }
-  .hab-c-ring { position: relative; }
+  /* El contador va sobre el botón, NO dentro del círculo: el círculo tiene
+     overflow:hidden y recortaba el número dejándolo a medias junto al emoji. */
+  .hab-circulo { position: relative; }
   .hab-c-veces {
-    position: absolute; top: -3px; right: -3px; min-width: 19px; height: 19px;
-    padding: 0 4px; border-radius: 999px; background: var(--ink); color: var(--bg);
-    font-size: 0.68rem; font-weight: 700; line-height: 19px; text-align: center;
-    border: 2px solid var(--bg); box-sizing: content-box;
+    position: absolute; top: -2px; right: 3px; min-width: 20px; height: 20px;
+    padding: 0 5px; border-radius: 999px; background: var(--ink); color: var(--bg);
+    font-size: 0.75rem; font-weight: 700; line-height: 20px; text-align: center;
+    border: 2px solid var(--bg); box-sizing: content-box; pointer-events: none;
   }
   .emoji-picker { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; }
   .emoji-op { width: 40px; height: 40px; border-radius: 10px; border: 1px solid var(--line); background: var(--surface-2); font-size: 1.125rem; }
@@ -1391,7 +1393,8 @@
             <datalist id="lista-libros"></datalist>
             <input id="lec-autor" type="text" maxlength="60" placeholder="Autor (opcional)">
             <button class="btn-primario btn-nota" id="guardar-lectura" disabled>Guardar frase</button>
-            <p class="ayuda">Tus frases se guardan aquí y rotan como frase del día en la pantalla principal. ¿Tienes una foto de la página? Mándamela por el chat y te la transcribo lista para pegar.</p>
+            <p class="ayuda">Tus frases se guardan aquí y rotan como frase del día en la pantalla principal.</p>
+            <p class="ayuda"><b>¿El dictado te falla o repite palabras?</b> Toca el cuadro de texto de arriba y usa el 🎤 del teclado de tu celular: transcribe igual de bien y es más fiable.</p>
           </div>
         </section>
         <section class="card">
@@ -2656,7 +2659,7 @@
         const badge = document.createElement('span');
         badge.className = 'hab-c-veces';
         badge.textContent = ses.length;
-        c.querySelector('.hab-c-ring').appendChild(badge);
+        c.appendChild(badge); // sobre el botón, para que no lo recorte el círculo
       }
       c.setAttribute('aria-label', nombreHabito(h) + (hecho
         ? ' · hecho ' + ses.length + (ses.length === 1 ? ' vez' : ' veces') + ' hoy'
@@ -3767,7 +3770,11 @@
     function crearRec() {
       const r = new Reconocimiento();
       r.lang = 'es-CO';
-      r.continuous = true;     // frases largas de un libro
+      // continuous = FALSE a propósito. En Chrome de Android la escucha continua
+      // devuelve la misma frase repetida dentro de ev.results, y eso duplicaba el
+      // texto por mucho que lo reconstruyéramos. Con una frase por sesión no pasa,
+      // y el reinicio automático de abajo mantiene el micrófono escuchando.
+      r.continuous = false;
       r.interimResults = true; // se va viendo mientras hablas
 
       r.onstart = function () { escuchando = true; pintarBoton(); decir('Escuchando… lee la frase con calma.'); };
@@ -3775,11 +3782,19 @@
       // Reconstruye el texto de ESTA sesión desde cero en cada evento (repetir un
       // resultado no cambia nada) y lo escribe sobre la base visible.
       r.onresult = function (ev) {
-        let final = '', interino = '';
+        const partes = [];
+        let interino = '';
         for (let i = 0; i < ev.results.length; i++) {
-          const t = ev.results[i][0].transcript;
-          if (ev.results[i].isFinal) final += t; else interino += t;
+          const t = (ev.results[i][0].transcript || '').trim();
+          if (!t) continue;
+          if (ev.results[i].isFinal) {
+            // Red de seguridad: si el navegador repite la misma frase seguida,
+            // la contamos una sola vez.
+            if (partes.length && partes[partes.length - 1].toLowerCase() === t.toLowerCase()) continue;
+            partes.push(t);
+          } else { interino = t; }
         }
+        const final = partes.join(' ');
         lecTexto.value = limpiar(textoPrevio + ' ' + final + ' ' + interino).slice(0, 600);
         validarLectura();
       };
@@ -3795,9 +3810,15 @@
         textoPrevio = limpiar(lecTexto.value);
         // Android corta tras unos segundos de silencio. Si tú no lo detuviste,
         // reanudamos con una instancia nueva para seguir leyendo frases largas.
-        if (escuchando && !cortadoPorUsuario && reinicios < 12) {
+        // Con una frase por sesión, reiniciamos más veces (cada frase cierra la
+        // sesión). Un respiro entre reinicios evita bucles si el micro falla.
+        if (escuchando && !cortadoPorUsuario && reinicios < 40) {
           reinicios++;
-          try { rec = crearRec(); rec.start(); return; } catch (e) {}
+          setTimeout(function () {
+            if (!escuchando || cortadoPorUsuario) return;
+            try { rec = crearRec(); rec.start(); } catch (e) { escuchando = false; pintarBoton(); }
+          }, 250);
+          return;
         }
         if (escuchando) { escuchando = false; pintarBoton(); decir('Dictado terminado. Revisa el texto antes de guardar.'); }
         validarLectura();
